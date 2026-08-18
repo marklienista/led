@@ -1,197 +1,85 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Detetives das Invenções</title>
-<style>
-:root{
-  --bg:#0f172a; --panel:#172033; --panel2:#202b42; --text:#f8fafc; --muted:#b7c2d4;
-  --green:#22c55e; --green2:#15803d; --purple:#8b5cf6; --purple2:#6d28d9;
-  --yellow:#fbbf24; --blue:#38bdf8; --red:#fb7185; --line:#334155;
-}
-*{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top,#1e293b 0,#0f172a 55%);color:var(--text)}
-body{min-height:100vh;display:flex;flex-direction:column} button{font:inherit}
-header{position:sticky;top:0;z-index:20;background:#0f172add;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.topbar{max-width:980px;margin:auto;padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px}.logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#fbbf24,#fde68a);color:#1f2937;font-size:26px;box-shadow:0 8px 30px #0005}.brand h1{font-size:18px;margin:0;color:#fde68a}.brand p{margin:2px 0 0;color:#94a3b8;font-size:12px}.top-actions{display:flex;gap:8px}.iconbtn{border:1px solid #475569;background:#1e293b;color:#e2e8f0;border-radius:12px;padding:9px 12px;cursor:pointer}.iconbtn:hover{background:#334155}
-main{width:100%;max-width:980px;margin:auto;flex:1;padding:18px 14px 28px;display:flex;align-items:center;justify-content:center}.screen{width:100%}.hidden{display:none!important}
-.card{background:linear-gradient(180deg,#1e293b,#172033);border:1px solid #3b4a63;border-radius:28px;box-shadow:0 24px 70px #0006}.home{padding:28px;text-align:center}.eyebrow{display:inline-flex;gap:7px;align-items:center;border:1px solid #fbbf2455;background:#fbbf2415;color:#fde68a;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.home h2{font-size:clamp(30px,6vw,58px);line-height:1.02;margin:18px auto 10px;max-width:780px}.home h2 span{color:#4ade80}.lead{max-width:700px;margin:0 auto;color:#cbd5e1;font-size:clamp(15px,2.5vw,19px);line-height:1.55}.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px auto;max-width:760px}.rule{background:#0f172a88;border:1px solid var(--line);border-radius:18px;padding:14px}.rule b{display:block;margin-top:6px}.rule span{font-size:26px}.rule p{font-size:12px;color:#aebbd0;margin:5px 0 0;line-height:1.35}.primary{border:0;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#111827;font-weight:900;padding:15px 24px;border-radius:16px;cursor:pointer;box-shadow:0 10px 30px #f59e0b33;font-size:17px}.primary:hover{transform:translateY(-1px)}.smallnote{color:#94a3b8;font-size:12px;margin-top:12px}
-.game-wrap{max-width:720px;margin:auto}.status{background:#172033;border:1px solid #334155;border-radius:19px;padding:12px 14px;margin-bottom:12px}.status-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.status strong{font-size:14px}.status .score{color:#fde68a;font-weight:900}.progress{height:10px;background:#0f172a;border-radius:999px;overflow:hidden;margin-top:10px;border:1px solid #334155}.progress>div{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#38bdf8,#a78bfa);transition:width .35s ease}.game-card{padding:22px;position:relative;overflow:hidden}.difficulty{display:inline-flex;padding:6px 10px;border-radius:999px;background:#334155;color:#dbeafe;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.emoji{width:120px;height:120px;margin:18px auto 12px;border-radius:30px;display:grid;place-items:center;font-size:70px;background:linear-gradient(145deg,#29364e,#111827);border:1px solid #475569;box-shadow:inset 0 0 30px #0003,0 18px 35px #0003;animation:float 3s ease-in-out infinite}.game-card h2{text-align:center;font-size:clamp(27px,5vw,38px);margin:5px 0 6px}.desc{text-align:center;max-width:570px;margin:auto;color:#cbd5e1;line-height:1.45;min-height:45px}.prompt{text-align:center;font-weight:900;color:#f8fafc;margin:20px 0 12px;font-size:18px}.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.choice{border:2px solid transparent;border-radius:18px;padding:16px 10px;color:white;font-weight:900;cursor:pointer;transition:.18s;min-height:78px}.choice:hover{transform:translateY(-2px)}.choice.natural{background:linear-gradient(135deg,#16a34a,#047857);border-color:#4ade8066}.choice.invention{background:linear-gradient(135deg,#8b5cf6,#6d28d9);border-color:#c4b5fd66}.choice .big{display:block;font-size:20px}.choice .sub{display:block;font-size:11px;opacity:.82;margin-top:3px}.options{display:grid;gap:9px;margin-top:10px}.option{background:#26344d;border:1px solid #475569;color:#f8fafc;border-radius:15px;padding:13px;text-align:left;cursor:pointer;font-weight:750}.option:hover{background:#334155;border-color:#64748b}.locked{pointer-events:none;opacity:.78}
-.feedback{margin-top:16px;padding:16px;border-radius:18px;border:1px solid #475569;background:#0f172aa5}.feedback.good{border-color:#22c55e77;background:#14532d55}.feedback.bad{border-color:#fb718577;background:#88133735}.feedback h3{margin:0 0 6px;font-size:18px}.feedback p{margin:0;color:#e2e8f0;line-height:1.45;font-size:14px}.nextrow{margin-top:13px;display:flex;justify-content:flex-end}.next{border:0;background:#fbbf24;color:#111827;border-radius:13px;padding:11px 16px;font-weight:900;cursor:pointer}
-.summary{max-width:650px;margin:auto;padding:26px;text-align:center}.trophy{width:100px;height:100px;border-radius:50%;background:#fbbf2420;border:2px solid #fbbf2466;display:grid;place-items:center;margin:auto;font-size:55px}.summary h2{font-size:36px;margin:13px 0 5px}.summary .msg{color:#cbd5e1}.scorebig{font-size:54px;font-weight:1000;color:#fde68a;margin:15px 0 0}.pointslabel{color:#94a3b8;font-size:12px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.stat{background:#0f172a;border:1px solid #334155;border-radius:16px;padding:13px}.stat strong{display:block;font-size:22px}.stat span{font-size:11px;color:#94a3b8}.summary-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.secondary{border:1px solid #475569;background:#273449;color:white;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}.secondary:hover{background:#334155}.learned{margin-top:18px;text-align:left;background:#0f172a88;border:1px solid #334155;border-radius:18px;padding:16px}.learned h3{margin:0 0 8px;font-size:15px;color:#93c5fd}.learned p{font-size:13px;color:#cbd5e1;margin:5px 0}.footer{padding:14px;color:#64748b;text-align:center;font-size:11px;border-top:1px solid #1e293b}
-@keyframes float{50%{transform:translateY(-7px)}}@keyframes pop{0%{transform:scale(.96);opacity:.2}100%{transform:scale(1);opacity:1}}.pop{animation:pop .25s ease-out}
-@media(max-width:650px){.rules{grid-template-columns:1fr}.home{padding:20px 14px}.brand p{display:none}.top-actions .label{display:none}.game-card{padding:17px 14px}.emoji{width:105px;height:105px;font-size:61px}.stats{grid-template-columns:1fr}.choice-grid{gap:8px}.choice{padding:14px 6px}}
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header>
-  <div class="topbar">
-    <div class="brand"><div class="logo">💡</div><div><h1>Detetives das Invenções</h1><p>Ciências • 2º ano • jornada de aproximadamente 20 minutos</p></div></div>
-    <div class="top-actions">
-      <button class="iconbtn" id="soundBtn" title="Ligar/desligar som">🔊 <span class="label">Som</span></button>
-      <button class="iconbtn" id="fullBtn" title="Tela cheia">⛶ <span class="label">Tela cheia</span></button>
-    </div>
-  </div>
+<div class="top">
+  <div class="brand">💡 Detetives das Invenções<small>2º ano • uma jornada contínua</small></div>
+  <div class="tools"><button id="soundBtn" class="tool">🔊</button><button id="fullBtn" class="tool">⛶</button></div>
+</div>
 </header>
 <main>
 <section id="home" class="screen">
-  <div class="card home pop">
-    <div class="eyebrow">🔎 Missão científica</div>
-    <h2>O que veio da <span>natureza</span> e o que foi inventado?</h2>
-    <p class="lead">Observe, pense e descubra. A cada rodada, o desafio fica um pouco mais interessante. Você também vai descobrir de onde vêm alguns objetos e como as pessoas aprenderam com a natureza para inventar coisas.</p>
-    <div class="rules">
-      <div class="rule"><span>🌿</span><b>Natural</b><p>Existe na natureza sem ter sido criado pelas pessoas.</p></div>
-      <div class="rule"><span>🛠️</span><b>Invenção</b><p>Foi criada ou transformada pelas pessoas para alguma finalidade.</p></div>
-      <div class="rule"><span>⭐</span><b>Ganhe pontos</b><p>Acertar a escolha e a pergunta de descoberta aumenta sua pontuação.</p></div>
-    </div>
-    <button class="primary" id="startBtn">Começar a investigação →</button>
-    <div class="smallnote">15 rodadas contínuas • novas combinações em cada tentativa</div>
+<div class="card home">
+  <h1>Natureza ou <span>invenção</span>?</h1>
+  <p>Olhe a imagem. Leia a frase. Escolha a resposta. Depois, descubra mais uma coisa sobre o item.</p>
+  <div class="rules">
+    <div class="rule"><b>🌿 Natural</b>Existe na natureza.</div>
+    <div class="rule"><b>💡 Invenção</b>Foi criada ou transformada por pessoas.</div>
+    <div class="rule"><b>⭐ Pontos</b>Cada acerto vale 10 pontos.</div>
   </div>
+  <button id="startBtn" class="primary">Começar →</button>
+  <div class="note">45 itens • dificuldade aumenta aos poucos • itens mudam em novas tentativas</div>
+</div>
 </section>
 
 <section id="game" class="screen hidden">
-  <div class="game-wrap">
-    <div class="status">
-      <div class="status-row"><strong id="roundText">Rodada 1 de 15</strong><div class="score">⭐ <span id="scoreText">0</span> pontos</div></div>
-      <div class="progress"><div id="progressBar"></div></div>
+<div class="game">
+  <div class="status">
+    <div class="statusline"><span id="roundText">Item 1 de 45</span><span class="score">⭐ <span id="scoreText">0</span> pontos</span></div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </div>
+  <div class="card play">
+    <span id="badge" class="badge">Observe</span>
+    <div id="visual" class="visual"></div>
+    <h2 id="itemName" class="item-name"></h2>
+    <p id="itemDesc" class="desc"></p>
+
+    <div id="stageOne">
+      <div class="prompt">É natural ou é uma invenção?</div>
+      <div class="choices">
+        <button id="naturalBtn" class="choice natural">🌿 Natural<small>Existe na natureza</small></button>
+        <button id="inventionBtn" class="choice invention">💡 Invenção<small>Foi criada por pessoas</small></button>
+      </div>
     </div>
-    <div class="card game-card pop" id="gameCard">
-      <div style="text-align:center"><span class="difficulty" id="difficulty">Observe com atenção</span></div>
-      <div class="emoji" id="emoji">🌳</div>
-      <h2 id="itemName">Árvore</h2>
-      <p class="desc" id="itemDesc"></p>
-      <div id="stageOne">
-        <div class="prompt">Isso é natural ou é uma invenção?</div>
-        <div class="choice-grid">
-          <button class="choice natural" id="naturalBtn"><span class="big">🌿 Natural</span><span class="sub">Veio da natureza</span></button>
-          <button class="choice invention" id="inventionBtn"><span class="big">💡 Invenção</span><span class="sub">Criada ou transformada por pessoas</span></button>
-        </div>
-      </div>
-      <div id="stageTwo" class="hidden">
-        <div class="prompt" id="followQuestion"></div>
-        <div class="options" id="options"></div>
-      </div>
-      <div id="feedback" class="feedback hidden"><h3 id="feedbackTitle"></h3><p id="feedbackText"></p><div class="nextrow"><button class="next" id="nextBtn">Continuar →</button></div></div>
+
+    <div id="stageTwo" class="hidden">
+      <div id="followQuestion" class="prompt"></div>
+      <div id="options" class="options"></div>
+    </div>
+
+    <div id="feedback" class="feedback hidden">
+      <h3 id="feedbackTitle"></h3>
+      <p id="feedbackText"></p>
+      <div class="nextrow"><button id="nextBtn" class="next">Continuar →</button></div>
     </div>
   </div>
+</div>
 </section>
 
 <section id="summary" class="screen hidden">
-  <div class="card summary pop">
-    <div class="trophy">🏆</div>
-    <h2>Investigação concluída!</h2>
-    <p class="msg" id="summaryMsg"></p>
-    <div class="scorebig" id="finalScore">0</div><div class="pointslabel">pontos de 300 possíveis</div>
-    <div class="stats">
-      <div class="stat"><strong id="classHits">0/15</strong><span>Natural x invenção</span></div>
-      <div class="stat"><strong id="followHits">0/15</strong><span>Perguntas de descoberta</span></div>
-      <div class="stat"><strong id="bestStreak">0</strong><span>Maior sequência de acertos</span></div>
-    </div>
-    <div class="summary-actions"><button class="primary" id="againBtn">Jogar de novo com outros itens</button><button class="secondary" id="homeBtn">Voltar ao início</button></div>
-    <div class="learned"><h3>🧠 Ideia principal</h3><p>Nem tudo que usa algo da natureza é natural. O papel vem da árvore, mas o caderno é uma invenção. A areia é natural, mas o vidro é produzido pelas pessoas.</p><p>Inventar também pode significar observar a natureza e criar uma solução inspirada nela.</p></div>
+<div class="card summary">
+  <div style="font-size:64px">🏆</div>
+  <h2>Você terminou!</h2>
+  <p id="summaryMsg"></p>
+  <div id="finalScore" class="bigscore">0</div>
+  <p style="margin-top:0">pontos de <span id="maxScore">900</span></p>
+  <div class="stats">
+    <div class="stat"><strong id="classHits">0/45</strong><span>Natural ou invenção</span></div>
+    <div class="stat"><strong id="followHits">0/45</strong><span>Perguntas extras</span></div>
+    <div class="stat"><strong id="bestStreak">0</strong><span>Maior sequência</span></div>
   </div>
+  <div class="actions"><button id="againBtn" class="primary">Jogar de novo</button><button id="homeBtn" class="secondary">Início</button></div>
+</div>
 </section>
 </main>
-<div class="footer">Recurso educativo para uso em sala • Funciona diretamente no navegador e não precisa de cadastro.</div>
-<script>
-const QUESTION_BANK = [
-{id:'e01',band:1,name:'Árvore',emoji:'🌳',type:'natural',desc:'Ela nasce de uma semente, cresce e produz folhas.',why:'A árvore é um ser vivo da natureza.',q:'O que uma árvore precisa para crescer?',opts:['Água e luz do Sol','Pilhas','Parafusos'],ans:'Água e luz do Sol'},
-{id:'e02',band:1,name:'Bicicleta',emoji:'🚲',type:'invention',desc:'Tem rodas, guidão, corrente e pedais.',why:'A bicicleta foi criada pelas pessoas para se deslocar.',q:'O que faz uma bicicleta comum andar?',opts:['A força das pernas','A chuva','As raízes'],ans:'A força das pernas'},
-{id:'e03',band:1,name:'Pedra',emoji:'🪨',type:'natural',desc:'Pode ser encontrada no chão, em rios e montanhas.',why:'As pedras são formadas por processos naturais da Terra.',q:'Onde podemos encontrar pedras na natureza?',opts:['Em rios e montanhas','Dentro de uma televisão','Somente em fábricas'],ans:'Em rios e montanhas'},
-{id:'e04',band:1,name:'Lápis',emoji:'✏️',type:'invention',desc:'É usado para escrever e desenhar.',why:'O lápis é fabricado pelas pessoas usando materiais como madeira e grafite.',q:'Qual parte do lápis deixa a marca no papel?',opts:['O grafite','A folha','A água'],ans:'O grafite'},
-{id:'e05',band:1,name:'Nuvem',emoji:'☁️',type:'natural',desc:'Fica no céu e é formada por pequenas gotas de água ou cristais de gelo.',why:'A nuvem se forma naturalmente na atmosfera.',q:'As nuvens estão ligadas principalmente a quê?',opts:['À água','Ao plástico','Ao metal'],ans:'À água'},
-{id:'e06',band:1,name:'Guarda-chuva',emoji:'☂️',type:'invention',desc:'É aberto sobre a cabeça para ajudar a proteger da chuva.',why:'O guarda-chuva foi criado pelas pessoas.',q:'Para que serve o guarda-chuva?',opts:['Ajudar a proteger da chuva','Fazer uma árvore crescer','Produzir vento'],ans:'Ajudar a proteger da chuva'},
-{id:'e07',band:1,name:'Borboleta',emoji:'🦋',type:'natural',desc:'É um animal com asas que passa por uma transformação durante a vida.',why:'A borboleta é um ser vivo da natureza.',q:'Antes de virar borboleta, ela passa por qual forma?',opts:['Lagarta','Parafuso','Pedra'],ans:'Lagarta'},
-{id:'e08',band:1,name:'Relógio',emoji:'⏰',type:'invention',desc:'Ajuda as pessoas a acompanhar as horas.',why:'O relógio foi inventado para medir e organizar o tempo.',q:'O relógio ajuda a saber o quê?',opts:['As horas','A cor do vento','O tamanho da Lua'],ans:'As horas'},
-{id:'e09',band:1,name:'Rio',emoji:'🏞️',type:'natural',desc:'É um curso de água que corre por um caminho natural.',why:'Os rios fazem parte da natureza.',q:'O rio é formado principalmente por quê?',opts:['Água','Vidro','Borracha'],ans:'Água'},
-{id:'e10',band:1,name:'Tesoura',emoji:'✂️',type:'invention',desc:'Tem duas lâminas e é usada para cortar materiais.',why:'A tesoura é uma ferramenta criada pelas pessoas.',q:'Qual é uma função da tesoura?',opts:['Cortar papel','Fazer chover','Criar sementes'],ans:'Cortar papel'},
-{id:'e11',band:1,name:'Peixe',emoji:'🐟',type:'natural',desc:'Vive na água e muitos peixes respiram por brânquias.',why:'O peixe é um ser vivo da natureza.',q:'Onde o peixe vive?',opts:['Na água','Dentro do lápis','No relógio'],ans:'Na água'},
-{id:'e12',band:1,name:'Lanterna',emoji:'🔦',type:'invention',desc:'Produz luz e pode ser carregada de um lugar para outro.',why:'A lanterna é um objeto criado pelas pessoas.',q:'Para que usamos uma lanterna?',opts:['Para iluminar','Para plantar árvores','Para formar nuvens'],ans:'Para iluminar'},
-{id:'m01',band:2,name:'Pão',emoji:'🍞',type:'invention',desc:'É preparado com ingredientes como farinha, água e fermento.',why:'Os ingredientes vêm da natureza, mas fazer pão é uma transformação realizada pelas pessoas.',q:'A farinha usada em muitos pães vem de qual planta?',opts:['Trigo','Cacto','Pinheiro'],ans:'Trigo'},
-{id:'m02',band:2,name:'Mel',emoji:'🍯',type:'natural',desc:'É produzido pelas abelhas a partir do néctar das flores.',why:'O mel é produzido naturalmente pelas abelhas.',q:'Quem produz o mel?',opts:['Abelhas','Bicicletas','Nuvens'],ans:'Abelhas'},
-{id:'m03',band:2,name:'Caderno',emoji:'📓',type:'invention',desc:'Tem folhas de papel presas juntas e serve para escrever.',why:'O papel usa matéria-prima natural, mas o caderno é fabricado pelas pessoas.',q:'O papel pode ser feito de fibras que vêm principalmente de quê?',opts:['Plantas e árvores','Relógios','Pedras de gelo'],ans:'Plantas e árvores'},
-{id:'m04',band:2,name:'Areia da praia',emoji:'🏖️',type:'natural',desc:'É formada por pequenos grãos de minerais e fragmentos de rochas.',why:'A areia é encontrada e formada na natureza.',q:'O que pode ser produzido pelas pessoas usando areia como matéria-prima?',opts:['Vidro','Folha de árvore','Nuvem'],ans:'Vidro'},
-{id:'m05',band:2,name:'Garrafa de vidro',emoji:'🍾',type:'invention',desc:'É um recipiente moldado em uma fábrica.',why:'O vidro é produzido pelas pessoas ao transformar materiais naturais, como a areia.',q:'Qual destes materiais está ligado à fabricação do vidro?',opts:['Areia','Algodão-doce','Folha seca'],ans:'Areia'},
-{id:'m06',band:2,name:'Algodão',emoji:'☁️',type:'natural',desc:'É uma fibra que cresce em uma planta.',why:'O algodão nasce em uma planta, por isso é natural.',q:'O algodão pode ser usado para fabricar o quê?',opts:['Tecidos e roupas','Raios do Sol','Rios'],ans:'Tecidos e roupas'},
-{id:'m07',band:2,name:'Camiseta',emoji:'👕',type:'invention',desc:'É uma peça de roupa cortada e costurada pelas pessoas.',why:'Mesmo quando é feita de algodão natural, a camiseta é fabricada.',q:'Qual material natural pode virar tecido para uma camiseta?',opts:['Algodão','Nuvem','Granito'],ans:'Algodão'},
-{id:'m08',band:2,name:'Queijo',emoji:'🧀',type:'invention',desc:'É preparado pelas pessoas a partir do leite.',why:'O leite é natural, mas o queijo é resultado de uma transformação feita pelas pessoas.',q:'Qual alimento é a principal matéria-prima do queijo?',opts:['Leite','Areia','Madeira'],ans:'Leite'},
-{id:'m09',band:2,name:'Ovo de galinha',emoji:'🥚',type:'natural',desc:'É produzido pelo corpo da galinha.',why:'O ovo é produzido naturalmente por um animal.',q:'Qual animal pode produzir este ovo?',opts:['Galinha','Peixe-palhaço','Borboleta'],ans:'Galinha'},
-{id:'m10',band:2,name:'Mesa de madeira',emoji:'🪑',type:'invention',desc:'Pode ser feita com madeira cortada, lixada e montada.',why:'A madeira vem da árvore, mas a mesa é construída pelas pessoas.',q:'De onde pode vir a madeira de uma mesa?',opts:['De árvores','De nuvens','De relógios'],ans:'De árvores'},
-{id:'m11',band:2,name:'Borracha natural',emoji:'🌱',type:'natural',desc:'O látex pode ser retirado de árvores como a seringueira.',why:'O látex é uma substância produzida naturalmente por certas plantas.',q:'De qual árvore podemos obter látex?',opts:['Seringueira','Coqueiro de metal','Árvore de plástico'],ans:'Seringueira'},
-{id:'m12',band:2,name:'Pneu',emoji:'🛞',type:'invention',desc:'É fabricado para ajudar veículos a se movimentar sobre o chão.',why:'O pneu é produzido pelas pessoas usando diferentes materiais.',q:'Qual material está presente em pneus?',opts:['Borracha','Água da chuva','Pétalas'],ans:'Borracha'},
-{id:'d01',band:3,name:'Teia de aranha',emoji:'🕸️',type:'natural',desc:'A aranha produz fios e constrói a própria teia.',why:'A teia é feita pelo comportamento e pelo corpo do animal, sem fabricação humana.',q:'Uma teia ajudou pessoas a pensar em materiais fortes. Isso é um exemplo de quê?',opts:['Aprender observando a natureza','A natureza fabricar máquinas','Uma pedra virar animal'],ans:'Aprender observando a natureza'},
-{id:'d02',band:3,name:'Velcro',emoji:'👟',type:'invention',desc:'É um fecho que gruda e desgruda, usado em roupas, tênis e bolsas.',why:'O velcro é uma invenção humana inspirada em sementes que grudam em pelos e roupas.',q:'O velcro foi inspirado em quê?',opts:['Sementes com pequenos ganchos','Gotas de chuva','Pedras lisas'],ans:'Sementes com pequenos ganchos'},
-{id:'d03',band:3,name:'Asa de pássaro',emoji:'🪽',type:'natural',desc:'Ajuda muitos pássaros a voar e controlar seus movimentos no ar.',why:'As asas fazem parte do corpo de animais.',q:'As pessoas observaram aves para desenvolver melhor qual invenção?',opts:['Aviões','Panelas','Lápis'],ans:'Aviões'},
-{id:'d04',band:3,name:'Avião',emoji:'✈️',type:'invention',desc:'É uma máquina criada para transportar pessoas e objetos pelo ar.',why:'O avião é uma invenção humana, mesmo que seu desenvolvimento tenha aprendido com o voo dos animais.',q:'Qual parte do avião lembra uma característica de animais voadores?',opts:['As asas','Os bancos','As malas'],ans:'As asas'},
-{id:'d05',band:3,name:'Semente que voa',emoji:'🌬️',type:'natural',desc:'Algumas sementes têm partes leves que ajudam o vento a carregá-las.',why:'Essa forma de dispersar sementes surgiu na natureza.',q:'Qual invenção desce pelo ar de modo parecido com algumas sementes?',opts:['Paraquedas','Geladeira','Escova de dentes'],ans:'Paraquedas'},
-{id:'d06',band:3,name:'Paraquedas',emoji:'🪂',type:'invention',desc:'Abre uma grande superfície de tecido para diminuir a velocidade da queda.',why:'O paraquedas é uma invenção humana.',q:'O paraquedas ajuda uma pessoa a fazer o quê?',opts:['Descer mais devagar pelo ar','Respirar debaixo d’água','Fazer uma árvore crescer'],ans:'Descer mais devagar pelo ar'},
-{id:'d07',band:3,name:'Pele de tubarão',emoji:'🦈',type:'natural',desc:'Tem uma textura especial que ajuda o animal a se mover na água.',why:'A pele faz parte do corpo natural do tubarão.',q:'Estudar a pele do tubarão pode ajudar pessoas a criar o quê?',opts:['Superfícies que deslizam melhor na água','Nuvens artificiais para chover','Árvores de metal'],ans:'Superfícies que deslizam melhor na água'},
-{id:'d08',band:3,name:'Tecido esportivo',emoji:'🏊',type:'invention',desc:'É planejado para ter determinadas formas, texturas e funções.',why:'O tecido é produzido pelas pessoas e pode copiar ideias observadas em animais.',q:'Quando uma invenção copia uma solução da natureza, as pessoas estão fazendo o quê?',opts:['Usando a natureza como inspiração','Transformando a invenção em animal','Fazendo a natureza deixar de existir'],ans:'Usando a natureza como inspiração'},
-{id:'d09',band:3,name:'Colmeia',emoji:'🐝',type:'natural',desc:'Abelhas constroem favos com muitas células de seis lados.',why:'A colmeia é uma construção feita por animais como parte de seu comportamento natural.',q:'Que forma aparece muitas vezes nos favos?',opts:['Hexágono','Triângulo de três dimensões','Estrela de dez pontas'],ans:'Hexágono'},
-{id:'d10',band:3,name:'Telhado com placas solares',emoji:'☀️',type:'invention',desc:'As placas são equipamentos criados para transformar luz em eletricidade.',why:'A luz do Sol é natural, mas a placa solar é uma tecnologia inventada.',q:'Qual parte é natural nessa situação?',opts:['A luz do Sol','A placa solar','Os fios elétricos'],ans:'A luz do Sol'},
-{id:'d11',band:3,name:'Arco-íris',emoji:'🌈',type:'natural',desc:'Pode aparecer quando a luz do Sol encontra gotas de água no ar.',why:'O arco-íris é um fenômeno natural.',q:'Quais elementos ajudam a formar um arco-íris?',opts:['Luz e gotas de água','Pilhas e fios','Madeira e cola'],ans:'Luz e gotas de água'},
-{id:'d12',band:3,name:'Robô',emoji:'🤖',type:'invention',desc:'É uma máquina construída e programada para executar tarefas.',why:'Robôs são criados pelas pessoas, mesmo quando imitam movimentos de animais.',q:'Se um robô imita o jeito de uma aranha andar, o que continua sendo invenção?',opts:['O robô','A aranha','A natureza inteira'],ans:'O robô'}
-];
-
-const TOTAL_ROUNDS=15, MAX_SCORE=300;
-let session=[], index=0, score=0, classHits=0, followHits=0, streak=0, bestStreak=0, stage=1, classCorrect=false;
-let soundOn=true;
-function shuffle(a){const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [b[i],b[j]]=[b[j],b[i]]} return b}
-function sampleBand(band,n,previous){let pool=QUESTION_BANK.filter(x=>x.band===band && !previous.includes(x.id)); if(pool.length<n) pool=QUESTION_BANK.filter(x=>x.band===band); return shuffle(pool).slice(0,n)}
-function buildSession(){
-  let previous=[]; try{previous=JSON.parse(localStorage.getItem('detetives_prev')||'[]')}catch(e){}
-  session=[...sampleBand(1,5,previous),...sampleBand(2,5,previous),...sampleBand(3,5,previous)];
-  try{localStorage.setItem('detetives_prev',JSON.stringify(session.map(x=>x.id)))}catch(e){}
-}
-function show(id){['home','game','summary'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));}
-function difficultyText(){if(index<5)return 'Observe com atenção'; if(index<10)return 'Pense na transformação'; return 'Desafio de inventor';}
-function render(){
-  const item=session[index]; stage=1; classCorrect=false;
-  document.getElementById('roundText').textContent=`Rodada ${index+1} de ${TOTAL_ROUNDS}`;
-  document.getElementById('scoreText').textContent=score;
-  document.getElementById('progressBar').style.width=`${(index/TOTAL_ROUNDS)*100}%`;
-  document.getElementById('difficulty').textContent=difficultyText();
-  document.getElementById('emoji').textContent=item.emoji; document.getElementById('itemName').textContent=item.name; document.getElementById('itemDesc').textContent=item.desc;
-  document.getElementById('stageOne').classList.remove('hidden'); document.getElementById('stageTwo').classList.add('hidden'); document.getElementById('feedback').classList.add('hidden');
-  document.getElementById('naturalBtn').classList.remove('locked'); document.getElementById('inventionBtn').classList.remove('locked');
-  const card=document.getElementById('gameCard'); card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop');
-}
-function tone(ok){if(!soundOn)return; try{const C=window.AudioContext||window.webkitAudioContext; const c=new C(),o=c.createOscillator(),g=c.createGain(); o.connect(g);g.connect(c.destination);o.type=ok?'sine':'triangle';o.frequency.setValueAtTime(ok?520:180,c.currentTime);o.frequency.exponentialRampToValueAtTime(ok?760:120,c.currentTime+.14);g.gain.setValueAtTime(.08,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.2);o.start();o.stop(c.currentTime+.21)}catch(e){}}
-function classify(choice){
-  if(stage!==1)return; stage=2; const item=session[index]; classCorrect=choice===item.type;
-  if(classCorrect){score+=10;classHits++;streak++;bestStreak=Math.max(bestStreak,streak);tone(true)}else{streak=0;tone(false)}
-  document.getElementById('scoreText').textContent=score; document.getElementById('naturalBtn').classList.add('locked'); document.getElementById('inventionBtn').classList.add('locked');
-  const fb=document.getElementById('feedback'); fb.className='feedback '+(classCorrect?'good':'bad'); fb.classList.remove('hidden');
-  document.getElementById('feedbackTitle').textContent=classCorrect?'✅ Boa investigação!':'🔍 Quase! Veja a pista:';
-  document.getElementById('feedbackText').textContent=item.why;
-  document.getElementById('nextBtn').textContent='Responder à descoberta →';
-  document.getElementById('nextBtn').onclick=showFollow;
-}
-function showFollow(){
-  const item=session[index]; document.getElementById('feedback').classList.add('hidden'); document.getElementById('stageOne').classList.add('hidden'); document.getElementById('stageTwo').classList.remove('hidden');
-  document.getElementById('followQuestion').textContent=item.q; const box=document.getElementById('options'); box.innerHTML='';
-  shuffle(item.opts).forEach(opt=>{const b=document.createElement('button');b.className='option';b.textContent=opt;b.onclick=()=>answerFollow(opt,b);box.appendChild(b)});
-}
-function answerFollow(opt,button){
-  if(stage!==2)return; stage=3; const item=session[index]; const ok=opt===item.ans; document.querySelectorAll('.option').forEach(b=>b.classList.add('locked'));
-  if(ok){score+=10;followHits++;streak++;bestStreak=Math.max(bestStreak,streak);tone(true)}else{streak=0;tone(false)}
-  document.getElementById('scoreText').textContent=score;
-  const fb=document.getElementById('feedback');fb.className='feedback '+(ok?'good':'bad');fb.classList.remove('hidden');
-  document.getElementById('feedbackTitle').textContent=ok?'⭐ Descoberta certa!':'💡 Agora você já sabe!';
-  document.getElementById('feedbackText').textContent= ok ? `Isso mesmo: ${item.ans}.` : `A resposta é: ${item.ans}.`;
-  document.getElementById('nextBtn').textContent=index===TOTAL_ROUNDS-1?'Ver minha pontuação 🏆':'Próxima rodada →'; document.getElementById('nextBtn').onclick=next;
-}
-function next(){index++; if(index>=TOTAL_ROUNDS)return finish(); render()}
-function finish(){
-  document.getElementById('progressBar').style.width='100%'; show('summary'); document.getElementById('finalScore').textContent=score; document.getElementById('classHits').textContent=`${classHits}/${TOTAL_ROUNDS}`; document.getElementById('followHits').textContent=`${followHits}/${TOTAL_ROUNDS}`; document.getElementById('bestStreak').textContent=bestStreak;
-  const pct=score/MAX_SCORE; let msg='Você terminou a missão e aprendeu novas pistas sobre natureza e invenções.'; if(pct>=.9)msg='Excelente! Você observou como um verdadeiro detetive das invenções.'; else if(pct>=.7)msg='Muito bem! Você já consegue explicar várias diferenças entre natureza e invenção.'; else if(pct>=.5)msg='Boa investigação! Uma nova tentativa vai trazer outros itens para você descobrir.';
-  document.getElementById('summaryMsg').textContent=msg; try{const best=Number(localStorage.getItem('detetives_best')||0);if(score>best)localStorage.setItem('detetives_best',score)}catch(e){}
-}
-function start(){buildSession();index=0;score=0;classHits=0;followHits=0;streak=0;bestStreak=0;show('game');render()}
-document.getElementById('startBtn').onclick=start; document.getElementById('againBtn').onclick=start; document.getElementById('homeBtn').onclick=()=>show('home'); document.getElementById('naturalBtn').onclick=()=>classify('natural'); document.getElementById('inventionBtn').onclick=()=>classify('invention');
-document.getElementById('soundBtn').onclick=()=>{soundOn=!soundOn;document.getElementById('soundBtn').innerHTML=(soundOn?'🔊':'🔇')+' <span class="label">Som</span>'};
-document.getElementById('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
-document.addEventListener('keydown',e=>{if(document.getElementById('game').classList.contains('hidden'))return; if(stage===1&&(e.key.toLowerCase()==='n'||e.key.toLowerCase()==='i')) classify(e.key.toLowerCase()==='n'?'natural':'invention')});
-</script>
+<script src="data.js"></script>
+<script src="visuals.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
