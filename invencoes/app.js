@@ -2,11 +2,15 @@ const TOTAL=50;
 const MAX_SCORE=1000;
 const BAND_PLAN=[{band:1,count:17},{band:2,count:17},{band:3,count:16}];
 const RANKING_KEY='inv_ranking_v1';
+const SUPABASE_URL='https://eyfmhnlzduoobdmwexmc.supabase.co';
+const SUPABASE_KEY='sb_publishable_as-eMTlem4cWd29PVNFAhg_uVLIqZKu';
+const SUPABASE_TABLE='invencoes_ranking';
 let session=[],index=0,score=0,classHits=0,followHits=0,streak=0,bestStreak=0,stage=1,soundOn=true,playerName='';
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){['home','game','summary'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id))}
 function cleanName(value){return value.trim().replace(/\s+/g,' ').slice(0,24)}
+function normalizedName(value){return cleanName(value).toLocaleLowerCase('pt-BR')}
 
 function buildSession(){
   let prev=[];try{prev=JSON.parse(localStorage.getItem('inv_prev')||'[]')}catch(e){}
@@ -87,17 +91,17 @@ function medalFor(points){
  return{key:'none',icon:'🎯',title:'Tente mais uma vez!',message:`${playerName}, jogue de novo e tente conquistar uma medalha!`};
 }
 
-function getRanking(){
+function getLocalRanking(){
  try{
   const data=JSON.parse(localStorage.getItem(RANKING_KEY)||'[]');
   return Array.isArray(data)?data.filter(x=>x&&typeof x.name==='string'&&Number.isFinite(Number(x.score))):[];
  }catch(e){return[]}
 }
 
-function saveRanking(){
- const ranking=getRanking();
- const key=playerName.toLocaleLowerCase('pt-BR');
- const pos=ranking.findIndex(x=>x.name.toLocaleLowerCase('pt-BR')===key);
+function saveLocalRanking(){
+ const ranking=getLocalRanking();
+ const key=normalizedName(playerName);
+ const pos=ranking.findIndex(x=>normalizedName(x.name)===key);
  const entry={name:playerName,score,updated:Date.now()};
  if(pos<0) ranking.push(entry);
  else if(score>Number(ranking[pos].score)) ranking[pos]=entry;
@@ -105,31 +109,75 @@ function saveRanking(){
  try{localStorage.setItem(RANKING_KEY,JSON.stringify(ranking.slice(0,50)))}catch(e){}
 }
 
-function renderRanking(targetId,highlight=''){
- const box=document.getElementById(targetId);if(!box)return;
- const ranking=getRanking().sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);
+async function saveOnlineScore(){
+ const response=await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`,{
+  method:'POST',
+  headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+  body:JSON.stringify({nome:playerName,pontos:score})
+ });
+ if(!response.ok)throw new Error(`Falha ao salvar ranking (${response.status})`);
+}
+
+function dedupeRanking(rows){
+ const best=new Map();
+ for(const row of rows||[]){
+  const name=cleanName(row.nome||row.name||'');
+  const points=Number(row.pontos??row.score);
+  if(!name||!Number.isFinite(points))continue;
+  const key=normalizedName(name);
+  const existing=best.get(key);
+  if(!existing||points>existing.score)best.set(key,{name,score:points,updated:row.criado_em||row.updated||0});
+ }
+ return [...best.values()].sort((a,b)=>b.score-a.score||String(a.updated).localeCompare(String(b.updated))).slice(0,10);
+}
+
+async function getOnlineRanking(){
+ const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=nome,pontos,criado_em&order=pontos.desc,criado_em.asc&limit=200`;
+ const response=await fetch(url,{headers:{'apikey':SUPABASE_KEY}});
+ if(!response.ok)throw new Error(`Falha ao carregar ranking (${response.status})`);
+ return dedupeRanking(await response.json());
+}
+
+function drawRanking(box,ranking,highlight='',offline=false){
  box.innerHTML='';
- if(!ranking.length){const empty=document.createElement('div');empty.className='rank-empty';empty.textContent='Ainda não há pontuações salvas.';box.appendChild(empty);return}
+ if(!ranking.length){
+  const empty=document.createElement('div');empty.className='rank-empty';empty.textContent=offline?'Sem internet. Ainda não há pontuações neste computador.':'Ainda não há pontuações no ranking.';box.appendChild(empty);return;
+ }
  ranking.forEach((entry,i)=>{
   const row=document.createElement('div');row.className='rank-row';
-  if(highlight&&entry.name.toLocaleLowerCase('pt-BR')===highlight.toLocaleLowerCase('pt-BR'))row.classList.add('current');
+  if(highlight&&normalizedName(entry.name)===normalizedName(highlight))row.classList.add('current');
   const p=document.createElement('span');p.className='rank-pos';p.textContent=`${i+1}º`;
   const n=document.createElement('span');n.className='rank-name';n.textContent=`${medalFor(Number(entry.score)).icon} ${entry.name}`;
   const s=document.createElement('span');s.className='rank-score';s.textContent=`${entry.score} pts`;
   row.append(p,n,s);box.appendChild(row);
  });
+ if(offline){const note=document.createElement('div');note.className='rank-empty';note.textContent='Sem conexão: mostrando o ranking deste computador.';box.appendChild(note)}
 }
 
-function finish(){
+async function renderRanking(targetId,highlight=''){
+ const box=document.getElementById(targetId);if(!box)return;
+ box.innerHTML='<div class="rank-empty">Carregando ranking...</div>';
+ try{
+  const online=await getOnlineRanking();
+  drawRanking(box,online,highlight,false);
+ }catch(e){
+  const local=dedupeRanking(getLocalRanking().map(x=>({nome:x.name,pontos:x.score,criado_em:x.updated})));
+  drawRanking(box,local,highlight,true);
+ }
+}
+
+async function finish(){
  show('summary');
  const medal=medalFor(score);
- saveRanking();
+ saveLocalRanking();
  document.getElementById('medalIcon').textContent=medal.icon;
  document.getElementById('medalTitle').textContent=medal.title;
  document.getElementById('summaryMsg').textContent=medal.message;
  document.getElementById('finalScore').textContent=score;document.getElementById('maxScore').textContent=MAX_SCORE;
  document.getElementById('classHits').textContent=`${classHits}/${TOTAL}`;document.getElementById('followHits').textContent=`${followHits}/${TOTAL}`;document.getElementById('bestStreak').textContent=bestStreak;
- renderRanking('summaryRanking',playerName);
+ const box=document.getElementById('summaryRanking');box.innerHTML='<div class="rank-empty">Salvando pontuação...</div>';
+ try{await saveOnlineScore()}catch(e){}
+ await renderRanking('summaryRanking',playerName);
 }
 
 function start(){
