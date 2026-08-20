@@ -56,7 +56,7 @@ function classify(choice){
  tone(ok);document.getElementById('scoreText').textContent=score;
  document.getElementById('naturalBtn').classList.add('locked');document.getElementById('inventionBtn').classList.add('locked');
  const f=document.getElementById('feedback');f.className='feedback '+(ok?'good':'bad');f.classList.remove('hidden');
- document.getElementById('feedbackTitle').textContent=ok?'✅ Certo!':'🔎 Veja:';
+ document.getElementById('feedbackTitle').textContent=ok?'✅ Certo!':'Ihhhh 😢';
  document.getElementById('feedbackText').textContent=item.why;
  document.getElementById('nextBtn').textContent='Pergunta extra →';document.getElementById('nextBtn').onclick=showFollow;
 }
@@ -73,8 +73,8 @@ function answerFollow(opt){
  if(ok){score+=10;followHits++;streak++;bestStreak=Math.max(bestStreak,streak)}else streak=0;
  tone(ok);document.getElementById('scoreText').textContent=score;
  const f=document.getElementById('feedback');f.className='feedback '+(ok?'good':'bad');f.classList.remove('hidden');
- document.getElementById('feedbackTitle').textContent=ok?'⭐ Muito bem!':'💡 A resposta é:';
- document.getElementById('feedbackText').textContent=ok?item.ans:`${item.ans}.`;
+ document.getElementById('feedbackTitle').textContent=ok?'⭐ Muito bem!':'Ihhhh 😢';
+ document.getElementById('feedbackText').textContent=ok?item.ans:`A resposta é: ${item.ans}.`;
  document.getElementById('nextBtn').textContent=index===TOTAL-1?'Ver pontuação 🏆':'Próximo item →';document.getElementById('nextBtn').onclick=next;
 }
 
