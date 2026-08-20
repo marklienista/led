@@ -1,28 +1,33 @@
-const TOTAL=45;
-const MAX_SCORE=TOTAL*20;
-let session=[],index=0,score=0,classHits=0,followHits=0,streak=0,bestStreak=0,stage=1,soundOn=true;
+const TOTAL=50;
+const MAX_SCORE=1000;
+const BAND_PLAN=[{band:1,count:17},{band:2,count:17},{band:3,count:16}];
+const RANKING_KEY='inv_ranking_v1';
+let session=[],index=0,score=0,classHits=0,followHits=0,streak=0,bestStreak=0,stage=1,soundOn=true,playerName='';
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 function show(id){['home','game','summary'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id))}
+function cleanName(value){return value.trim().replace(/\s+/g,' ').slice(0,24)}
+
 function buildSession(){
   let prev=[];try{prev=JSON.parse(localStorage.getItem('inv_prev')||'[]')}catch(e){}
   session=[];
-  for(const band of [1,2,3]){
-    const all=QUESTION_BANK.filter(x=>x.band===band);
+  for(const plan of BAND_PLAN){
+    const all=QUESTION_BANK.filter(x=>x.band===plan.band);
     const fresh=shuffle(all.filter(x=>!prev.includes(x.id)));
     const old=shuffle(all.filter(x=>prev.includes(x.id)));
-    session.push(...fresh.slice(0,15));
-    if(session.filter(x=>x.band===band).length<15){
-      const need=15-session.filter(x=>x.band===band).length;
-      session.push(...old.slice(0,need));
-    }
+    const chosen=[...fresh.slice(0,plan.count)];
+    if(chosen.length<plan.count) chosen.push(...old.slice(0,plan.count-chosen.length));
+    session.push(...chosen);
   }
   try{localStorage.setItem('inv_prev',JSON.stringify(session.map(x=>x.id)))}catch(e){}
 }
-function levelText(){return index<15?'Observe':index<30?'Pense na transformação':'Desafio de inventor'}
+
+function levelText(){return index<17?'Observe':index<34?'Pense na transformação':'Desafio de inventor'}
+
 function render(){
  const item=session[index];stage=1;
  document.getElementById('roundText').textContent=`Item ${index+1} de ${TOTAL}`;
+ document.getElementById('playerLabel').textContent=`👤 ${playerName}`;
  document.getElementById('scoreText').textContent=score;
  document.getElementById('progressBar').style.width=`${(index/TOTAL)*100}%`;
  document.getElementById('badge').textContent=levelText();
@@ -35,6 +40,7 @@ function render(){
  document.getElementById('naturalBtn').classList.remove('locked');
  document.getElementById('inventionBtn').classList.remove('locked');
 }
+
 function tone(ok){
  if(!soundOn)return;
  try{
@@ -43,6 +49,7 @@ function tone(ok){
   g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.18);o.stop(c.currentTime+.2)
  }catch(e){}
 }
+
 function classify(choice){
  if(stage!==1)return;stage=2;const item=session[index];const ok=choice===item.type;
  if(ok){score+=10;classHits++;streak++;bestStreak=Math.max(bestStreak,streak)}else streak=0;
@@ -53,11 +60,13 @@ function classify(choice){
  document.getElementById('feedbackText').textContent=item.why;
  document.getElementById('nextBtn').textContent='Pergunta extra →';document.getElementById('nextBtn').onclick=showFollow;
 }
+
 function showFollow(){
  const item=session[index];document.getElementById('feedback').classList.add('hidden');document.getElementById('stageOne').classList.add('hidden');document.getElementById('stageTwo').classList.remove('hidden');
  document.getElementById('followQuestion').textContent=item.q;const box=document.getElementById('options');box.innerHTML='';
  shuffle(item.opts).forEach(opt=>{const b=document.createElement('button');b.className='option';b.textContent=opt;b.onclick=()=>answerFollow(opt);box.appendChild(b)});
 }
+
 function answerFollow(opt){
  if(stage!==2)return;stage=3;const item=session[index],ok=opt===item.ans;
  document.querySelectorAll('.option').forEach(x=>x.classList.add('locked'));
@@ -68,15 +77,79 @@ function answerFollow(opt){
  document.getElementById('feedbackText').textContent=ok?item.ans:`${item.ans}.`;
  document.getElementById('nextBtn').textContent=index===TOTAL-1?'Ver pontuação 🏆':'Próximo item →';document.getElementById('nextBtn').onclick=next;
 }
+
 function next(){index++;if(index>=TOTAL)return finish();render()}
-function finish(){
- show('summary');document.getElementById('finalScore').textContent=score;document.getElementById('maxScore').textContent=MAX_SCORE;
- document.getElementById('classHits').textContent=`${classHits}/${TOTAL}`;document.getElementById('followHits').textContent=`${followHits}/${TOTAL}`;document.getElementById('bestStreak').textContent=bestStreak;
- const p=score/MAX_SCORE;document.getElementById('summaryMsg').textContent=p>=.85?'Excelente! Você observou e pensou muito bem.':p>=.65?'Muito bem! Você aprendeu bastante.':'Boa tentativa! Jogue de novo e veja novos itens.';
+
+function medalFor(points){
+ if(points>950)return{key:'gold',icon:'🥇',title:'Medalha de ouro!',message:`Parabéns, ${playerName}! Você ganhou a medalha de ouro. Chame o professor!`};
+ if(points>800)return{key:'silver',icon:'🥈',title:'Medalha de prata!',message:`Parabéns, ${playerName}! Você ganhou a medalha de prata. Chame o professor!`};
+ if(points>600)return{key:'bronze',icon:'🥉',title:'Medalha de bronze!',message:`${playerName}, você ganhou a medalha de bronze. Jogue de novo e tente chegar à prata!`};
+ return{key:'none',icon:'🎯',title:'Tente mais uma vez!',message:`${playerName}, jogue de novo e tente conquistar uma medalha!`};
 }
-function start(){buildSession();index=0;score=0;classHits=0;followHits=0;streak=0;bestStreak=0;show('game');render()}
-document.getElementById('startBtn').onclick=start;document.getElementById('againBtn').onclick=start;document.getElementById('homeBtn').onclick=()=>show('home');
-document.getElementById('naturalBtn').onclick=()=>classify('natural');document.getElementById('inventionBtn').onclick=()=>classify('invention');
+
+function getRanking(){
+ try{
+  const data=JSON.parse(localStorage.getItem(RANKING_KEY)||'[]');
+  return Array.isArray(data)?data.filter(x=>x&&typeof x.name==='string'&&Number.isFinite(Number(x.score))):[];
+ }catch(e){return[]}
+}
+
+function saveRanking(){
+ const ranking=getRanking();
+ const key=playerName.toLocaleLowerCase('pt-BR');
+ const pos=ranking.findIndex(x=>x.name.toLocaleLowerCase('pt-BR')===key);
+ const entry={name:playerName,score,updated:Date.now()};
+ if(pos<0) ranking.push(entry);
+ else if(score>Number(ranking[pos].score)) ranking[pos]=entry;
+ ranking.sort((a,b)=>Number(b.score)-Number(a.score)||(a.updated||0)-(b.updated||0));
+ try{localStorage.setItem(RANKING_KEY,JSON.stringify(ranking.slice(0,50)))}catch(e){}
+}
+
+function renderRanking(targetId,highlight=''){
+ const box=document.getElementById(targetId);if(!box)return;
+ const ranking=getRanking().sort((a,b)=>Number(b.score)-Number(a.score)).slice(0,10);
+ box.innerHTML='';
+ if(!ranking.length){const empty=document.createElement('div');empty.className='rank-empty';empty.textContent='Ainda não há pontuações salvas.';box.appendChild(empty);return}
+ ranking.forEach((entry,i)=>{
+  const row=document.createElement('div');row.className='rank-row';
+  if(highlight&&entry.name.toLocaleLowerCase('pt-BR')===highlight.toLocaleLowerCase('pt-BR'))row.classList.add('current');
+  const p=document.createElement('span');p.className='rank-pos';p.textContent=`${i+1}º`;
+  const n=document.createElement('span');n.className='rank-name';n.textContent=`${medalFor(Number(entry.score)).icon} ${entry.name}`;
+  const s=document.createElement('span');s.className='rank-score';s.textContent=`${entry.score} pts`;
+  row.append(p,n,s);box.appendChild(row);
+ });
+}
+
+function finish(){
+ show('summary');
+ const medal=medalFor(score);
+ saveRanking();
+ document.getElementById('medalIcon').textContent=medal.icon;
+ document.getElementById('medalTitle').textContent=medal.title;
+ document.getElementById('summaryMsg').textContent=medal.message;
+ document.getElementById('finalScore').textContent=score;document.getElementById('maxScore').textContent=MAX_SCORE;
+ document.getElementById('classHits').textContent=`${classHits}/${TOTAL}`;document.getElementById('followHits').textContent=`${followHits}/${TOTAL}`;document.getElementById('bestStreak').textContent=bestStreak;
+ renderRanking('summaryRanking',playerName);
+}
+
+function start(){
+ const input=document.getElementById('playerName');
+ const name=cleanName(input.value||playerName);
+ if(!name){document.getElementById('nameError').classList.remove('hidden');input.focus();return}
+ playerName=name;input.value=playerName;document.getElementById('nameError').classList.add('hidden');
+ buildSession();index=0;score=0;classHits=0;followHits=0;streak=0;bestStreak=0;show('game');render();
+}
+
+function goHome(){document.getElementById('playerName').value=playerName;renderRanking('homeRanking',playerName);show('home')}
+
+document.getElementById('startBtn').onclick=start;
+document.getElementById('againBtn').onclick=start;
+document.getElementById('homeBtn').onclick=goHome;
+document.getElementById('naturalBtn').onclick=()=>classify('natural');
+document.getElementById('inventionBtn').onclick=()=>classify('invention');
 document.getElementById('soundBtn').onclick=()=>{soundOn=!soundOn;document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇'};
 document.getElementById('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};
+document.getElementById('playerName').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
 document.addEventListener('keydown',e=>{if(document.getElementById('game').classList.contains('hidden'))return;if(stage===1&&e.key.toLowerCase()==='n')classify('natural');if(stage===1&&e.key.toLowerCase()==='i')classify('invention')});
+
+renderRanking('homeRanking');
