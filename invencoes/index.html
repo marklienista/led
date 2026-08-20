@@ -9,34 +9,37 @@
 <body>
 <header>
 <div class="top">
-  <div class="brand">💡 Detetives das Invenções<small>2º ano • uma jornada contínua</small></div>
+  <div class="brand">💡 Detetives das Invenções<small>2º ano • investigação em dupla</small></div>
   <div class="tools"><button id="soundBtn" class="tool" title="Som">🔊</button><button id="fullBtn" class="tool" title="Tela cheia">⛶</button></div>
 </div>
 </header>
 <main>
 <section id="home" class="screen">
 <div class="card home">
-  <h1>Natureza ou <span>invenção</span>?</h1>
-  <p>Veja a imagem. Leia. Escolha a resposta. Depois, responda mais uma pergunta.</p>
+  <h1>Uma dupla de <span>detetives</span>!</h1>
+  <p>Vocês vão investigar juntos o que é da natureza e o que foi inventado. Antes de clicar, conversem e ajudem um ao outro.</p>
   <div class="rules">
-    <div class="rule"><b>🌿 Natural</b>Existe na natureza.</div>
-    <div class="rule"><b>💡 Invenção</b>Foi criada por pessoas.</div>
-    <div class="rule"><b>⭐ 1000 pontos</b>São 50 itens. Cada acerto vale 10.</div>
+    <div class="rule"><b>👀 Um observa e lê</b>Explique para seu colega o que percebeu.</div>
+    <div class="rule"><b>🤝 O outro ajuda</b>Conversem antes de escolher a resposta.</div>
+    <div class="rule"><b>🔄 Troquem os papéis</b>A cada item, quem lê e quem ajuda muda.</div>
   </div>
   <div class="medal-goals" aria-label="Metas de medalhas">
     <div><span>🥇</span><b>Ouro</b><small>mais de 950</small></div>
     <div><span>🥈</span><b>Prata</b><small>mais de 800</small></div>
     <div><span>🥉</span><b>Bronze</b><small>mais de 600</small></div>
   </div>
-  <div class="name-box">
-    <label for="playerName">Digite seu nome:</label>
-    <input id="playerName" type="text" maxlength="24" autocomplete="off" placeholder="Seu nome" />
-    <div id="nameError" class="name-error hidden">Digite seu nome para começar.</div>
+  <div class="name-box duo-box">
+    <div class="duo-title">👥 Quem forma a dupla?</div>
+    <div class="duo-names">
+      <div><label for="playerOne">Primeiro nome:</label><input id="playerOne" type="text" maxlength="12" autocomplete="off" placeholder="Nome 1" /></div>
+      <div><label for="playerTwo">Primeiro nome:</label><input id="playerTwo" type="text" maxlength="12" autocomplete="off" placeholder="Nome 2" /></div>
+    </div>
+    <div id="nameError" class="name-error hidden">Digite os dois nomes para começar.</div>
   </div>
-  <button id="startBtn" class="primary">Começar →</button>
-  <div class="note">50 itens • até 1000 pontos • os itens e as alternativas mudam em novas tentativas</div>
+  <button id="startBtn" class="primary">Começar a investigação →</button>
+  <div class="note">50 itens • até 1000 pontos • conversem antes de responder</div>
   <div class="home-ranking">
-    <h2>🏆 Ranking da turma</h2>
+    <h2>🏆 Ranking da escola</h2>
     <div id="homeRanking" class="ranking-list"></div>
   </div>
 </div>
@@ -61,8 +64,9 @@
       </div>
 
       <div class="question-panel">
+        <div id="roleHint" class="role-hint"></div>
         <div id="stageOne">
-          <div class="prompt">É natural ou é uma invenção?</div>
+          <div class="prompt">Conversem: é natural ou é uma invenção?</div>
           <div class="choices">
             <button id="naturalBtn" class="choice natural">🌿 Natural<small>Existe na natureza</small></button>
             <button id="inventionBtn" class="choice invention">💡 Invenção<small>Foi criada por pessoas</small></button>
@@ -88,7 +92,7 @@
 <section id="summary" class="screen hidden">
 <div class="card summary">
   <div id="medalIcon" class="medal-icon">🏆</div>
-  <h2 id="medalTitle">Você terminou!</h2>
+  <h2 id="medalTitle">Vocês terminaram!</h2>
   <p id="summaryMsg"></p>
   <div id="finalScore" class="bigscore">0</div>
   <p class="score-caption">pontos de <span id="maxScore">1000</span></p>
@@ -98,10 +102,10 @@
     <div class="stat"><strong id="bestStreak">0</strong><span>Maior sequência</span></div>
   </div>
   <div class="ranking-box">
-    <h3>🏆 Ranking da turma</h3>
+    <h3>🏆 Ranking da escola</h3>
     <div id="summaryRanking" class="ranking-list"></div>
   </div>
-  <div class="actions"><button id="againBtn" class="primary">Jogar de novo</button><button id="homeBtn" class="secondary">Início</button></div>
+  <div class="actions"><button id="againBtn" class="primary">Jogar de novo juntos</button><button id="homeBtn" class="secondary">Início</button></div>
 </div>
 </section>
 </main>
