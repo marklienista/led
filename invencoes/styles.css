@@ -25,14 +25,16 @@ main{max-width:1280px;width:100%;margin:auto;padding:22px 18px 34px;flex:1;displ
 .medal-goals{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0 24px}
 .medal-goals div{min-width:145px;background:#152136;border:1px solid #40516d;border-radius:17px;padding:11px 15px}
 .medal-goals span{font-size:30px;display:block}.medal-goals b{font-size:20px;display:block}.medal-goals small{font-size:15px;color:#b8c4d6}
-.name-box{max-width:520px;margin:20px auto 18px;text-align:left}
-.name-box label{display:block;font-size:23px;font-weight:900;margin-bottom:8px}
-.name-box input{width:100%;padding:15px 17px;border:2px solid #60728f;border-radius:15px;background:#101b2d;color:#fff;font-size:25px;outline:none}
+.name-box{max-width:650px;margin:20px auto 18px;text-align:left}
+.duo-title{text-align:center;font-size:24px;font-weight:900;margin-bottom:12px;color:#fde68a}
+.duo-names{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.name-box label{display:block;font-size:21px;font-weight:900;margin-bottom:7px}
+.name-box input{width:100%;padding:15px 17px;border:2px solid #60728f;border-radius:15px;background:#101b2d;color:#fff;font-size:24px;outline:none}
 .name-box input:focus{border-color:#fbbf24;box-shadow:0 0 0 3px #fbbf2425}
-.name-error{color:#fecdd3;background:#4a1725;border:1px solid #fb7185;border-radius:11px;padding:8px 11px;font-size:17px;margin-top:7px}
+.name-error{color:#fecdd3;background:#4a1725;border:1px solid #fb7185;border-radius:11px;padding:8px 11px;font-size:17px;margin-top:9px}
 .primary{background:#fbbf24;color:#172033;border:0;border-radius:16px;font-weight:900;font-size:24px;padding:17px 28px;cursor:pointer}
 .note{font-size:17px;color:#aebbd0;margin-top:14px}
-.home-ranking{margin:28px auto 0;max-width:700px;text-align:left;border-top:1px solid #40516d;padding-top:20px}.home-ranking h2{font-size:24px;margin:0 0 12px;text-align:center}
+.home-ranking{margin:28px auto 0;max-width:760px;text-align:left;border-top:1px solid #40516d;padding-top:20px}.home-ranking h2{font-size:25px;margin:0 0 12px;text-align:center}
 .game{max-width:1200px;margin:auto}
 .status{background:#172236;border:1px solid #40516d;border-radius:20px;padding:14px 18px;margin-bottom:13px}
 .statusline{display:flex;justify-content:space-between;align-items:center;gap:16px;font-weight:900;font-size:21px}
@@ -43,6 +45,8 @@ main{max-width:1280px;width:100%;margin:auto;padding:22px 18px 34px;flex:1;displ
 .play-layout{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(500px,1.25fr);gap:34px;align-items:center}
 .visual-panel{text-align:center;padding:8px 8px 8px 2px}
 .question-panel{min-width:0}
+.role-hint{background:#0f2742;border:2px solid #38bdf866;border-radius:18px;padding:14px 16px;margin-bottom:18px;font-size:22px;line-height:1.35;font-weight:800;text-align:center;color:#dff4ff}
+.role-hint b{color:#fde68a}
 .badge{display:inline-block;background:#334968;border-radius:999px;padding:8px 13px;font-weight:900;font-size:16px;text-transform:uppercase}
 .visual{width:300px;height:250px;margin:18px auto 13px;background:#111b2e;border:2px solid #40516d;border-radius:30px;display:grid;place-items:center;padding:18px}
 .visual svg{width:100%;height:100%;display:block}
@@ -65,10 +69,10 @@ main{max-width:1280px;width:100%;margin:auto;padding:22px 18px 34px;flex:1;displ
 .medal-icon{font-size:82px;line-height:1;margin-bottom:5px}.summary h2{font-size:46px;margin:10px 0}.bigscore{font-size:76px;font-weight:1000;color:#fde68a;margin-top:12px}.summary p{font-size:24px;color:#dbe4f2;line-height:1.4}.score-caption{margin-top:0!important}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:22px 0}
 .stat{background:#111b2e;border:1px solid #40516d;border-radius:18px;padding:17px}.stat strong{display:block;font-size:30px}.stat span{font-size:16px;color:#b8c4d6}
-.ranking-box{background:#111b2e;border:1px solid #40516d;border-radius:20px;padding:18px;margin:18px 0 22px;text-align:left}.ranking-box h3{font-size:24px;text-align:center;margin:0 0 12px}
+.ranking-box{background:#111b2e;border:1px solid #40516d;border-radius:20px;padding:18px;margin:18px 0 22px;text-align:left}.ranking-box h3{font-size:25px;text-align:center;margin:0 0 12px}
 .ranking-list{display:grid;gap:7px}.rank-row{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:10px;background:#1b2940;border:1px solid #344966;border-radius:12px;padding:9px 13px;font-size:19px}.rank-row.current{border-color:#fbbf24;background:#3a3218}.rank-pos{font-weight:900;color:#fde68a}.rank-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rank-score{font-weight:900}.rank-empty{text-align:center;color:#aebbd0;font-size:18px;padding:8px}
 .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.secondary{background:#2a3b58;color:#fff;border:1px solid #50627e;border-radius:15px;padding:15px 19px;font-weight:900;font-size:21px;cursor:pointer}
 @media(max-width:900px){
- body{font-size:19px}.top{padding:10px 14px}.brand{font-size:20px}.brand small{display:none}main{padding:16px 12px 28px}.home{padding:26px 18px}.home p{font-size:21px}.rules{grid-template-columns:1fr}.play{padding:18px 14px}.play-layout{grid-template-columns:1fr;gap:15px}.visual-panel{padding:0}.visual{width:180px;height:150px;margin:11px auto 8px}.item-name{font-size:40px}.desc{font-size:21px}.prompt{font-size:26px;margin:8px 0 13px}.choice{font-size:23px;min-height:85px;padding:16px 8px}.choice small{font-size:15px}.option{font-size:21px;padding:15px}.feedback h3{font-size:23px}.feedback p{font-size:20px}.stats{grid-template-columns:1fr}.statusline{font-size:17px}.rank-row{font-size:17px;grid-template-columns:45px 1fr auto}
+ body{font-size:19px}.top{padding:10px 14px}.brand{font-size:20px}.brand small{display:none}main{padding:16px 12px 28px}.home{padding:26px 18px}.home p{font-size:21px}.rules{grid-template-columns:1fr}.play{padding:18px 14px}.play-layout{grid-template-columns:1fr;gap:15px}.visual-panel{padding:0}.visual{width:180px;height:150px;margin:11px auto 8px}.item-name{font-size:40px}.desc{font-size:21px}.prompt{font-size:26px;margin:8px 0 13px}.role-hint{font-size:19px}.choice{font-size:23px;min-height:85px;padding:16px 8px}.choice small{font-size:15px}.option{font-size:21px;padding:15px}.feedback h3{font-size:23px}.feedback p{font-size:20px}.stats{grid-template-columns:1fr}.statusline{font-size:17px}.rank-row{font-size:17px;grid-template-columns:45px 1fr auto}
 }
-@media(max-width:540px){.choices{grid-template-columns:1fr}.medal-goals{gap:8px}.medal-goals div{min-width:120px}.summary{padding:25px 15px}.bigscore{font-size:62px}}
+@media(max-width:620px){.duo-names{grid-template-columns:1fr}.choices{grid-template-columns:1fr}.medal-goals{gap:8px}.medal-goals div{min-width:120px}.summary{padding:25px 15px}.bigscore{font-size:62px}}
