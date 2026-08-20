@@ -10,53 +10,76 @@
 <header>
 <div class="top">
   <div class="brand">💡 Detetives das Invenções<small>2º ano • uma jornada contínua</small></div>
-  <div class="tools"><button id="soundBtn" class="tool">🔊</button><button id="fullBtn" class="tool">⛶</button></div>
+  <div class="tools"><button id="soundBtn" class="tool" title="Som">🔊</button><button id="fullBtn" class="tool" title="Tela cheia">⛶</button></div>
 </div>
 </header>
 <main>
 <section id="home" class="screen">
 <div class="card home">
   <h1>Natureza ou <span>invenção</span>?</h1>
-  <p>Olhe a imagem. Leia a frase. Escolha a resposta. Depois, descubra mais uma coisa sobre o item.</p>
+  <p>Veja a imagem. Leia. Escolha a resposta. Depois, responda mais uma pergunta.</p>
   <div class="rules">
     <div class="rule"><b>🌿 Natural</b>Existe na natureza.</div>
-    <div class="rule"><b>💡 Invenção</b>Foi criada ou transformada por pessoas.</div>
-    <div class="rule"><b>⭐ Pontos</b>Cada acerto vale 10 pontos.</div>
+    <div class="rule"><b>💡 Invenção</b>Foi criada por pessoas.</div>
+    <div class="rule"><b>⭐ 1000 pontos</b>São 50 itens. Cada acerto vale 10.</div>
+  </div>
+  <div class="medal-goals" aria-label="Metas de medalhas">
+    <div><span>🥇</span><b>Ouro</b><small>mais de 950</small></div>
+    <div><span>🥈</span><b>Prata</b><small>mais de 800</small></div>
+    <div><span>🥉</span><b>Bronze</b><small>mais de 600</small></div>
+  </div>
+  <div class="name-box">
+    <label for="playerName">Digite seu nome:</label>
+    <input id="playerName" type="text" maxlength="24" autocomplete="off" placeholder="Seu nome" />
+    <div id="nameError" class="name-error hidden">Digite seu nome para começar.</div>
   </div>
   <button id="startBtn" class="primary">Começar →</button>
-  <div class="note">45 itens • dificuldade aumenta aos poucos • itens mudam em novas tentativas</div>
+  <div class="note">50 itens • até 1000 pontos • os itens e as alternativas mudam em novas tentativas</div>
+  <div class="home-ranking">
+    <h2>🏆 Ranking deste computador</h2>
+    <div id="homeRanking" class="ranking-list"></div>
+  </div>
 </div>
 </section>
 
 <section id="game" class="screen hidden">
 <div class="game">
   <div class="status">
-    <div class="statusline"><span id="roundText">Item 1 de 45</span><span class="score">⭐ <span id="scoreText">0</span> pontos</span></div>
+    <div class="statusline">
+      <span><span id="playerLabel"></span> • <span id="roundText">Item 1 de 50</span></span>
+      <span class="score">⭐ <span id="scoreText">0</span> / 1000</span>
+    </div>
     <div class="progress"><div id="progressBar"></div></div>
   </div>
   <div class="card play">
-    <span id="badge" class="badge">Observe</span>
-    <div id="visual" class="visual"></div>
-    <h2 id="itemName" class="item-name"></h2>
-    <p id="itemDesc" class="desc"></p>
-
-    <div id="stageOne">
-      <div class="prompt">É natural ou é uma invenção?</div>
-      <div class="choices">
-        <button id="naturalBtn" class="choice natural">🌿 Natural<small>Existe na natureza</small></button>
-        <button id="inventionBtn" class="choice invention">💡 Invenção<small>Foi criada por pessoas</small></button>
+    <div class="play-layout">
+      <div class="visual-panel">
+        <span id="badge" class="badge">Observe</span>
+        <div id="visual" class="visual"></div>
+        <h2 id="itemName" class="item-name"></h2>
+        <p id="itemDesc" class="desc"></p>
       </div>
-    </div>
 
-    <div id="stageTwo" class="hidden">
-      <div id="followQuestion" class="prompt"></div>
-      <div id="options" class="options"></div>
-    </div>
+      <div class="question-panel">
+        <div id="stageOne">
+          <div class="prompt">É natural ou é uma invenção?</div>
+          <div class="choices">
+            <button id="naturalBtn" class="choice natural">🌿 Natural<small>Existe na natureza</small></button>
+            <button id="inventionBtn" class="choice invention">💡 Invenção<small>Foi criada por pessoas</small></button>
+          </div>
+        </div>
 
-    <div id="feedback" class="feedback hidden">
-      <h3 id="feedbackTitle"></h3>
-      <p id="feedbackText"></p>
-      <div class="nextrow"><button id="nextBtn" class="next">Continuar →</button></div>
+        <div id="stageTwo" class="hidden">
+          <div id="followQuestion" class="prompt"></div>
+          <div id="options" class="options"></div>
+        </div>
+
+        <div id="feedback" class="feedback hidden">
+          <h3 id="feedbackTitle"></h3>
+          <p id="feedbackText"></p>
+          <div class="nextrow"><button id="nextBtn" class="next">Continuar →</button></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -64,15 +87,19 @@
 
 <section id="summary" class="screen hidden">
 <div class="card summary">
-  <div style="font-size:64px">🏆</div>
-  <h2>Você terminou!</h2>
+  <div id="medalIcon" class="medal-icon">🏆</div>
+  <h2 id="medalTitle">Você terminou!</h2>
   <p id="summaryMsg"></p>
   <div id="finalScore" class="bigscore">0</div>
-  <p style="margin-top:0">pontos de <span id="maxScore">900</span></p>
+  <p class="score-caption">pontos de <span id="maxScore">1000</span></p>
   <div class="stats">
-    <div class="stat"><strong id="classHits">0/45</strong><span>Natural ou invenção</span></div>
-    <div class="stat"><strong id="followHits">0/45</strong><span>Perguntas extras</span></div>
+    <div class="stat"><strong id="classHits">0/50</strong><span>Natural ou invenção</span></div>
+    <div class="stat"><strong id="followHits">0/50</strong><span>Perguntas extras</span></div>
     <div class="stat"><strong id="bestStreak">0</strong><span>Maior sequência</span></div>
+  </div>
+  <div class="ranking-box">
+    <h3>🏆 Ranking deste computador</h3>
+    <div id="summaryRanking" class="ranking-list"></div>
   </div>
   <div class="actions"><button id="againBtn" class="primary">Jogar de novo</button><button id="homeBtn" class="secondary">Início</button></div>
 </div>
