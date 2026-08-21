@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Para que serve?</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">🛠️ Para que serve?<small>2º ano • investigação em dupla</small></div>
+    <div class="tools"><button id="soundBtn" class="tool" title="Som">🔊</button><button id="fullBtn" class="tool" title="Tela cheia">⛶</button></div>
+  </div>
+</header>
+<main>
+<section id="home" class="screen">
+  <div class="card home">
+    <div class="eyebrow">🔎 Missão dos inventores</div>
+    <h1>Por que as pessoas <span>inventam</span> coisas?</h1>
+    <p>Uma invenção costuma ajudar em alguma tarefa, resolver um problema ou aumentar uma capacidade. Vocês vão descobrir <b>para que ela serve</b> e <b>o que ela tem que faz isso acontecer</b>.</p>
+    <div class="idea-flow">
+      <div><span>😕</span><b>Problema ou necessidade</b><small>Algo precisa ser feito.</small></div>
+      <div class="arrow">→</div>
+      <div><span>💡</span><b>Invenção</b><small>Uma solução criada.</small></div>
+      <div class="arrow">→</div>
+      <div><span>⚙️</span><b>Partes e características</b><small>Fazem a solução funcionar.</small></div>
+    </div>
+    <div class="rules">
+      <div class="rule"><b>👀 Um lê e observa</b>Conte para o colega o que percebeu.</div>
+      <div class="rule"><b>🤝 Decidam juntos</b>Conversem antes de clicar.</div>
+      <div class="rule"><b>🔄 Troquem os papéis</b>A cada item, muda quem começa.</div>
+    </div>
+    <div class="medal-goals">
+      <div><span>🥇</span><b>Ouro</b><small>mais de 950</small></div>
+      <div><span>🥈</span><b>Prata</b><small>mais de 800</small></div>
+      <div><span>🥉</span><b>Bronze</b><small>mais de 600</small></div>
+    </div>
+    <div class="name-box">
+      <div class="duo-title">👥 Quem forma a dupla?</div>
+      <div class="duo-names">
+        <div><label for="playerOne">Primeiro nome ou apelido:</label><input id="playerOne" maxlength="10" autocomplete="off" placeholder="Nome 1"></div>
+        <div><label for="playerTwo">Primeiro nome ou apelido:</label><input id="playerTwo" maxlength="10" autocomplete="off" placeholder="Nome 2"></div>
+      </div>
+      <div id="nameError" class="name-error hidden">Digite os dois nomes para começar.</div>
+    </div>
+    <button id="startBtn" class="primary">Começar a missão →</button>
+    <div class="note">50 invenções • 1000 pontos • as perguntas mudam em novas tentativas</div>
+    <div class="home-ranking"><h2>🏆 Ranking da escola</h2><div id="homeRanking" class="ranking-list"></div></div>
+  </div>
+</section>
+
+<section id="game" class="screen hidden">
+  <div class="game">
+    <div class="status">
+      <div class="statusline"><span><span id="teamLabel"></span> • <span id="roundText">Item 1 de 50</span></span><span class="score">⭐ <span id="scoreText">0</span> / 1000</span></div>
+      <div class="progress"><div id="progressBar"></div></div>
+    </div>
+    <div class="card play">
+      <div class="play-layout">
+        <div class="visual-panel">
+          <span id="badge" class="badge">Para que serve?</span>
+          <div id="visual" class="visual"></div>
+          <h2 id="itemName" class="item-name"></h2>
+          <p id="itemDesc" class="desc"></p>
+        </div>
+        <div class="question-panel">
+          <div id="roleHint" class="role-hint"></div>
+          <div id="stageOne">
+            <div class="concept-label">1. FUNÇÃO</div>
+            <div id="functionQuestion" class="prompt">Para que esta invenção serve?</div>
+            <div id="functionOptions" class="options"></div>
+          </div>
+          <div id="stageTwo" class="hidden">
+            <div class="concept-label">2. COMO ELA CONSEGUE?</div>
+            <div id="featureQuestion" class="prompt"></div>
+            <div id="featureOptions" class="options"></div>
+          </div>
+          <div id="feedback" class="feedback hidden"><h3 id="feedbackTitle"></h3><p id="feedbackText"></p><div class="nextrow"><button id="nextBtn" class="next">Continuar →</button></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="summary" class="screen hidden">
+  <div class="card summary">
+    <div id="medalIcon" class="medal-icon">🏆</div>
+    <h2 id="medalTitle">Vocês terminaram!</h2>
+    <p id="summaryMsg"></p>
+    <div id="finalScore" class="bigscore">0</div><p class="score-caption">pontos de 1000</p>
+    <div class="learning-box"><b>💡 O que descobrimos?</b><span>Uma invenção tem uma função. Suas partes, seu material e seu jeito de funcionar ajudam a cumprir essa função.</span></div>
+    <div class="stats">
+      <div class="stat"><strong id="functionHits">0/50</strong><span>Para que serve</span></div>
+      <div class="stat"><strong id="featureHits">0/50</strong><span>Como consegue</span></div>
+      <div class="stat"><strong id="bestStreak">0</strong><span>Maior sequência</span></div>
+    </div>
+    <div class="ranking-box"><h3>🏆 Ranking da escola</h3><div id="summaryRanking" class="ranking-list"></div></div>
+    <div class="actions"><button id="againBtn" class="primary">Jogar de novo juntos</button><button id="homeBtn" class="secondary">Início</button></div>
+  </div>
+</section>
+</main>
+<script src="../invencoes/visuals.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
