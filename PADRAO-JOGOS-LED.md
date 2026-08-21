@@ -20,7 +20,8 @@ Este documento define a base comum para os jogos digitais do Laboratório de Edu
 4. Botão "Começar".
 5. Durante todo o jogo, manter o ano visível.
 6. Manter um botão "Início" visível para voltar à escolha do ano.
-7. Ao final: resultado, medalha quando aplicável, síntese da aprendizagem, ranking e opções de jogar novamente, trocar dupla ou trocar ano.
+7. Se a partida estiver em andamento, qualquer ação que abandone o progresso — como "Início" ou "Trocar ano" — deve pedir confirmação antes de sair.
+8. Ao final: resultado, medalha quando aplicável, síntese da aprendizagem, ranking e opções de jogar novamente, trocar dupla ou trocar ano.
 
 A tela de entrada deve ser curta. Explicações mais longas só entram quando forem indispensáveis para entender a mecânica.
 
@@ -148,6 +149,7 @@ A mecânica pode mudar dentro do mesmo jogo, desde que a interface permaneça co
 - Imagens essenciais devem ser internas ao projeto (SVG ou arquivos do repositório), evitando dependência de fontes ou serviços externos.
 - Som é opcional e deve poder ser desligado.
 - Tela cheia disponível quando útil.
+- Indicadores técnicos, como estado do ranking, devem ser discretos e não competir com a atividade pedagógica.
 
 ## 11. Feedback
 
@@ -178,6 +180,10 @@ Ranking:
 - Top 10 na interface.
 - Salvar online no Supabase e manter armazenamento local como contingência.
 - Usar apenas primeiro nome ou apelido.
+- Verificar a conexão com o banco já na abertura do jogo e novamente ao iniciar uma partida.
+- Mostrar de forma sutil o estado do ranking, por exemplo: "● ranking online" ou "● ranking local".
+- A indisponibilidade do banco nunca deve impedir o jogo: a atividade continua normalmente com armazenamento local.
+- Se a conexão voltar durante a sessão, o indicador deve se atualizar automaticamente quando possível.
 
 Nem todo jogo precisa de pontuação. Jogos autorais, criativos ou exploratórios podem substituir pontos e ranking por produto final, coleção, percurso concluído, autoavaliação ou outro fechamento coerente com a proposta.
 
@@ -200,6 +206,8 @@ Cada jogo deve ficar em uma pasta própria:
 - `visuals.js`: SVGs e elementos visuais, quando próprios do jogo.
 - `app.js`: mecânica, progressão, pontuação e integração.
 
+Na raiz do repositório, arquivos compartilhados podem concentrar comportamentos comuns. O arquivo atual `game-base.js` cuida de proteção de navegação e verificação do estado do ranking.
+
 Para novos jogos, cada item do banco deve declarar explicitamente seu nível (`level: 1`, `2`, `3` ou `4`) em vez de inferir dificuldade pela posição ou ID.
 
 Elementos comuns que podem evoluir para uma biblioteca compartilhada no repositório:
@@ -211,6 +219,9 @@ Elementos comuns que podem evoluir para uma biblioteca compartilhada no reposit�
 - sistema de medalhas;
 - ranking Supabase;
 - armazenamento local;
+- verificação de conectividade do ranking;
+- indicador online/local;
+- confirmação antes de abandonar uma partida;
 - som;
 - tela cheia;
 - navegação para o início;
@@ -242,6 +253,7 @@ A escolha da mecânica vem depois dessas respostas.
 - funcionamento em dupla;
 - ano visível;
 - botão de início/troca de ano;
+- confirmação antes de abandonar uma partida em andamento;
 - experiência widescreen;
 - feedback de acerto e erro;
 - duração estimada adequada;
@@ -249,5 +261,8 @@ A escolha da mecânica vem depois dessas respostas.
 - imagens funcionando sem dependências frágeis;
 - funcionamento sem mouse preciso quando possível;
 - ranking separado por jogo e ano, quando utilizado;
+- teste de conexão do banco na abertura;
+- indicador discreto de ranking online/local;
+- fallback local testado quando o banco estiver indisponível;
 - teste em tela de notebook;
 - post do Padlet pronto com título, instrução curta e link.
