@@ -32,6 +32,7 @@ internal sealed class AgentContext : ApplicationContext
     private KeyboardBlocker? blocker;
     private LedState shownState = LedState.Off;
     private string shownRoom = "";
+    private LedCommand lastCommand = new(LedState.Off, "", 0);
     private DateTime lastSuccess = DateTime.MinValue;
     private DateTime bypassUntil = DateTime.MinValue;
     private bool polling;
@@ -41,6 +42,9 @@ internal sealed class AgentContext : ApplicationContext
         http.DefaultRequestHeaders.TryAddWithoutValidation("apikey", SupabaseKey);
 
         var menu = new ContextMenuStrip();
+        menu.Items.Add("Mostrar status", null, (_, _) => ShowStatus());
+        menu.Items.Add("Testar tela azul por 5 s", null, async (_, _) => await LocalTestAsync());
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Liberar este computador por 5 min", null, (_, _) => EmergencyBypass());
         menu.Items.Add("Sair", null, (_, _) => ExitAgent());
         tray = new NotifyIcon
@@ -62,11 +66,14 @@ internal sealed class AgentContext : ApplicationContext
         polling = true;
         try
         {
-            var q = "?select=nome,criado_em&nome=like.CTRL%7C*&order=criado_em.desc&limit=1";
+            // Busca uma pequena janela dos registros mais recentes e escolhe o último CTRL localmente.
+            // Evita depender do filtro PostgREST contendo o caractere |.
+            var q = "?select=nome,criado_em&order=criado_em.desc&limit=100";
             using var response = await http.GetAsync($"{SupabaseUrl}/rest/v1/{Table}{q}");
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
-            var command = Parse(json);
+            var command = ParseLatestControl(json);
+            lastCommand = command;
             lastSuccess = DateTime.UtcNow;
             Apply(command);
         }
@@ -79,32 +86,59 @@ internal sealed class AgentContext : ApplicationContext
         finally { polling = false; }
     }
 
-    private static LedCommand Parse(string json)
+    private static LedCommand ParseLatestControl(string json)
     {
         try
         {
             using var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.ValueKind != JsonValueKind.Array || doc.RootElement.GetArrayLength() == 0)
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
                 return new(LedState.Off, "", 0);
 
-            var row = doc.RootElement[0];
-            var name = row.TryGetProperty("nome", out var n) ? n.GetString() ?? "" : "";
-            var parts = name.Split('|');
-            if (parts.Length < 4 || parts[0] != "CTRL") return new(LedState.Off, "", 0);
-            if (!long.TryParse(parts[1], out var ts)) return new(LedState.Off, "", 0);
-
-            var age = DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(ts);
-            if (age > CommandMaxAge || age < TimeSpan.FromMinutes(-2)) return new(LedState.Off, "", ts);
-
-            var state = parts[2] switch
+            foreach (var row in doc.RootElement.EnumerateArray())
             {
-                "LISTEN" => LedState.Listen,
-                "BLOCK" => LedState.Block,
-                _ => LedState.Off
-            };
-            return new(state, parts[3].Trim(), ts);
+                var name = row.TryGetProperty("nome", out var n) ? n.GetString() ?? "" : "";
+                if (!name.StartsWith("CTRL|", StringComparison.Ordinal)) continue;
+
+                var parts = name.Split('|');
+                if (parts.Length < 4 || !long.TryParse(parts[1], out var ts)) continue;
+
+                var age = DateTimeOffset.UtcNow - DateTimeOffset.FromUnixTimeMilliseconds(ts);
+                if (age > CommandMaxAge || age < TimeSpan.FromMinutes(-2))
+                    return new(LedState.Off, "", ts);
+
+                var state = parts[2] switch
+                {
+                    "LISTEN" => LedState.Listen,
+                    "BLOCK" => LedState.Block,
+                    _ => LedState.Off
+                };
+                return new(state, parts[3].Trim(), ts);
+            }
+
+            return new(LedState.Off, "", 0);
         }
         catch { return new(LedState.Off, "", 0); }
+    }
+
+    private void ShowStatus()
+    {
+        var connected = lastSuccess == DateTime.MinValue
+            ? "sem conexão confirmada"
+            : $"última conexão: {lastSuccess.ToLocalTime():HH:mm:ss}";
+        var commandAge = lastCommand.TimestampMs > 0
+            ? $"comando de {DateTimeOffset.FromUnixTimeMilliseconds(lastCommand.TimestampMs).LocalDateTime:HH:mm:ss}"
+            : "nenhum comando CTRL encontrado";
+        tray.ShowBalloonTip(5000, "Som da Turma • status",
+            $"Estado: {lastCommand.State} | Turma: {lastCommand.Room}\n{connected}\n{commandAge}", ToolTipIcon.Info);
+    }
+
+    private async Task LocalTestAsync()
+    {
+        bypassUntil = DateTime.MinValue;
+        var test = new LedCommand(LedState.Listen, "TESTE", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        Apply(test);
+        await Task.Delay(5000);
+        HideOverlays();
     }
 
     private void Apply(LedCommand command)
