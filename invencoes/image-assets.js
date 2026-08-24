@@ -10,6 +10,13 @@ const INV_FALLBACK_VISUAL_SVG=visualSVG;
 
 if(INV_IMAGE_SPRITE.length>100){
   document.documentElement.style.setProperty('--inv-image-sprite',`url("${INV_IMAGE_SPRITE}")`);
+  const style=document.createElement('style');
+  style.textContent=`
+    .visual:has(.item-photo){width:310px;height:310px;padding:0;overflow:hidden;background:#f8f5ef;border-color:#64748b}
+    .item-photo{width:100%;height:100%;background-image:var(--inv-image-sprite);background-repeat:no-repeat;background-size:500% 400%;background-color:#f8f5ef}
+    @media(max-width:900px){.visual:has(.item-photo){width:190px;height:190px}}
+  `;
+  document.head.appendChild(style);
 }
 
 function escapeVisualLabel(text){
