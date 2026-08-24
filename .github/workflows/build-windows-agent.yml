@@ -1,0 +1,38 @@
+name: Build Windows Agent
+
+on:
+  push:
+    paths:
+      - 'windows-agent/**'
+      - '.github/workflows/build-windows-agent.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish single EXE
+        shell: pwsh
+        run: dotnet publish .\windows-agent\SomDaTurma.WindowsAgent.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o .\dist\SomDaTurmaWindows
+
+      - name: Copy installers
+        shell: pwsh
+        run: |
+          Copy-Item .\windows-agent\instalar.ps1 .\dist\SomDaTurmaWindows\instalar.ps1
+          Copy-Item .\windows-agent\desinstalar.ps1 .\dist\SomDaTurmaWindows\desinstalar.ps1
+          Copy-Item .\windows-agent\README.md .\dist\SomDaTurmaWindows\LEIA-ME.md
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SomDaTurma-Windows
+          path: .\dist\SomDaTurmaWindows\
+          if-no-files-found: error
