@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Som da Turma • LED",
+  "version": "0.1.0",
+  "description": "Mostra OUVIR ou AULA PARADA nos computadores dos estudantes a partir do painel Som da Turma do LED.",
+  "permissions": [],
+  "host_permissions": [
+    "https://eyfmhnlzduoobdmwexmc.supabase.co/*"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "exclude_matches": ["https://marklienista.github.io/led/barulho/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_title": "Som da Turma • LED"
+  }
+}
