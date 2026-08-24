@@ -5,6 +5,16 @@
   let lastSent='';
   let pending=null;
 
+  // Faixa ampliada: no máximo, o medidor reage a sons bem mais baixos.
+  // Mantém o mesmo controle 0–100 para a interface continuar simples.
+  try{
+    thresholds=function(){
+      const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
+      return{quiet:.028*f,loud:.082*f};
+    };
+    setSensitivity(70);
+  }catch(e){}
+
   function currentRoom(){
     const label=document.getElementById('roomLabel')?.textContent||'';
     const fromLabel=label.replace(/^\s*🏫\s*/,'').trim();
