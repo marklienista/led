@@ -6,6 +6,7 @@ const INV_IMAGE_POS={
 };
 
 const INV_IMAGE_SPRITE='data:image/webp;base64,'+(window.INV_SPRITE_PARTS||[]).join('');
+const INV_FALLBACK_VISUAL_SVG=visualSVG;
 
 if(INV_IMAGE_SPRITE.length>100){
   document.documentElement.style.setProperty('--inv-image-sprite',`url("${INV_IMAGE_SPRITE}")`);
@@ -17,8 +18,16 @@ function escapeVisualLabel(text){
 
 function renderItemVisual(item){
   const pos=INV_IMAGE_POS[item.id];
-  if(!pos||INV_IMAGE_SPRITE.length<=100)return visualSVG(item.visual);
+  if(!pos||INV_IMAGE_SPRITE.length<=100)return INV_FALLBACK_VISUAL_SVG(item.visual);
   const x=pos[0]*25;
   const y=pos[1]*(100/3);
   return `<div class="item-photo" role="img" aria-label="${escapeVisualLabel(item.name)}" style="background-position:${x}% ${y}%"></div>`;
 }
+
+visualSVG=function(key){
+  try{
+    const item=session[index];
+    if(item&&INV_IMAGE_POS[item.id])return renderItemVisual(item);
+  }catch(e){}
+  return INV_FALLBACK_VISUAL_SVG(key);
+};
