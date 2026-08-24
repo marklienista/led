@@ -7,6 +7,11 @@ if (-not (Test-Path $source)) {
 
 $destDir = Join-Path $env:LOCALAPPDATA 'SomDaTurmaLED'
 $destExe = Join-Path $destDir 'SomDaTurma.WindowsAgent.exe'
+
+# Encerra uma versão anterior para permitir atualização do executável.
+Get-Process 'SomDaTurma.WindowsAgent' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 500
+
 New-Item -ItemType Directory -Force -Path $destDir | Out-Null
 Copy-Item $source $destExe -Force
 
@@ -20,5 +25,5 @@ $shortcut.Description = 'Agente de atenção do Som da Turma - LED'
 $shortcut.Save()
 
 Start-Process $destExe
-Write-Host 'Som da Turma instalado e iniciado.' -ForegroundColor Green
+Write-Host 'Som da Turma instalado/atualizado e iniciado.' -ForegroundColor Green
 Write-Host 'Ele também iniciará automaticamente com o Windows.'
