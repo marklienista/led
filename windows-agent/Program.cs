@@ -244,7 +244,7 @@ internal sealed class OverlayForm : Form
         Controls.Add(subtitle);
         Controls.Add(roomLabel);
 
-        Deactivate += (_, _) => BeginInvoke(ReassertTopMost);
+        Deactivate += (_, _) => BeginInvoke(new Action(ReassertTopMost));
         FormClosing += (_, e) => { if (!AllowClose) e.Cancel = true; };
     }
 
