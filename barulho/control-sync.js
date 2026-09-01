@@ -15,6 +15,18 @@
   if(sensitivityInput)sensitivityInput.value='90';
   if(sensitivityLive)sensitivityLive.value='90';
 
+  // Campo simples para o professor restaurar/atribuir pontos antes de iniciar a aula.
+  const initialPointsField=document.createElement('div');
+  initialPointsField.className='field initial-points-field';
+  initialPointsField.innerHTML='<label for="initialPoints">⭐ PONTOS</label><input id="initialPoints" type="number" min="0" max="99" step="1" value="0" inputmode="numeric" aria-label="Pontos iniciais">';
+  roomInput?.closest('.field')?.after(initialPointsField);
+  const initialPointsInput=document.getElementById('initialPoints');
+
+  function readInitialPoints(){
+    const n=Math.floor(Number(initialPointsInput?.value)||0);
+    return Math.max(0,Math.min(99,n));
+  }
+
   thresholds=function(){
     const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
     const quiet=.028*f;
@@ -31,6 +43,9 @@
     .meter-shell{background:linear-gradient(90deg,#c4b5fd 0 6%,#ffffff45 6% 100%)}
     .monitor.listen-wait .state-copy h2{font-size:clamp(40px,7vw,88px);letter-spacing:-.025em}
     .monitor.listen-wait .state-copy p{font-size:clamp(110px,20vw,260px);line-height:.82;margin-top:36px;font-variant-numeric:tabular-nums}
+    .initial-points-field{max-width:180px}
+    .initial-points-field input{width:100%;padding:12px 14px;border:2px solid #cbd5e1;border-radius:16px;font-size:28px;font-weight:950;text-align:center}
+    .initial-points-field input:focus{outline:3px solid #93c5fd;border-color:#2563eb}
     @media(max-width:760px){.legend{grid-template-columns:1fr 1fr}}
   `;
   document.head.appendChild(style);
@@ -134,7 +149,7 @@
 
   const baseStartLesson=startLesson;
   startLesson=async function(){
-    lessonPoints=0;
+    lessonPoints=readInitialPoints();
     silenceForPointMs=0;
     await baseStartLesson();
     if(active)pointText();
@@ -299,6 +314,7 @@
     document.getElementById('summaryDuration').textContent=fmt(duration);
 
     if(roomInput)roomInput.value='';
+    if(initialPointsInput)initialPointsInput.value='0';
     room='';
     document.getElementById('roomLabel').textContent='Turma';
 
@@ -317,6 +333,7 @@
   document.getElementById('finishBlockedBtn').onclick=finishLesson;
   document.getElementById('newBtn').onclick=()=>{
     if(roomInput)roomInput.value='';
+    if(initialPointsInput)initialPointsInput.value='0';
     show('setup');
     roomInput?.focus();
   };
