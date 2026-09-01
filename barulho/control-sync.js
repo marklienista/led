@@ -8,7 +8,6 @@
   let lastSent='';
   let pending=null;
 
-  // Configuração inicial da interface.
   const roomInput=document.getElementById('roomInput');
   const sensitivityInput=document.getElementById('sensitivity');
   const sensitivityLive=document.getElementById('sensitivityLive');
@@ -16,7 +15,6 @@
   if(sensitivityInput)sensitivityInput.value='90';
   if(sensitivityLive)sensitivityLive.value='90';
 
-  // Sensibilidade ampliada. Em 90%, reproduz aproximadamente a posição mostrada pelo professor.
   thresholds=function(){
     const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
     const quiet=.028*f;
@@ -24,7 +22,6 @@
   };
   setSensitivity(90);
 
-  // Estado PERFEITO: faixa propositalmente curta, antes do SILÊNCIO.
   const style=document.createElement('style');
   style.textContent=`
     :root{--perfect:#7c3aed}
@@ -45,20 +42,16 @@
     legend.prepend(item);
   }
 
-  // A pontuação agora é acumulada dentro da aula.
   let lessonPoints=0;
   let silenceForPointMs=0;
-  let pointsLockedZero=false;
 
   function pointText(){
     const box=document.getElementById('pointLive');
     if(!box)return;
-    if(pointsLockedZero){box.textContent='⛔ PONTOS DA AULA: 0';return}
     const remaining=Math.max(0,Math.ceil((POINT_MS-silenceForPointMs)/1000));
     box.textContent=`⭐ PONTOS: ${lessonPoints}  •  +1 EM ${remaining}s`;
   }
 
-  // Novo desenho dos estados.
   paint=function(state){
     const m=els.monitor,title=document.getElementById('stateTitle'),sub=document.getElementById('stateSubtitle');
     m.classList.remove('state-perfect','state-quiet','state-talk','state-loud','state-listen');
@@ -70,7 +63,6 @@
     if(state==='listen'){title.textContent='👂 OUVIR';sub.textContent='FIQUE ATENTO'}
   };
 
-  // PERFEITO + SILÊNCIO formam uma única sequência contínua para pontos e recorde.
   loop=function(now){
     if(!active)return;
     raf=requestAnimationFrame(loop);
@@ -107,15 +99,12 @@
       if(!quietStreakStart)quietStreakStart=now;
       maxQuietMs=Math.max(maxQuietMs,now-quietStreakStart);
       loudSince=0;
-      if(!pointsLockedZero){
-        silenceForPointMs+=delta;
-        while(silenceForPointMs>=POINT_MS){
-          lessonPoints++;
-          silenceForPointMs-=POINT_MS;
-        }
+      silenceForPointMs+=delta;
+      while(silenceForPointMs>=POINT_MS){
+        lessonPoints++;
+        silenceForPointMs-=POINT_MS;
       }
     }else{
-      // Qualquer conversa interrompe a tentativa dos 15 segundos, mas não apaga pontos já conquistados.
       silenceForPointMs=0;
       if(next==='loud'){
         if(!loudSince)loudSince=now;
@@ -127,12 +116,12 @@
     document.getElementById('liveRecord').textContent=fmt(maxQuietMs);
   };
 
-  // AULA PARADA zera a aula inteira e impede novos pontos até encerrar.
+  // AULA PARADA apaga os pontos conquistados até então.
+  // Depois de continuar, a turma pode voltar a conquistar pontos normalmente.
   triggerStop=function(){
     if(blocked||paused)return;
     blocked=true;
     stops++;
-    pointsLockedZero=true;
     lessonPoints=0;
     silenceForPointMs=0;
     endQuietStreak();
@@ -143,19 +132,15 @@
     document.getElementById('stopOverlay').classList.remove('hidden');
   };
 
-  // Inicialização da aula com a nova pontuação.
   const baseStartLesson=startLesson;
   startLesson=async function(){
     lessonPoints=0;
     silenceForPointMs=0;
-    pointsLockedZero=false;
     await baseStartLesson();
     if(active)pointText();
   };
   document.getElementById('startBtn').onclick=startLesson;
 
-  // O modo OUVIR só entra após 5 segundos contínuos de silêncio.
-  // A espera não soma ponto, recorde nem percentual da aula.
   const pauseBtn=document.getElementById('pauseBtn');
   const monitor=document.getElementById('monitor');
   const title=document.getElementById('stateTitle');
@@ -241,7 +226,6 @@
     if(!active||blocked)return;
     const now=performance.now();
     if(currentState==='perfect'||currentState==='quiet')endQuietStreak(now);
-    // A ação do professor interrompe a tentativa atual dos 15 s, sem apagar pontos conquistados.
     silenceForPointMs=0;
     paused=true;
     waitingForSilence=true;
@@ -267,7 +251,6 @@
     setPauseLabel();
   }
 
-  // Nova versão do armazenamento para não misturar a regra antiga de 1 ponto/aula.
   localSessions=function(){
     try{const x=JSON.parse(localStorage.getItem(LOCAL_V2)||'[]');return Array.isArray(x)?x:[]}
     catch(e){return[]}
@@ -284,7 +267,6 @@
     }).filter(Boolean);
   };
 
-  // Encerramento com quantidade real de pontos e campo da turma limpo.
   finishLesson=async function(){
     if(!active)return;
     const now=performance.now();
@@ -302,21 +284,20 @@
 
     const record=Math.round(maxQuietMs/1000);
     const quietPct=measuredMs?Math.min(100,Math.round(quietMs/measuredMs*100)):0;
-    const point=pointsLockedZero?0:lessonPoints;
+    const point=lessonPoints;
     const s={id:sessionId(),room:endedRoom,point,record,duration:Math.round(duration/1000),quietPct,stops,ts:Date.now(),synced:false};
     const rows=localSessions();rows.push(s);writeLocal(rows);
 
     document.getElementById('summaryRoom').textContent='🏫 '+endedRoom;
     const banner=document.getElementById('resultBanner');
     banner.className='result-banner '+(point?'win':'no-point');
-    document.getElementById('resultTitle').textContent=pointsLockedZero?'⛔ PONTOS ZERADOS':point?`⭐ ${point} PONTO${point===1?'':'S'}!`:'FIM DA AULA';
-    document.getElementById('resultText').textContent=pointsLockedZero?'HOUVE AULA PARADA':point?'PARABÉNS, TURMA!':'VAMOS CONQUISTAR PONTOS NA PRÓXIMA!';
+    document.getElementById('resultTitle').textContent=point?`⭐ ${point} PONTO${point===1?'':'S'}!`:(stops?'⛔ 0 PONTOS':'FIM DA AULA');
+    document.getElementById('resultText').textContent=point?(stops?'VOCÊS RECUPERARAM OS PONTOS!':'PARABÉNS, TURMA!'):(stops?'VAMOS RECOMEÇAR!':'VAMOS CONQUISTAR PONTOS NA PRÓXIMA!');
     document.getElementById('summaryRecord').textContent=fmt(record*1000);
     document.getElementById('summaryQuiet').textContent=quietPct+'%';
     document.getElementById('summaryStops').textContent=stops;
     document.getElementById('summaryDuration').textContent=fmt(duration);
 
-    // Limpa a turma imediatamente após encerrar.
     if(roomInput)roomInput.value='';
     room='';
     document.getElementById('roomLabel').textContent='Turma';
@@ -340,7 +321,6 @@
     roomInput?.focus();
   };
 
-  // Sincronização opcional com os clientes; mantida, mas não interfere na atividade local.
   function currentRoom(){
     const setupVisible=!document.getElementById('setup')?.classList.contains('hidden');
     const fromInput=(roomInput?.value||'').trim().toUpperCase();
