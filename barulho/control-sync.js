@@ -37,12 +37,13 @@
     .monitor.listen-wait .state-copy h2{font-size:clamp(40px,7vw,88px);letter-spacing:-.025em}
     .monitor.listen-wait .state-copy p{font-size:clamp(110px,20vw,260px);line-height:.82;margin-top:36px;font-variant-numeric:tabular-nums}
     .manual-points-field{max-width:none;margin-top:2px}
-    .manual-points-row{display:grid;grid-template-columns:110px 1fr;gap:10px}
+    .manual-points-row{display:grid;grid-template-columns:100px 1fr 1fr;gap:10px}
     .manual-points-row input{width:100%;padding:12px 10px;border:2px solid #cbd5e1;border-radius:16px;font-size:26px;font-weight:950;text-align:center}
-    .manual-points-row button{border:0;border-radius:16px;background:#e2e8f0;color:#0f172a;font-weight:950;font-size:17px;padding:12px 16px;cursor:pointer}
+    .manual-points-row button{border:0;border-radius:16px;background:#e2e8f0;color:#0f172a;font-weight:950;font-size:16px;padding:12px 14px;cursor:pointer;min-height:48px}
+    .manual-points-row .remove{background:#fee2e2;color:#991b1b}
     .manual-points-row button:disabled{opacity:.55;cursor:wait}
     .manual-points-msg{min-height:20px;margin-top:7px;font-size:13px;font-weight:900;color:#166534}
-    @media(max-width:760px){.legend{grid-template-columns:1fr 1fr}.manual-points-row{grid-template-columns:90px 1fr}}
+    @media(max-width:760px){.legend{grid-template-columns:1fr 1fr}.manual-points-row{grid-template-columns:80px 1fr 1fr}.manual-points-row button{font-size:14px;padding:10px 8px}}
   `;
   document.head.appendChild(style);
 
@@ -54,19 +55,21 @@
     legend.prepend(item);
   }
 
-  // Ajuste manual: fora da aula e direto no ranking.
+  // Ajuste manual do ranking, sempre fora da lógica da aula.
   const manualField=document.createElement('div');
   manualField.className='field manual-points-field';
   manualField.innerHTML=`
-    <label for="manualPoints">⭐ ADICIONAR PONTOS</label>
+    <label for="manualPoints">⭐ AJUSTAR PONTOS</label>
     <div class="manual-points-row">
-      <input id="manualPoints" type="number" min="1" max="99" step="1" value="1" inputmode="numeric" aria-label="Quantidade de pontos para adicionar">
-      <button id="manualPointsBtn" type="button">+ ADICIONAR</button>
+      <input id="manualPoints" type="number" min="1" max="99" step="1" value="1" inputmode="numeric" aria-label="Quantidade de pontos">
+      <button id="manualAddBtn" type="button">+ ADICIONAR</button>
+      <button id="manualRemoveBtn" class="remove" type="button">− REMOVER</button>
     </div>
     <div id="manualPointsMsg" class="manual-points-msg" aria-live="polite"></div>`;
   roomInput?.closest('.field')?.after(manualField);
   const manualInput=document.getElementById('manualPoints');
-  const manualBtn=document.getElementById('manualPointsBtn');
+  const manualAddBtn=document.getElementById('manualAddBtn');
+  const manualRemoveBtn=document.getElementById('manualRemoveBtn');
   const manualMsg=document.getElementById('manualPointsMsg');
 
   let lessonPoints=0;
@@ -166,7 +169,7 @@
     lessonPoints=0;
     silenceForPointMs=0;
     await baseStartLesson();
-    if(active)pointText();
+    if(active){pointText();setPauseLabel()}
   };
   document.getElementById('startBtn').onclick=startLesson;
 
@@ -263,18 +266,22 @@
     catch(e){return[]}
   };
   writeLocal=function(rows){try{localStorage.setItem(LOCAL_V2,JSON.stringify(rows.slice(-500)))}catch(e){}};
+
   encodedName=function(s){
     if(s.manual)return`${MANUAL_PREFIX}${s.room}|${s.point}|${String(s.id).slice(-8)}`;
     return`${SCORE_PREFIX}${s.room}|${s.point}|${Math.max(0,Math.floor(s.record))}|${String(s.id).slice(-8)}`;
   };
+
   saveOnline=async function(s){
     const r=await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`,{
       method:'POST',
       headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-      body:JSON.stringify({nome:encodedName(s),pontos:s.point})
+      // Ajustes manuais são lidos pelo nome; pontos=0 evita depender de aceitar negativos na coluna.
+      body:JSON.stringify({nome:encodedName(s),pontos:s.manual?0:s.point})
     });
     if(!r.ok)throw new Error('save '+r.status);
   };
+
   onlineSessions=async function(){
     const q=new URLSearchParams({select:'nome,pontos,criado_em',nome:'like.R2*',order:'criado_em.desc',limit:'2000'});
     const r=await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?${q}`,{headers:{apikey:SUPABASE_KEY}});
@@ -282,10 +289,11 @@
     return(await r.json()).map(row=>{
       const p=String(row.nome||'').split('|');
       if(p[0]==='R2'&&p.length>=4)return{room:sanitizeRoom(p[1]),point:Math.max(0,Number(p[2])||0),record:Number(p[3])||0,ts:row.criado_em||0,manual:false};
-      if(p[0]==='R2M'&&p.length>=3)return{room:sanitizeRoom(p[1]),point:Math.max(0,Number(p[2])||0),record:0,ts:row.criado_em||0,manual:true};
+      if(p[0]==='R2M'&&p.length>=3)return{room:sanitizeRoom(p[1]),point:Number(p[2])||0,record:0,ts:row.criado_em||0,manual:true};
       return null;
     }).filter(Boolean);
   };
+
   aggregate=function(rows){
     const map=new Map();
     for(const s of rows){
@@ -296,8 +304,10 @@
       if(s.manual)x.manualPoints+=Number(s.point)||0;else x.lessons++;
       map.set(k,x);
     }
+    for(const x of map.values())x.points=Math.max(0,x.points);
     return[...map.values()];
   };
+
   drawRows=function(id,rows,mode){
     const box=document.getElementById(id);box.innerHTML='';
     if(!rows.length){box.innerHTML='<div class="empty">SEM RESULTADOS</div>';return}
@@ -309,26 +319,57 @@
     });
   };
 
-  if(manualBtn){
-    manualBtn.onclick=async()=>{
-      const r=cleanRoom(roomInput?.value);
-      if(!r){manualMsg.style.color='#991b1b';manualMsg.textContent='ESCOLHA A TURMA';roomInput?.focus();return}
-      const value=Math.max(1,Math.min(99,Math.floor(Number(manualInput?.value)||1)));
-      if(manualInput)manualInput.value=String(value);
-      const s={id:'M'+sessionId(),room:r,point:value,record:0,duration:0,quietPct:0,stops:0,ts:Date.now(),synced:false,manual:true};
-      const rows=localSessions();rows.push(s);writeLocal(rows);
-      manualBtn.disabled=true;manualMsg.style.color='#64748b';manualMsg.textContent='SALVANDO...';
-      try{
-        await saveOnline(s);markSynced(s.id);
-        manualMsg.style.color='#166534';manualMsg.textContent=`✅ +${value} PARA ${r}`;
-      }catch(e){
-        manualMsg.style.color='#92400e';manualMsg.textContent=`💾 +${value} PARA ${r} NESTE COMPUTADOR`;
-      }finally{
-        manualBtn.disabled=false;
-        if(manualInput)manualInput.value='1';
-      }
-    };
+  async function currentTotalFor(roomName){
+    try{
+      const rows=await onlineSessions();
+      const found=aggregate(rows).find(x=>x.room===roomName);
+      return found?found.points:0;
+    }catch(e){
+      const found=aggregate(localSessions()).find(x=>x.room===roomName);
+      return found?found.points:0;
+    }
   }
+
+  async function adjustManual(sign){
+    const r=cleanRoom(roomInput?.value);
+    if(!r){manualMsg.style.color='#991b1b';manualMsg.textContent='ESCOLHA A TURMA';roomInput?.focus();return}
+    let value=Math.max(1,Math.min(99,Math.floor(Number(manualInput?.value)||1)));
+    if(manualInput)manualInput.value=String(value);
+
+    manualAddBtn.disabled=true;
+    manualRemoveBtn.disabled=true;
+    manualMsg.style.color='#64748b';
+    manualMsg.textContent='SALVANDO...';
+
+    if(sign<0){
+      const total=await currentTotalFor(r);
+      if(total<=0){
+        manualMsg.style.color='#92400e';manualMsg.textContent=`${r} JÁ ESTÁ COM 0 PONTOS`;
+        manualAddBtn.disabled=false;manualRemoveBtn.disabled=false;
+        return;
+      }
+      value=Math.min(value,total);
+    }
+
+    const delta=sign*value;
+    const s={id:'M'+sessionId(),room:r,point:delta,record:0,duration:0,quietPct:0,stops:0,ts:Date.now(),synced:false,manual:true};
+    const rows=localSessions();rows.push(s);writeLocal(rows);
+
+    try{
+      await saveOnline(s);markSynced(s.id);
+      manualMsg.style.color='#166534';
+      manualMsg.textContent=sign>0?`✅ +${value} PARA ${r}`:`✅ −${value} DE ${r}`;
+    }catch(e){
+      manualMsg.style.color='#92400e';
+      manualMsg.textContent=sign>0?`💾 +${value} PARA ${r} NESTE COMPUTADOR`:`💾 −${value} DE ${r} NESTE COMPUTADOR`;
+    }finally{
+      manualAddBtn.disabled=false;manualRemoveBtn.disabled=false;
+      if(manualInput)manualInput.value='1';
+    }
+  }
+
+  if(manualAddBtn)manualAddBtn.onclick=()=>adjustManual(1);
+  if(manualRemoveBtn)manualRemoveBtn.onclick=()=>adjustManual(-1);
 
   finishLesson=async function(){
     if(!active)return;
