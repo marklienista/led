@@ -2,22 +2,160 @@
   const URL='https://eyfmhnlzduoobdmwexmc.supabase.co';
   const KEY='sb_publishable_as-eMTlem4cWd29PVNFAhg_uVLIqZKu';
   const TABLE='invencoes_ranking';
+  const SCORE_PREFIX='R2|';
+  const LOCAL_V2='led_noise_sessions_v2';
+  const POINT_MS=15000;
   let lastSent='';
   let pending=null;
 
-  // Faixa ampliada: no máximo, o medidor reage a sons bem mais baixos.
-  // Mantém o mesmo controle 0–100 para a interface continuar simples.
-  try{
-    thresholds=function(){
-      const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
-      return{quiet:.028*f,loud:.082*f};
-    };
-    setSensitivity(70);
-  }catch(e){}
+  // Configuração inicial da interface.
+  const roomInput=document.getElementById('roomInput');
+  const sensitivityInput=document.getElementById('sensitivity');
+  const sensitivityLive=document.getElementById('sensitivityLive');
+  if(roomInput)roomInput.placeholder='TURMA';
+  if(sensitivityInput)sensitivityInput.value='90';
+  if(sensitivityLive)sensitivityLive.value='90';
 
-  // O modo OUVIR só começa após 5 segundos contínuos de silêncio.
-  // Enquanto espera, o som continua sendo lido apenas para essa contagem:
-  // não altera ponto, recorde nem percentual de silêncio da aula.
+  // Sensibilidade ampliada. Em 90%, reproduz aproximadamente a posição mostrada pelo professor.
+  thresholds=function(){
+    const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
+    const quiet=.028*f;
+    return{perfect:quiet*.28,quiet,loud:.082*f};
+  };
+  setSensitivity(90);
+
+  // Estado PERFEITO: faixa propositalmente curta, antes do SILÊNCIO.
+  const style=document.createElement('style');
+  style.textContent=`
+    :root{--perfect:#7c3aed}
+    .monitor.state-perfect{background:var(--perfect)}
+    .legend{grid-template-columns:repeat(5,1fr)}
+    .legend-item.perfect{background:var(--perfect)}
+    .meter-shell{background:linear-gradient(90deg,#c4b5fd 0 6%,#ffffff45 6% 100%)}
+    .monitor.listen-wait .state-copy h2{font-size:clamp(40px,7vw,88px);letter-spacing:-.025em}
+    .monitor.listen-wait .state-copy p{font-size:clamp(110px,20vw,260px);line-height:.82;margin-top:36px;font-variant-numeric:tabular-nums}
+    @media(max-width:760px){.legend{grid-template-columns:1fr 1fr}}
+  `;
+  document.head.appendChild(style);
+  const legend=document.querySelector('.legend');
+  if(legend&&!legend.querySelector('.perfect')){
+    const item=document.createElement('div');
+    item.className='legend-item perfect';
+    item.textContent='✨ PERFEITO';
+    legend.prepend(item);
+  }
+
+  // A pontuação agora é acumulada dentro da aula.
+  let lessonPoints=0;
+  let silenceForPointMs=0;
+  let pointsLockedZero=false;
+
+  function pointText(){
+    const box=document.getElementById('pointLive');
+    if(!box)return;
+    if(pointsLockedZero){box.textContent='⛔ PONTOS DA AULA: 0';return}
+    const remaining=Math.max(0,Math.ceil((POINT_MS-silenceForPointMs)/1000));
+    box.textContent=`⭐ PONTOS: ${lessonPoints}  •  +1 EM ${remaining}s`;
+  }
+
+  // Novo desenho dos estados.
+  paint=function(state){
+    const m=els.monitor,title=document.getElementById('stateTitle'),sub=document.getElementById('stateSubtitle');
+    m.classList.remove('state-perfect','state-quiet','state-talk','state-loud','state-listen');
+    m.classList.add('state-'+state);
+    if(state==='perfect'){title.textContent='✨ PERFEITO';sub.textContent='TOTAL SILÊNCIO'}
+    if(state==='quiet'){title.textContent='🤫 SILÊNCIO';sub.textContent='MUITO BEM!'}
+    if(state==='talk'){title.textContent='💬 CONVERSA';sub.textContent='MAIS BAIXO'}
+    if(state==='loud'){title.textContent='🔊 MUITO ALTO';sub.textContent='ABAIXE O SOM!'}
+    if(state==='listen'){title.textContent='👂 OUVIR';sub.textContent='FIQUE ATENTO'}
+  };
+
+  // PERFEITO + SILÊNCIO formam uma única sequência contínua para pontos e recorde.
+  loop=function(now){
+    if(!active)return;
+    raf=requestAnimationFrame(loop);
+    document.getElementById('timer').textContent=fmt(now-startAt);
+    const delta=Math.min(100,Math.max(0,now-lastFrame));
+    lastFrame=now;
+    if(blocked||paused)return;
+
+    measuredMs+=delta;
+    analyser.getByteTimeDomainData(dataArray);
+    let sum=0;
+    for(let i=0;i<dataArray.length;i++){
+      const x=(dataArray[i]-128)/128;
+      sum+=x*x;
+    }
+    const rms=Math.sqrt(sum/dataArray.length);
+    smoothed=smoothed*.82+rms*.18;
+    const t=thresholds();
+    const next=smoothed<t.perfect?'perfect':smoothed<t.quiet?'quiet':smoothed<t.loud?'talk':'loud';
+    const wasSilent=currentState==='perfect'||currentState==='quiet';
+    const isSilent=next==='perfect'||next==='quiet';
+
+    if(next!==currentState){
+      if(wasSilent&&!isSilent)endQuietStreak(now);
+      if(!wasSilent&&isSilent)quietStreakStart=now;
+      currentState=next;
+      paint(next);
+    }
+
+    document.getElementById('meterFill').style.width=levelPercent()+'%';
+
+    if(isSilent){
+      quietMs+=delta;
+      if(!quietStreakStart)quietStreakStart=now;
+      maxQuietMs=Math.max(maxQuietMs,now-quietStreakStart);
+      loudSince=0;
+      if(!pointsLockedZero){
+        silenceForPointMs+=delta;
+        while(silenceForPointMs>=POINT_MS){
+          lessonPoints++;
+          silenceForPointMs-=POINT_MS;
+        }
+      }
+    }else{
+      // Qualquer conversa interrompe a tentativa dos 15 segundos, mas não apaga pontos já conquistados.
+      silenceForPointMs=0;
+      if(next==='loud'){
+        if(!loudSince)loudSince=now;
+        if(now>unlockGraceUntil&&now-loudSince>900)triggerStop();
+      }else loudSince=0;
+    }
+
+    pointText();
+    document.getElementById('liveRecord').textContent=fmt(maxQuietMs);
+  };
+
+  // AULA PARADA zera a aula inteira e impede novos pontos até encerrar.
+  triggerStop=function(){
+    if(blocked||paused)return;
+    blocked=true;
+    stops++;
+    pointsLockedZero=true;
+    lessonPoints=0;
+    silenceForPointMs=0;
+    endQuietStreak();
+    beep();
+    pointText();
+    document.getElementById('stopRoom').textContent=room;
+    document.getElementById('stopCount').textContent=stops;
+    document.getElementById('stopOverlay').classList.remove('hidden');
+  };
+
+  // Inicialização da aula com a nova pontuação.
+  const baseStartLesson=startLesson;
+  startLesson=async function(){
+    lessonPoints=0;
+    silenceForPointMs=0;
+    pointsLockedZero=false;
+    await baseStartLesson();
+    if(active)pointText();
+  };
+  document.getElementById('startBtn').onclick=startLesson;
+
+  // O modo OUVIR só entra após 5 segundos contínuos de silêncio.
+  // A espera não soma ponto, recorde nem percentual da aula.
   const pauseBtn=document.getElementById('pauseBtn');
   const monitor=document.getElementById('monitor');
   const title=document.getElementById('stateTitle');
@@ -28,13 +166,6 @@
   let waitLast=0;
   let waitQuietMs=0;
   let waitSmooth=0;
-
-  const style=document.createElement('style');
-  style.textContent=`
-    .monitor.listen-wait .state-copy h2{font-size:clamp(40px,7vw,88px);letter-spacing:-.025em}
-    .monitor.listen-wait .state-copy p{font-size:clamp(110px,20vw,260px);line-height:.82;margin-top:36px;font-variant-numeric:tabular-nums}
-  `;
-  document.head.appendChild(style);
 
   function setPauseLabel(){
     if(!pauseBtn)return;
@@ -88,6 +219,7 @@
     paint('quiet');
     if(meter)meter.style.width='0%';
     setPauseLabel();
+    pointText();
   }
 
   function waitLoop(now){
@@ -97,25 +229,20 @@
     waitLast=now;
     const rms=readRms();
     waitSmooth=waitSmooth*.72+rms*.28;
-    const quietLimit=thresholds().quiet;
-    const isQuiet=waitSmooth<quietLimit;
-
+    const isQuiet=waitSmooth<thresholds().quiet;
     if(isQuiet)waitQuietMs+=delta;
     else waitQuietMs=0;
-
     if(subtitle)subtitle.textContent=String(Math.min(5,Math.floor(waitQuietMs/1000)));
-    if(meter){
-      const pct=isQuiet?Math.min(100,(waitQuietMs/5000)*100):0;
-      meter.style.width=pct+'%';
-    }
-
+    if(meter)meter.style.width=(isQuiet?Math.min(100,(waitQuietMs/5000)*100):0)+'%';
     if(waitQuietMs>=5000)finishWaiting();
   }
 
   function beginWaiting(){
     if(!active||blocked)return;
     const now=performance.now();
-    if(currentState==='quiet')endQuietStreak(now);
+    if(currentState==='perfect'||currentState==='quiet')endQuietStreak(now);
+    // A ação do professor interrompe a tentativa atual dos 15 s, sem apagar pontos conquistados.
+    silenceForPointMs=0;
     paused=true;
     waitingForSilence=true;
     nonQuietSince=0;
@@ -126,6 +253,7 @@
     currentState='listen';
     document.getElementById('settingsPanel')?.classList.add('hidden');
     showWaiting();
+    pointText();
     cancelAnimationFrame(waitRaf);
     waitRaf=requestAnimationFrame(waitLoop);
   }
@@ -139,11 +267,86 @@
     setPauseLabel();
   }
 
+  // Nova versão do armazenamento para não misturar a regra antiga de 1 ponto/aula.
+  localSessions=function(){
+    try{const x=JSON.parse(localStorage.getItem(LOCAL_V2)||'[]');return Array.isArray(x)?x:[]}
+    catch(e){return[]}
+  };
+  writeLocal=function(rows){try{localStorage.setItem(LOCAL_V2,JSON.stringify(rows.slice(-500)))}catch(e){}};
+  encodedName=function(s){return`${SCORE_PREFIX}${s.room}|${s.point}|${Math.max(0,Math.floor(s.record))}|${String(s.id).slice(-8)}`};
+  onlineSessions=async function(){
+    const q=new URLSearchParams({select:'nome,pontos,criado_em',nome:'like.R2|*',order:'criado_em.desc',limit:'2000'});
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?${q}`,{headers:{apikey:SUPABASE_KEY}});
+    if(!r.ok)throw new Error('load '+r.status);
+    return(await r.json()).map(row=>{
+      const p=String(row.nome||'').split('|');
+      return p[0]==='R2'&&p.length>=4?{room:sanitizeRoom(p[1]),point:Math.max(0,Number(p[2])||0),record:Number(p[3])||0,ts:row.criado_em||0}:null;
+    }).filter(Boolean);
+  };
+
+  // Encerramento com quantidade real de pontos e campo da turma limpo.
+  finishLesson=async function(){
+    if(!active)return;
+    const now=performance.now();
+    if(!paused&&!blocked&&(currentState==='perfect'||currentState==='quiet'))endQuietStreak(now);
+    const duration=now-startAt;
+    const endedRoom=room;
+    stopAudio();
+    document.getElementById('stopOverlay').classList.add('hidden');
+    blocked=false;
+    paused=false;
+    waitingForSilence=false;
+    cancelAnimationFrame(waitRaf);
+    monitor?.classList.remove('listen-wait');
+    if(document.fullscreenElement)document.exitFullscreen?.();
+
+    const record=Math.round(maxQuietMs/1000);
+    const quietPct=measuredMs?Math.min(100,Math.round(quietMs/measuredMs*100)):0;
+    const point=pointsLockedZero?0:lessonPoints;
+    const s={id:sessionId(),room:endedRoom,point,record,duration:Math.round(duration/1000),quietPct,stops,ts:Date.now(),synced:false};
+    const rows=localSessions();rows.push(s);writeLocal(rows);
+
+    document.getElementById('summaryRoom').textContent='🏫 '+endedRoom;
+    const banner=document.getElementById('resultBanner');
+    banner.className='result-banner '+(point?'win':'no-point');
+    document.getElementById('resultTitle').textContent=pointsLockedZero?'⛔ PONTOS ZERADOS':point?`⭐ ${point} PONTO${point===1?'':'S'}!`:'FIM DA AULA';
+    document.getElementById('resultText').textContent=pointsLockedZero?'HOUVE AULA PARADA':point?'PARABÉNS, TURMA!':'VAMOS CONQUISTAR PONTOS NA PRÓXIMA!';
+    document.getElementById('summaryRecord').textContent=fmt(record*1000);
+    document.getElementById('summaryQuiet').textContent=quietPct+'%';
+    document.getElementById('summaryStops').textContent=stops;
+    document.getElementById('summaryDuration').textContent=fmt(duration);
+
+    // Limpa a turma imediatamente após encerrar.
+    if(roomInput)roomInput.value='';
+    room='';
+    document.getElementById('roomLabel').textContent='Turma';
+
+    show('summary');
+    document.getElementById('saveStatus').textContent='SALVANDO...';
+    try{
+      await saveOnline(s);markSynced(s.id);
+      document.getElementById('saveStatus').textContent='✅ SALVO';
+      document.getElementById('saveStatus').className='status-note online';
+    }catch(e){
+      document.getElementById('saveStatus').textContent='💾 SALVO NESTE COMPUTADOR';
+      document.getElementById('saveStatus').className='status-note offline';
+    }
+  };
+  document.getElementById('finishBtn').onclick=finishLesson;
+  document.getElementById('finishBlockedBtn').onclick=finishLesson;
+  document.getElementById('newBtn').onclick=()=>{
+    if(roomInput)roomInput.value='';
+    show('setup');
+    roomInput?.focus();
+  };
+
+  // Sincronização opcional com os clientes; mantida, mas não interfere na atividade local.
   function currentRoom(){
+    const setupVisible=!document.getElementById('setup')?.classList.contains('hidden');
+    const fromInput=(roomInput?.value||'').trim().toUpperCase();
     const label=document.getElementById('roomLabel')?.textContent||'';
     const fromLabel=label.replace(/^\s*🏫\s*/,'').trim();
-    const fromInput=(document.getElementById('roomInput')?.value||'').trim().toUpperCase();
-    return (fromLabel||fromInput).replace(/\|/g,'').slice(0,12);
+    return (setupVisible?fromInput:(fromLabel||fromInput)).replace(/\|/g,'').slice(0,12);
   }
 
   function logicalState(){
@@ -159,11 +362,11 @@
   }
 
   async function publish(state){
-    const room=currentRoom();
-    const key=`${state}|${room}`;
+    const r=currentRoom();
+    const key=`${state}|${r}`;
     if(key===lastSent)return;
     lastSent=key;
-    const nome=`CTRL|${Date.now()}|${state}|${room}`;
+    const nome=`CTRL|${Date.now()}|${state}|${r}`;
     try{
       await fetch(`${URL}/rest/v1/${TABLE}`,{
         method:'POST',
@@ -175,10 +378,7 @@
 
   function syncSoon(){
     clearTimeout(pending);
-    pending=setTimeout(()=>{
-      if(monitor&&!monitor.classList.contains('hidden')&&!paused&&!waitingForSilence)setPauseLabel();
-      publish(logicalState());
-    },80);
+    pending=setTimeout(()=>publish(logicalState()),80);
   }
 
   const ids=['monitor','stopOverlay','summary','setup'];
@@ -187,6 +387,6 @@
     const el=document.getElementById(id);
     if(el)observer.observe(el,{attributes:true,attributeFilter:['class']});
   });
-  document.getElementById('roomInput')?.addEventListener('change',()=>{lastSent='';syncSoon()});
+  roomInput?.addEventListener('change',()=>{lastSent='';syncSoon()});
   syncSoon();
 })();
