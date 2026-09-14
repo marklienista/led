@@ -23,7 +23,6 @@
   if(sensitivityInput)sensitivityInput.value='90';
   if(sensitivityLive)sensitivityLive.value='90';
 
-  // Medição relativa: simples e sensível, sem o antigo estado PERFEITO.
   thresholds=function(){
     const f=1.65-(Math.max(0,Math.min(100,sensitivity))/100)*1.35;
     return{quiet:.028*f,loud:.082*f};
@@ -64,10 +63,12 @@
   `;
   document.head.appendChild(style);
 
-  // Remove qualquer vestígio do estado experimental PERFEITO.
   document.querySelector('.legend-item.perfect')?.remove();
+  const quietLegend=document.querySelector('.legend-item.quiet');
+  if(quietLegend)quietLegend.textContent='🧠 FOCO TOTAL';
+  const talkLegend=document.querySelector('.legend-item.talk');
+  if(talkLegend)talkLegend.textContent='💬 CONVERSA';
 
-  // Pequeno aviso de integridade científica, sem ocupar a tela das crianças.
   const micField=sensitivityInput?.closest('.field');
   if(micField&&!micField.querySelector('.sensor-note')){
     const note=document.createElement('div');
@@ -76,7 +77,6 @@
     micField.appendChild(note);
   }
 
-  // Ajuste manual do ranking, sempre fora da lógica da aula.
   const oldManual=document.querySelector('.manual-points-field');
   if(oldManual)oldManual.remove();
   const manualField=document.createElement('div');
@@ -95,18 +95,16 @@
   const manualRemoveBtn=document.getElementById('manualRemoveBtn');
   const manualMsg=document.getElementById('manualPointsMsg');
 
-  // Barra discreta de progresso: cresce de 0 a 15 e pulsa ao conquistar o ponto.
   const oldFocusProgress=document.querySelector('.focus-progress');
   if(oldFocusProgress)oldFocusProgress.remove();
   const focusProgress=document.createElement('div');
   focusProgress.className='focus-progress';
-  focusProgress.innerHTML='<div class="focus-track"><div class="focus-fill"></div></div><div class="focus-label">🤫 0 / 15</div>';
+  focusProgress.innerHTML='<div class="focus-track"><div class="focus-fill"></div></div><div class="focus-label">🧠 0 / 15</div>';
   const meterShell=monitor?.querySelector('.meter-shell');
   meterShell?.after(focusProgress);
   const focusFill=focusProgress.querySelector('.focus-fill');
   const focusLabel=focusProgress.querySelector('.focus-label');
 
-  // Botão visível para reconhecer trabalho concluído.
   const toolsGroup=monitor?.querySelector('.teacher-tools > div:last-child');
   document.getElementById('workDoneBtn')?.remove();
   const workDoneBtn=document.createElement('button');
@@ -116,7 +114,6 @@
   workDoneBtn.textContent=`✅ TRABALHO +${WORK_POINTS}`;
   toolsGroup?.prepend(workDoneBtn,document.createTextNode(' '));
 
-  // AULA PARADA: o professor informa se foi som da turma ou som externo.
   let externalBtn=document.getElementById('externalNoiseBtn');
   if(!externalBtn){
     externalBtn=document.createElement('button');
@@ -131,12 +128,13 @@
     wrap.appendChild(externalBtn);
   }
   if(releaseBtn)releaseBtn.textContent='🔊 SOM DA TURMA — RECOMEÇAR';
+  const stopTitle=document.querySelector('#stopOverlay .stop-card h2');
+  if(stopTitle)stopTitle.textContent='VAMOS REORGANIZAR O SOM';
   const stopText=document.querySelector('#stopOverlay .stop-card p');
-  if(stopText)stopText.textContent='VAMOS REORGANIZAR O SOM';
+  if(stopText)stopText.textContent='O SOM FICOU MUITO ALTO';
   const stopCountPill=document.getElementById('stopCount')?.closest('.pill');
   if(stopCountPill)stopCountPill.style.display='none';
 
-  // Ranking passa a mostrar somente medalhas de mérito.
   const rankingScreen=document.getElementById('ranking');
   rankingScreen?.classList.add('ranking-medals');
   const rankingTitle=rankingScreen?.querySelector('.rank-head h1');
@@ -181,7 +179,7 @@
     focusProgress.classList.remove('earned');
     const sec=Math.min(15,Math.floor(silenceForPointMs/1000));
     focusFill.style.width=Math.min(100,(silenceForPointMs/POINT_MS)*100)+'%';
-    focusLabel.textContent=`🤫 ${sec} / 15`;
+    focusLabel.textContent=`🧠 ${sec} / 15`;
   }
   function pulsePoints(){
     const box=document.getElementById('pointLive');
@@ -195,9 +193,9 @@
     const m=els.monitor,sub=document.getElementById('stateSubtitle'),ttl=document.getElementById('stateTitle');
     m.classList.remove('state-quiet','state-talk','state-loud','state-listen','state-perfect');
     m.classList.add('state-'+state);
-    if(state==='quiet'){ttl.textContent='🤫 SILÊNCIO';sub.textContent='MUITO BEM!'}
+    if(state==='quiet'){ttl.textContent='🧠 FOCO TOTAL';sub.textContent='ÓTIMO PARA CONCENTRAR'}
     if(state==='talk'){ttl.textContent='💬 CONVERSA';sub.textContent='CUIDE DO VOLUME'}
-    if(state==='loud'){ttl.textContent='🔊 MUITO ALTO';sub.textContent='ABAIXE O SOM!'}
+    if(state==='loud'){ttl.textContent='🔊 MUITO ALTO';sub.textContent='VAMOS DIMINUIR O SOM'}
     if(state==='listen'){ttl.textContent='👂 OUVIR';sub.textContent='FIQUE ATENTO'}
   };
 
@@ -258,7 +256,6 @@
     document.getElementById('liveRecord').textContent=fmt(maxQuietMs);
   };
 
-  // O evento apenas pausa. A consequência depende da leitura do professor sobre o contexto.
   triggerStop=function(){
     if(blocked||paused)return;
     blocked=true;
@@ -441,7 +438,6 @@
     return Number.isFinite(n)?n:0;
   }
 
-  // Conversão sequencial: 40 pontos viram 1 medalha e o excedente continua acumulado.
   function medalStates(rows){
     const map=new Map();
     const ordered=[...rows].sort((a,b)=>timeValue(a.ts)-timeValue(b.ts));
@@ -454,7 +450,6 @@
         x.progress+=delta;
         while(x.progress>=MEDAL_POINTS){x.medals++;x.progress-=MEDAL_POINTS}
       }else{
-        // Remoção manual atua apenas sobre os pontos ainda não convertidos em medalha.
         x.progress=Math.max(0,x.progress+delta);
       }
       x.record=Math.max(x.record,Number(s.record)||0);
