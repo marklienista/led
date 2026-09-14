@@ -5,7 +5,12 @@ getOnlineRanking = async function(){
   if(!response.ok)throw new Error(`Falha ao carregar ranking (${response.status})`);
   const rows=(await response.json()).filter(row=>{
     const name=String(row.nome||'');
-    return !name.includes('::') && !name.startsWith('R|') && !name.startsWith('CTRL|');
+    return !name.includes('::') &&
+           !name.startsWith('R|') &&
+           !name.startsWith('R2|') &&
+           !name.startsWith('R2M|') &&
+           !name.startsWith('SD3|') &&
+           !name.startsWith('CTRL|');
   });
   return dedupeRanking(rows);
 };
