@@ -4,7 +4,7 @@
   ];
   const SOM_TURMA_TABLE='som_turma_eventos';
   const CONFIG_TABLE='som_turma_configuracoes';
-  const DEFAULT_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5};
+  const DEFAULT_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5,noStopPoints:1};
 
   let currentProfile=null;
   let experienceMode=false;
@@ -155,6 +155,10 @@
         <label for="cfgWorkPoints">✅ PONTOS POR TRABALHO</label>
         <div class="config-input-wrap"><input id="cfgWorkPoints" type="number" min="1" max="100" step="1"><span>pts</span></div>
       </div>
+      <div class="config-item">
+        <label for="cfgNoStopPoints">🎯 AULA SEM PARALISAÇÃO</label>
+        <div class="config-input-wrap"><input id="cfgNoStopPoints" type="number" min="0" max="100" step="1"><span>pts</span></div>
+      </div>
     </div>
     <button id="saveConfigBtn" class="config-save" type="button" disabled>SALVAR CONFIGURAÇÕES</button>
     <div id="configStatus" class="config-status"></div>
@@ -191,6 +195,7 @@
   const cfgPeriodPoints=document.getElementById('cfgPeriodPoints');
   const cfgMedalPoints=document.getElementById('cfgMedalPoints');
   const cfgWorkPoints=document.getElementById('cfgWorkPoints');
+  const cfgNoStopPoints=document.getElementById('cfgNoStopPoints');
   const saveConfigBtn=document.getElementById('saveConfigBtn');
   const configStatus=document.getElementById('configStatus');
   const turmaPoints=document.getElementById('turmaPoints');
@@ -230,6 +235,7 @@
       recorde_seg:Math.max(0,Number(s.record)||0),
       foco_pontos:Math.max(0,Number(s.focusPoints)||0),
       trabalho_pontos:Math.max(0,Number(s.workPoints)||0),
+      bonus_sem_parada:Math.max(0,Number(s.noStopBonus)||0),
       paradas:Math.max(0,Number(s.stops)||0),
       duracao_seg:Math.max(0,Number(s.duration)||0),
       silencio_pct:Math.max(0,Math.min(100,Number(s.quietPct)||0)),
@@ -244,6 +250,7 @@
       record:Math.max(0,Number(row.recorde_seg)||0),
       focusPoints:Math.max(0,Number(row.foco_pontos)||0),
       workPoints:Math.max(0,Number(row.trabalho_pontos)||0),
+      noStopBonus:Math.max(0,Number(row.bonus_sem_parada)||0),
       stops:Math.max(0,Number(row.paradas)||0),
       duration:Math.max(0,Number(row.duracao_seg)||0),
       quietPct:Math.max(0,Math.min(100,Number(row.silencio_pct)||0)),
@@ -272,7 +279,7 @@
   async function scopedOnlineSessions(){
     if(experienceMode||!currentProfile)return[];
     const q=new URLSearchParams({
-      select:'perfil,turma,tipo,pontos,recorde_seg,foco_pontos,trabalho_pontos,paradas,duracao_seg,silencio_pct,sessao_id,criado_em',
+      select:'perfil,turma,tipo,pontos,recorde_seg,foco_pontos,trabalho_pontos,bonus_sem_parada,paradas,duracao_seg,silencio_pct,sessao_id,criado_em',
       perfil:`eq.${currentProfile.id}`,
       order:'criado_em.asc',
       limit:'5000'
@@ -304,7 +311,8 @@
       periodSeconds:Math.max(1,Math.min(300,Math.floor(Number(x.periodSeconds??x.periodo_seg??15)||15))),
       periodPoints:Math.max(1,Math.min(100,Math.floor(Number(x.periodPoints??x.pontos_periodo??1)||1))),
       medalPoints:Math.max(1,Math.min(10000,Math.floor(Number(x.medalPoints??x.pontos_medalha??40)||40))),
-      workPoints:Math.max(1,Math.min(100,Math.floor(Number(x.workPoints??x.pontos_trabalho??5)||5)))
+      workPoints:Math.max(1,Math.min(100,Math.floor(Number(x.workPoints??x.pontos_trabalho??5)||5))),
+      noStopPoints:Math.max(0,Math.min(100,Math.floor(Number(x.noStopPoints??x.pontos_sem_parada??1))))
     };
   }
 
@@ -316,6 +324,7 @@
     if(cfgPeriodPoints)cfgPeriodPoints.value=String(s.periodPoints);
     if(cfgMedalPoints)cfgMedalPoints.value=String(s.medalPoints);
     if(cfgWorkPoints)cfgWorkPoints.value=String(s.workPoints);
+    if(cfgNoStopPoints)cfgNoStopPoints.value=String(s.noStopPoints);
     const workBtn=document.getElementById('workDoneBtn');
     if(workBtn)workBtn.textContent=`✅ TRABALHO +${s.workPoints}`;
     return s;
@@ -346,7 +355,8 @@
       periodSeconds:cfgPeriodSeconds?.value,
       periodPoints:cfgPeriodPoints?.value,
       medalPoints:cfgMedalPoints?.value,
-      workPoints:cfgWorkPoints?.value
+      workPoints:cfgWorkPoints?.value,
+      noStopPoints:cfgNoStopPoints?.value
     });
     if(experienceMode||!currentProfile){
       if(configStatus)configStatus.textContent='🧪 CONFIGURAÇÃO DE TESTE • NÃO SALVA';
@@ -367,6 +377,7 @@
           pontos_periodo:s.periodPoints,
           pontos_medalha:s.medalPoints,
           pontos_trabalho:s.workPoints,
+          pontos_sem_parada:s.noStopPoints,
           atualizado_em:new Date().toISOString()
         })
       });
@@ -389,7 +400,7 @@
     }
     applySettings(localSettings());
     try{
-      const q=new URLSearchParams({select:'periodo_seg,pontos_periodo,pontos_medalha,pontos_trabalho',perfil:`eq.${currentProfile.id}`,limit:'1'});
+      const q=new URLSearchParams({select:'periodo_seg,pontos_periodo,pontos_medalha,pontos_trabalho,pontos_sem_parada',perfil:`eq.${currentProfile.id}`,limit:'1'});
       const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${CONFIG_TABLE}?${q}`,{headers:{apikey:SUPABASE_KEY}});
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       const rows=await response.json();
@@ -523,7 +534,7 @@
 
   roomInput?.addEventListener('input',()=>{clearTimeout(roomInput._statsTimer);roomInput._statsTimer=setTimeout(refreshTurmaStats,180)});
   roomInput?.addEventListener('change',refreshTurmaStats);
-  [cfgPeriodSeconds,cfgPeriodPoints,cfgMedalPoints,cfgWorkPoints].forEach(input=>{
+  [cfgPeriodSeconds,cfgPeriodPoints,cfgMedalPoints,cfgWorkPoints,cfgNoStopPoints].forEach(input=>{
     input?.addEventListener('input',()=>setSettingsDirty(true));
   });
   saveConfigBtn?.addEventListener('click',saveSettings);
