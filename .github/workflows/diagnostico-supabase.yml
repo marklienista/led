@@ -4,28 +4,26 @@ on:
     paths:
       - '.github/workflows/diagnostico-supabase.yml'
   workflow_dispatch:
-
 jobs:
   diagnostico:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Testar Supabase
+      - name: Inspecionar esquema Supabase
         shell: bash
         run: |
           set +e
           URL=$(grep -o "SUPABASE_URL='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
           KEY=$(grep -o "SUPABASE_KEY='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
-          TABLE=$(grep -o "SUPABASE_TABLE='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
-          HOST=$(echo "$URL" | sed -E 's#https?://([^/]+).*#\1#')
-          REST="$URL/rest/v1/$TABLE"
-          echo "PROJECT_HOST=$HOST"
-          echo '=== DNS ==='
-          getent hosts "$HOST" || true
-          echo '=== GET ==='
-          code=$(curl --connect-timeout 15 -sS -o /tmp/get.txt -w "%{http_code}" "$REST?select=nome,pontos,criado_em&limit=1" -H "apikey: $KEY")
-          rc=$?
-          echo "GET_CURL_EXIT=$rc"
-          echo "GET_STATUS=$code"
-          cat /tmp/get.txt 2>/dev/null || true
-          echo
+          REST="$URL/rest/v1/"
+          curl -sS "$REST" -H "apikey: $KEY" -H "Accept: application/openapi+json" -o /tmp/schema.json
+          python - <<'PY'
+import json
+try:
+    d=json.load(open('/tmp/schema.json'))
+    defs=d.get('definitions',{})
+    print('TABLES=' + ','.join(sorted(defs.keys())))
+except Exception as e:
+    print('SCHEMA_ERROR='+repr(e))
+    print(open('/tmp/schema.json').read()[:2000])
+PY
