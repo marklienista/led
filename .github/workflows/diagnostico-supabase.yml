@@ -1,0 +1,31 @@
+name: Diagnostico Supabase Som da Turma
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnostico-supabase.yml'
+  workflow_dispatch:
+
+jobs:
+  diagnostico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testar Supabase
+        shell: bash
+        run: |
+          set -o pipefail
+          URL=$(grep -o "SUPABASE_URL='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
+          KEY=$(grep -o "SUPABASE_KEY='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
+          TABLE=$(grep -o "SUPABASE_TABLE='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
+          REST="$URL/rest/v1/$TABLE"
+          echo '=== GET ==='
+          code=$(curl -sS -o /tmp/get.txt -w "%{http_code}" "$REST?select=nome,pontos,criado_em&limit=1" -H "apikey: $KEY")
+          echo "GET_STATUS=$code"
+          cat /tmp/get.txt
+          echo
+          echo '=== POST ==='
+          body='{"nome":"SD3|debug|D|TESTE|0|diag","pontos":0}'
+          code=$(curl -sS -o /tmp/post.txt -w "%{http_code}" "$REST" -X POST -H "apikey: $KEY" -H "Content-Type: application/json" -H "Prefer: return=minimal" --data "$body")
+          echo "POST_STATUS=$code"
+          cat /tmp/post.txt
+          echo
