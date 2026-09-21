@@ -5,9 +5,11 @@
   const SCORE_PREFIX='R2|';
   const MANUAL_PREFIX='R2M|';
   const LOCAL_V2='led_noise_sessions_v2';
-  const POINT_MS=15000;
-  const MEDAL_POINTS=40;
   const WORK_POINTS=5;
+  const SETTINGS=window.SOM_TURMA_SETTINGS||(window.SOM_TURMA_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40});
+  function periodMs(){return Math.max(1,Math.min(300,Number(SETTINGS.periodSeconds)||15))*1000}
+  function periodPoints(){return Math.max(1,Math.min(100,Math.floor(Number(SETTINGS.periodPoints)||1)))}
+  function medalTarget(){return Math.max(1,Math.min(10000,Math.floor(Number(SETTINGS.medalPoints)||40)))}
 
   const roomInput=document.getElementById('roomInput');
   const sensitivityInput=document.getElementById('sensitivity');
@@ -99,7 +101,7 @@
   if(oldFocusProgress)oldFocusProgress.remove();
   const focusProgress=document.createElement('div');
   focusProgress.className='focus-progress';
-  focusProgress.innerHTML='<div class="focus-track"><div class="focus-fill"></div></div><div class="focus-label">🧠 0 / 15</div>';
+  focusProgress.innerHTML=`<div class="focus-track"><div class="focus-fill"></div></div><div class="focus-label">🧠 0 / ${Math.floor(periodMs()/1000)}</div>`;
   const meterShell=monitor?.querySelector('.meter-shell');
   meterShell?.after(focusProgress);
   const focusFill=focusProgress.querySelector('.focus-fill');
@@ -173,13 +175,15 @@
     if(now<focusFlashUntil){
       focusProgress.classList.add('earned');
       focusFill.style.width='100%';
-      focusLabel.textContent='⭐ 15 / 15';
+      const maxSec=Math.floor(periodMs()/1000);
+      focusLabel.textContent=`⭐ ${maxSec} / ${maxSec}`;
       return;
     }
     focusProgress.classList.remove('earned');
-    const sec=Math.min(15,Math.floor(silenceForPointMs/1000));
-    focusFill.style.width=Math.min(100,(silenceForPointMs/POINT_MS)*100)+'%';
-    focusLabel.textContent=`🧠 ${sec} / 15`;
+    const maxSec=Math.floor(periodMs()/1000);
+    const sec=Math.min(maxSec,Math.floor(silenceForPointMs/1000));
+    focusFill.style.width=Math.min(100,(silenceForPointMs/periodMs())*100)+'%';
+    focusLabel.textContent=`🧠 ${sec} / ${maxSec}`;
   }
   function pulsePoints(){
     const box=document.getElementById('pointLive');
@@ -236,9 +240,9 @@
       maxQuietMs=Math.max(maxQuietMs,now-quietStreakStart);
       loudSince=0;
       silenceForPointMs+=delta;
-      if(silenceForPointMs>=POINT_MS){
-        lessonFocusPoints++;
-        silenceForPointMs-=POINT_MS;
+      if(silenceForPointMs>=periodMs()){
+        lessonFocusPoints+=periodPoints();
+        silenceForPointMs-=periodMs();
         focusFlashUntil=now+650;
         pointText();
         pulsePoints();
@@ -448,7 +452,7 @@
       const delta=Number(s.point)||0;
       if(delta>=0){
         x.progress+=delta;
-        while(x.progress>=MEDAL_POINTS){x.medals++;x.progress-=MEDAL_POINTS}
+        while(x.progress>=medalTarget()){x.medals++;x.progress-=medalTarget()}
       }else{
         x.progress=Math.max(0,x.progress+delta);
       }
@@ -467,7 +471,7 @@
     rows.forEach((x,i)=>{
       const r=document.createElement('div');
       r.className='rank-row';
-      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">${x.progress}/${MEDAL_POINTS} para a próxima</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${x.progress} pontos</span></div>`;
+      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">${x.progress}/${medalTarget()} para a próxima</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${x.progress} pontos</span></div>`;
       box.appendChild(r);
     });
   }
