@@ -7,10 +7,10 @@
   };
 
   const core=document.createElement('script');
-  core.src='control-core.js?v=20260921-11';
+  core.src='control-core.js?v=20260921-12';
   core.onload=()=>{
     const profiles=document.createElement('script');
-    profiles.src='profiles.js?v=20260921-11';
+    profiles.src='profiles.js?v=20260921-12';
     document.head.appendChild(profiles);
   };
   document.head.appendChild(core);
