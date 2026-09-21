@@ -5,11 +5,12 @@
   const SCORE_PREFIX='R2|';
   const MANUAL_PREFIX='R2M|';
   const LOCAL_V2='led_noise_sessions_v2';
-  const SETTINGS=window.SOM_TURMA_SETTINGS||(window.SOM_TURMA_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5});
+  const SETTINGS=window.SOM_TURMA_SETTINGS||(window.SOM_TURMA_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5,noStopPoints:1});
   function periodMs(){return Math.max(1,Math.min(300,Number(SETTINGS.periodSeconds)||15))*1000}
   function periodPoints(){return Math.max(1,Math.min(100,Math.floor(Number(SETTINGS.periodPoints)||1)))}
   function medalTarget(){return Math.max(1,Math.min(10000,Math.floor(Number(SETTINGS.medalPoints)||40)))}
   function workPoints(){return Math.max(1,Math.min(100,Math.floor(Number(SETTINGS.workPoints)||5)))}
+  function noStopPoints(){const n=Number(SETTINGS.noStopPoints);return Math.max(0,Math.min(100,Math.floor(Number.isFinite(n)?n:1)))}
 
   const roomInput=document.getElementById('roomInput');
   const sensitivityInput=document.getElementById('sensitivity');
@@ -568,15 +569,16 @@
 
     const record=Math.round(maxQuietMs/1000);
     const quietPct=measuredMs?Math.min(100,Math.round(quietMs/measuredMs*100)):0;
-    const total=lessonPoints();
-    const s={id:sessionId(),room:endedRoom,point:total,record,duration:Math.round(duration/1000),quietPct,stops,ts:Date.now(),synced:false,manual:false,focusPoints:lessonFocusPoints,workPoints:lessonWorkPoints};
+    const noStopBonus=stops===0?noStopPoints():0;
+    const total=lessonPoints()+noStopBonus;
+    const s={id:sessionId(),room:endedRoom,point:total,record,duration:Math.round(duration/1000),quietPct,stops,ts:Date.now(),synced:false,manual:false,focusPoints:lessonFocusPoints,workPoints:lessonWorkPoints,noStopBonus};
     const rows=localSessions();rows.push(s);writeLocal(rows);
 
     document.getElementById('summaryRoom').textContent='🏫 '+endedRoom;
     const banner=document.getElementById('resultBanner');
     banner.className='result-banner '+(total?'win':'no-point');
     document.getElementById('resultTitle').textContent=total?`⭐ ${total} PONTO${total===1?'':'S'}!`:(stops?'⛔ 0 PONTOS':'FIM DA AULA');
-    document.getElementById('resultText').textContent=total?(stops?'VOCÊS SE REORGANIZARAM!':'PARABÉNS, TURMA!'):(stops?'VAMOS RECOMEÇAR!':'VAMOS CONQUISTAR PONTOS NA PRÓXIMA!');
+    document.getElementById('resultText').textContent=total?(stops?'VOCÊS SE REORGANIZARAM!':(noStopBonus?'🎯 +'+noStopBonus+' POR AULA SEM PARALISAÇÃO':'PARABÉNS, TURMA!')):(stops?'VAMOS RECOMEÇAR!':'VAMOS CONQUISTAR PONTOS NA PRÓXIMA!');
     document.getElementById('summaryRecord').textContent=fmt(record*1000);
     document.getElementById('summaryQuiet').textContent=quietPct+'%';
     document.getElementById('summaryStops').textContent=stops;
