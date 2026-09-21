@@ -66,6 +66,13 @@
     .turma-stat b{display:block;font-size:28px;line-height:1.05}
     .turma-stat span{display:block;font-size:12px;font-weight:950;color:#64748b;margin-top:5px}
     .turma-next{grid-column:1/-1;text-align:center;font-size:12px;font-weight:900;color:#64748b;margin-top:-2px}
+    .medal-wallet{grid-column:1/-1;background:#fff7ed;border:1px solid #fed7aa;border-radius:16px;padding:14px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    .medal-wallet-value b{display:block;font-size:30px;line-height:1}
+    .medal-wallet-value span{display:block;font-size:12px;font-weight:950;color:#9a3412;margin-top:5px}
+    .use-medal-btn{border:0;border-radius:13px;background:#b45309;color:#fff;padding:11px 14px;font-weight:950;font-size:13px}
+    .use-medal-btn:disabled{background:#d6d3d1;color:#78716c;cursor:default}
+    .medal-use-note{grid-column:1/-1;font-size:11px;line-height:1.35;color:#78716c;font-weight:800}
+    .medal-use-msg{grid-column:1/-1;min-height:16px;font-size:12px;font-weight:950;color:#166534}
     .manual-points-field{margin-top:0!important;margin-bottom:8px!important}
     .manual-points-row{grid-template-columns:76px 1fr 1fr!important}
     .manual-points-row input{font-size:22px!important;padding:10px 8px!important}
@@ -133,7 +140,13 @@
   turmaSummary.className='turma-summary hidden';
   turmaSummary.innerHTML=`
     <div class="turma-stat"><b id="turmaPoints">0</b><span>⭐ PONTOS</span></div>
-    <div class="turma-stat"><b id="turmaMedals">0</b><span>🏅 MEDALHAS</span></div>
+    <div class="turma-stat"><b id="turmaMedals">0</b><span>🏅 MEDALHAS CONQUISTADAS</span></div>
+    <div class="medal-wallet">
+      <div class="medal-wallet-value"><b id="turmaAvailable">0</b><span>🏅 DISPONÍVEIS PARA USAR</span></div>
+      <button id="useMedalBtn" class="use-medal-btn" type="button" disabled>USAR 1 MEDALHA</button>
+      <div id="medalUseNote" class="medal-use-note">Usar uma medalha não altera as conquistadas nem o ranking.</div>
+      <div id="medalUseMsg" class="medal-use-msg" aria-live="polite"></div>
+    </div>
     <div id="turmaNext" class="turma-next"></div>`;
 
   const configBox=document.createElement('div');
@@ -200,6 +213,10 @@
   const configStatus=document.getElementById('configStatus');
   const turmaPoints=document.getElementById('turmaPoints');
   const turmaMedals=document.getElementById('turmaMedals');
+  const turmaAvailable=document.getElementById('turmaAvailable');
+  const useMedalBtn=document.getElementById('useMedalBtn');
+  const medalUseNote=document.getElementById('medalUseNote');
+  const medalUseMsg=document.getElementById('medalUseMsg');
   const turmaNext=document.getElementById('turmaNext');
 
   async function sha256(text){
@@ -230,12 +247,13 @@
     return{
       perfil:currentProfile.id,
       turma:cleanRoom(s.room),
-      tipo:s.manual?'ajuste':'sessao',
+      tipo:s.medalUse?'medalha_usada':(s.manual?'ajuste':'sessao'),
       pontos:Number(s.point)||0,
       recorde_seg:Math.max(0,Number(s.record)||0),
       foco_pontos:Math.max(0,Number(s.focusPoints)||0),
       trabalho_pontos:Math.max(0,Number(s.workPoints)||0),
       bonus_sem_parada:Math.max(0,Number(s.noStopBonus)||0),
+      medalhas_usadas:Math.max(0,Number(s.medalUse)||0),
       paradas:Math.max(0,Number(s.stops)||0),
       duracao_seg:Math.max(0,Number(s.duration)||0),
       silencio_pct:Math.max(0,Math.min(100,Number(s.quietPct)||0)),
@@ -251,11 +269,12 @@
       focusPoints:Math.max(0,Number(row.foco_pontos)||0),
       workPoints:Math.max(0,Number(row.trabalho_pontos)||0),
       noStopBonus:Math.max(0,Number(row.bonus_sem_parada)||0),
+      medalUse:Math.max(0,Number(row.medalhas_usadas)||0),
       stops:Math.max(0,Number(row.paradas)||0),
       duration:Math.max(0,Number(row.duracao_seg)||0),
       quietPct:Math.max(0,Math.min(100,Number(row.silencio_pct)||0)),
       id:String(row.sessao_id||''),
-      manual:row.tipo==='ajuste',
+      manual:row.tipo!=='sessao',
       ts:row.criado_em||0,
       synced:true
     };
@@ -263,9 +282,10 @@
 
   async function scopedSaveOnline(s){
     if(experienceMode||!currentProfile)return;
-    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SOM_TURMA_TABLE}`,{
+    const q=new URLSearchParams({on_conflict:'perfil,sessao_id'});
+    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SOM_TURMA_TABLE}?${q}`,{
       method:'POST',
-      headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json','Prefer':'resolution=ignore-duplicates,return=minimal'},
       body:JSON.stringify(toDbRow(s))
     });
     if(!response.ok){
@@ -279,7 +299,7 @@
   async function scopedOnlineSessions(){
     if(experienceMode||!currentProfile)return[];
     const q=new URLSearchParams({
-      select:'perfil,turma,tipo,pontos,recorde_seg,foco_pontos,trabalho_pontos,bonus_sem_parada,paradas,duracao_seg,silencio_pct,sessao_id,criado_em',
+      select:'perfil,turma,tipo,pontos,recorde_seg,foco_pontos,trabalho_pontos,bonus_sem_parada,medalhas_usadas,paradas,duracao_seg,silencio_pct,sessao_id,criado_em',
       perfil:`eq.${currentProfile.id}`,
       order:'criado_em.asc',
       limit:'5000'
@@ -441,16 +461,18 @@
 
   function stateForRoom(rows,roomName){
     const target=Math.max(1,Number(window.SOM_TURMA_SETTINGS?.medalPoints)||40);
-    let medals=0,points=0;
+    let medals=0,points=0,used=0;
     const ordered=rows.filter(x=>cleanRoom(x.room)===roomName).sort((a,b)=>timeValue(a.ts)-timeValue(b.ts));
     for(const row of ordered){
+      used+=Math.max(0,Number(row.medalUse)||0);
       const delta=Number(row.point)||0;
       if(delta>=0){
         points+=delta;
         while(points>=target){medals++;points-=target}
       }else points=Math.max(0,points+delta);
     }
-    return{medals,points,target};
+    const available=Math.max(0,medals-used);
+    return{medals,points,target,used,available};
   }
 
   async function refreshTurmaStats(){
@@ -473,7 +495,63 @@
     const state=stateForRoom(rows,selected);
     if(turmaPoints)turmaPoints.textContent=String(state.points);
     if(turmaMedals)turmaMedals.textContent=String(state.medals);
+    if(turmaAvailable)turmaAvailable.textContent=String(state.available);
+    if(useMedalBtn)useMedalBtn.disabled=state.available<=0;
+    if(medalUseNote)medalUseNote.textContent=state.used
+      ? `${state.used} já usada${state.used===1?'':'s'} • usar não altera as conquistadas nem o ranking.`
+      : 'Usar uma medalha não altera as conquistadas nem o ranking.';
     if(turmaNext)turmaNext.textContent=`${state.points}/${state.target} para a próxima medalha`;
+  }
+
+  async function useOneMedal(){
+    const selected=cleanRoom(roomInput?.value);
+    if(!selected||experienceMode||!currentProfile)return;
+    useMedalBtn.disabled=true;
+    if(medalUseMsg){medalUseMsg.textContent='VERIFICANDO...';medalUseMsg.style.color='#64748b'}
+    let rows=[];
+    try{
+      await syncProfile();
+      rows=await scopedOnlineSessions();
+      rows.push(...scopedLocalSessions().filter(x=>!x.synced));
+    }catch(e){
+      rows=scopedLocalSessions();
+    }
+    const state=stateForRoom(rows,selected);
+    if(state.available<=0){
+      if(medalUseMsg){medalUseMsg.textContent='NENHUMA MEDALHA DISPONÍVEL';medalUseMsg.style.color='#92400e'}
+      useMedalBtn.disabled=true;
+      return;
+    }
+    const ok=window.confirm(`Usar 1 medalha da turma ${selected}?\n\nAs ${state.medals} medalha${state.medals===1?' conquistada':'s conquistadas'} e o ranking continuam iguais. Apenas as disponíveis para usar diminuem em 1.`);
+    if(!ok){
+      useMedalBtn.disabled=false;
+      if(medalUseMsg)medalUseMsg.textContent='';
+      return;
+    }
+    const event={
+      id:'U'+sessionId(),
+      room:selected,
+      point:0,
+      record:0,
+      duration:0,
+      quietPct:0,
+      stops:0,
+      ts:Date.now(),
+      synced:false,
+      manual:true,
+      medalUse:1
+    };
+    const local=scopedLocalSessions();
+    local.push(event);
+    scopedWriteLocal(local);
+    try{
+      await scopedSaveOnline(event);
+      scopedMarkSynced(event.id);
+      if(medalUseMsg){medalUseMsg.textContent='✅ 1 MEDALHA USADA';medalUseMsg.style.color='#166534'}
+    }catch(e){
+      if(medalUseMsg){medalUseMsg.textContent='💾 USO REGISTRADO NESTE COMPUTADOR';medalUseMsg.style.color='#92400e'}
+    }
+    await refreshTurmaStats();
   }
 
   function applyUi(){
@@ -490,6 +568,7 @@
     }
     turmaSummary.classList.add('hidden');
     manualField?.classList.add('hidden');
+    if(medalUseMsg)medalUseMsg.textContent='';
   }
 
   async function enter(profile){
@@ -538,6 +617,7 @@
     input?.addEventListener('input',()=>setSettingsDirty(true));
   });
   saveConfigBtn?.addEventListener('click',saveSettings);
+  useMedalBtn?.addEventListener('click',useOneMedal);
 
   if(manualMsg){
     new MutationObserver(()=>{if(manualMsg.textContent&&!manualMsg.textContent.includes('SALVANDO'))setTimeout(refreshTurmaStats,100)})
