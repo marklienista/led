@@ -85,7 +85,7 @@
   const manualField=document.createElement('div');
   manualField.className='field manual-points-field';
   manualField.innerHTML=`
-    <label for="manualPoints">⭐ AJUSTAR PONTOS</label>
+    <label for="manualPoints">⭐ AJUSTAR PONTOS DA TURMA</label>
     <div class="manual-points-row">
       <input id="manualPoints" type="number" min="1" max="99" step="1" value="1" inputmode="numeric" aria-label="Quantidade de pontos">
       <button id="manualAddBtn" type="button">+ ADICIONAR</button>
