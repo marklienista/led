@@ -92,29 +92,56 @@
   }
   function cleanRoom(v){return String(v||'').trim().toUpperCase().replace(/\|/g,'').replace(/\s+/g,' ').slice(0,12)}
 
+  const SOM_TURMA_TABLE='som_turma_eventos';
+
   function encode(s){
     const profile=currentProfile?.id||'';
-    if(s.manual)return`${DATA_PREFIX}|${profile}|M|${cleanRoom(s.room)}|${Number(s.point)||0}|${String(s.id).slice(-10)}`;
-    return`${DATA_PREFIX}|${profile}|S|${cleanRoom(s.room)}|${Math.max(0,Number(s.point)||0)}|${Math.max(0,Number(s.record)||0)}|${Math.max(0,Number(s.focusPoints)||0)}|${Math.max(0,Number(s.workPoints)||0)}|${String(s.id).slice(-10)}`;
+    if(s.manual)return `${DATA_PREFIX}|${profile}|M|${cleanRoom(s.room)}|${Number(s.point)||0}|${String(s.id).slice(-10)}`;
+    return `${DATA_PREFIX}|${profile}|S|${cleanRoom(s.room)}|${Math.max(0,Number(s.point)||0)}|${Math.max(0,Number(s.record)||0)}|${Math.max(0,Number(s.focusPoints)||0)}|${Math.max(0,Number(s.workPoints)||0)}|${String(s.id).slice(-10)}`;
   }
 
-  function parse(row){
-    const p=String(row.nome||'').split('|');
-    if(p[0]!==DATA_PREFIX||p[1]!==currentProfile?.id)return null;
-    if(p[2]==='S'&&p.length>=9)return{room:cleanRoom(p[3]),point:Math.max(0,Number(p[4])||0),record:Math.max(0,Number(p[5])||0),focusPoints:Math.max(0,Number(p[6])||0),workPoints:Math.max(0,Number(p[7])||0),id:p[8],manual:false,ts:row.criado_em||0,synced:true};
-    if(p[2]==='M'&&p.length>=6)return{room:cleanRoom(p[3]),point:Number(p[4])||0,record:0,id:p[5],manual:true,ts:row.criado_em||0,synced:true};
-    return null;
+  function toDbRow(s){
+    return {
+      perfil:currentProfile.id,
+      turma:cleanRoom(s.room),
+      tipo:s.manual?'ajuste':'sessao',
+      pontos:Number(s.point)||0,
+      recorde_seg:Math.max(0,Number(s.record)||0),
+      foco_pontos:Math.max(0,Number(s.focusPoints)||0),
+      trabalho_pontos:Math.max(0,Number(s.workPoints)||0),
+      paradas:Math.max(0,Number(s.stops)||0),
+      duracao_seg:Math.max(0,Number(s.duration)||0),
+      silencio_pct:Math.max(0,Math.min(100,Number(s.quietPct)||0)),
+      sessao_id:String(s.id)
+    };
+  }
+
+  function fromDbRow(row){
+    return {
+      room:cleanRoom(row.turma),
+      point:Number(row.pontos)||0,
+      record:Math.max(0,Number(row.recorde_seg)||0),
+      focusPoints:Math.max(0,Number(row.foco_pontos)||0),
+      workPoints:Math.max(0,Number(row.trabalho_pontos)||0),
+      stops:Math.max(0,Number(row.paradas)||0),
+      duration:Math.max(0,Number(row.duracao_seg)||0),
+      quietPct:Math.max(0,Math.min(100,Number(row.silencio_pct)||0)),
+      id:String(row.sessao_id||''),
+      manual:row.tipo==='ajuste',
+      ts:row.criado_em||0,
+      synced:true
+    };
   }
 
   async function scopedSaveOnline(s){
     if(experienceMode||!currentProfile)return;
-    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`,{
+    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SOM_TURMA_TABLE}`,{
       method:'POST',
       headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body:JSON.stringify({nome:encode(s),pontos:s.manual?0:Math.max(0,Number(s.point)||0)})
+      body:JSON.stringify(toDbRow(s))
     });
     if(!response.ok){
-      let detail='';try{detail=(await response.text()).slice(0,120)}catch(e){}
+      let detail='';try{detail=(await response.text()).slice(0,160)}catch(e){}
       if(dbStatus){dbStatus.textContent=`● ERRO ONLINE • ${response.status}`;dbStatus.className='status-note offline'}
       throw new Error(`HTTP ${response.status}${detail?' • '+detail:''}`);
     }
@@ -123,12 +150,19 @@
 
   async function scopedOnlineSessions(){
     if(experienceMode||!currentProfile)return[];
-    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=nome,pontos,criado_em&order=criado_em.asc&limit=5000`,{headers:{'apikey':SUPABASE_KEY}});
-    if(!response.ok)throw new Error(`HTTP ${response.status}`);
-    const rows=await response.json();
-    return rows.map(parse).filter(Boolean);
+    const q=new URLSearchParams({
+      select:'perfil,turma,tipo,pontos,recorde_seg,foco_pontos,trabalho_pontos,paradas,duracao_seg,silencio_pct,sessao_id,criado_em',
+      perfil:`eq.${currentProfile.id}`,
+      order:'criado_em.asc',
+      limit:'5000'
+    });
+    const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SOM_TURMA_TABLE}?${q}`,{headers:{'apikey':SUPABASE_KEY}});
+    if(!response.ok){
+      let detail='';try{detail=(await response.text()).slice(0,160)}catch(e){}
+      throw new Error(`HTTP ${response.status}${detail?' • '+detail:''}`);
+    }
+    return (await response.json()).map(fromDbRow);
   }
-
   // A lógica principal consulta estas funções dinamicamente.
   localSessions=scopedLocalSessions;
   writeLocal=scopedWriteLocal;
@@ -149,7 +183,7 @@
     if(!currentProfile||experienceMode)return;
     if(dbStatus){dbStatus.textContent='● VERIFICANDO ONLINE...';dbStatus.className='status-note'}
     try{
-      const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=nome&limit=1`,{headers:{'apikey':SUPABASE_KEY}});
+      const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${SOM_TURMA_TABLE}?select=id&limit=1`,{headers:{'apikey':SUPABASE_KEY}});
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       await syncProfile();
       if(dbStatus){dbStatus.textContent=`● ONLINE • ${currentProfile.name}`;dbStatus.className='status-note online'}
