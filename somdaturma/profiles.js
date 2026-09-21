@@ -47,7 +47,7 @@
     .public-head{text-align:center;margin-bottom:24px}
     .public-head h1{font-size:clamp(44px,6vw,72px);line-height:1;margin:0 0 10px}
     .public-head p{margin:0 auto;max-width:760px;color:#64748b;font-weight:750;font-size:17px;line-height:1.45}
-    .public-grid{display:grid;grid-template-columns:1.05fr 1fr .85fr;gap:18px;align-items:stretch;flex:1}
+    .public-grid{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:18px;align-items:stretch;flex:1}
     .public-card{background:#f8fafc;border:1px solid #dbe4ee;border-radius:22px;padding:24px;min-width:0;display:flex;flex-direction:column}
     .public-card h2{font-size:24px;margin:0 0 18px}
     .public-card p{color:#64748b;line-height:1.45;margin:0 0 18px}
@@ -68,7 +68,14 @@
     .author-card{justify-content:space-between}
     .author-placeholder{min-height:250px;border:2px dashed #cbd5e1;border-radius:18px;display:grid;place-items:center;text-align:center;color:#94a3b8;font-weight:900;padding:24px}
     .public-footer{margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:12px;font-weight:800}
-    @media(max-width:920px){.public-grid{grid-template-columns:1fr}.public-card{min-height:auto}.author-placeholder{min-height:140px}}
+    @media(max-width:920px){
+      .public-grid{grid-template-columns:1fr}
+      .public-card{min-height:auto}
+      .login-card{order:1}
+      .resource-card{order:2}
+      .author-card{order:3}
+      .author-placeholder{min-height:140px}
+    }
     @media(max-width:520px){.profile-login{padding:12px}.profile-login .public-shell{padding:18px;border-radius:22px}.public-card{padding:18px}.public-head h1{font-size:42px}}
     .setup{padding:18px 28px;place-items:start center}
     .setup .panel{width:min(1320px,100%);min-height:calc(100vh - 36px);padding:28px;display:flex;flex-direction:column}
@@ -140,6 +147,22 @@
       </header>
 
       <div class="public-grid">
+        <section class="public-card resource-card">
+          <h2>Conheça a ferramenta</h2>
+          <div class="resource-list">
+            <a class="resource-link" href="manual/">
+              <b>📖 Como usar</b>
+              <span>Manual visual com a configuração da turma, os níveis de som, pontos, trabalhos e medalhas.</span>
+              <span class="resource-action">ABRIR MANUAL →</span>
+            </a>
+            <a class="resource-link" href="possibilidades-pedagogicas/">
+              <b>💡 Possibilidades pedagógicas</b>
+              <span>Ideias para usar a ferramenta em diferentes atividades, construir combinados e dar sentido às medalhas.</span>
+              <span class="resource-action">VER POSSIBILIDADES →</span>
+            </a>
+          </div>
+        </section>
+
         <section class="public-card login-card">
           <h2>Entrar</h2>
           <div class="field">
@@ -155,22 +178,6 @@
             <button id="tryModeBtn" class="btn secondary experience-btn" type="button">EXPERIMENTAR SEM SALVAR</button>
           </div>
           <div id="schoolLoginError" class="profile-login-error" aria-live="polite"></div>
-        </section>
-
-        <section class="public-card">
-          <h2>Conheça a ferramenta</h2>
-          <div class="resource-list">
-            <a class="resource-link" href="manual/">
-              <b>📖 Como usar</b>
-              <span>Manual visual com a configuração da turma, os níveis de som, pontos, trabalhos e medalhas.</span>
-              <span class="resource-action">ABRIR MANUAL →</span>
-            </a>
-            <a class="resource-link" href="possibilidades-pedagogicas/">
-              <b>💡 Possibilidades pedagógicas</b>
-              <span>Ideias para usar a ferramenta em diferentes atividades, construir combinados e dar sentido às medalhas.</span>
-              <span class="resource-action">VER POSSIBILIDADES →</span>
-            </a>
-          </div>
         </section>
 
         <section class="public-card author-card">
