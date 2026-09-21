@@ -168,7 +168,7 @@
   centerCard.className='setup-card levels-card';
   const rightCard=document.createElement('div');
   rightCard.className='setup-card config-card';
-  centerCard.innerHTML='<h2>🔊 NÍVEIS</h2>';
+  centerCard.innerHTML='<h2>NÍVEIS</h2>';
   rightCard.innerHTML='<h2>⚙️ CONFIGURAÇÕES</h2>';
 
   const mainTitle=setupPanel?.querySelector('h1');
@@ -316,6 +316,8 @@
     if(cfgPeriodPoints)cfgPeriodPoints.value=String(s.periodPoints);
     if(cfgMedalPoints)cfgMedalPoints.value=String(s.medalPoints);
     if(cfgWorkPoints)cfgWorkPoints.value=String(s.workPoints);
+    const workBtn=document.getElementById('workDoneBtn');
+    if(workBtn)workBtn.textContent=`✅ TRABALHO +${s.workPoints}`;
     return s;
   }
 
@@ -398,6 +400,7 @@
         if(configStatus){configStatus.textContent='✅ CONFIGURAÇÕES SALVAS';configStatus.style.color='#166534'}
       }else{
         applySettings(DEFAULT_SETTINGS);
+        setSettingsDirty(true);
         await saveSettings();
       }
     }catch(e){
