@@ -3,18 +3,282 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f172a">
 <title>Como usar • Som da Turma</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#eef2f7;color:#0f172a}
-main{width:min(1120px,calc(100% - 32px));margin:24px auto;background:#fff;border:1px solid #dbe4ee;border-radius:26px;padding:28px;min-height:calc(100vh - 48px)}
-a{color:#2563eb;text-decoration:none;font-weight:900}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
-h1{font-size:clamp(38px,6vw,64px);margin:28px 0 10px}p{color:#64748b;line-height:1.6;font-size:17px}.placeholder{margin-top:30px;border:2px dashed #cbd5e1;border-radius:22px;padding:46px;text-align:center;color:#94a3b8;font-weight:900}
+:root{--ink:#0f172a;--muted:#64748b;--line:#dbe4ee;--bg:#eef2f7;--green:#15803d;--yellow:#ca8a04;--red:#b91c1c;--blue:#2563eb;--soft:#f8fafc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:var(--blue);text-decoration:none;font-weight:900}
+.shell{width:min(1180px,calc(100% - 32px));margin:22px auto 48px}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:950}.back{display:inline-flex;align-items:center;gap:6px}
+.hero{background:#fff;border:1px solid var(--line);border-radius:28px;padding:32px;box-shadow:0 18px 50px #0f172a12}
+.hero h1{font-size:clamp(42px,6vw,68px);line-height:1;margin:0 0 12px}
+.hero p{max-width:850px;margin:0;color:var(--muted);font-size:18px;line-height:1.55}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.quick a{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--ink);font-size:14px}
+.section{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:26px;padding:28px}
+.section h2{font-size:clamp(28px,4vw,42px);margin:0 0 10px}
+.section>p{color:var(--muted);line-height:1.6;font-size:16px;margin:0 0 22px}
+.figure{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#f8fafc}
+.figure svg{display:block;width:100%;height:auto}
+.legend-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.legend-card{border:1px solid var(--line);border-radius:17px;padding:16px;background:#fff}
+.legend-card h3{font-size:18px;margin:0 0 6px;display:flex;gap:8px;align-items:center}
+.legend-card p{font-size:14px;color:var(--muted);line-height:1.5;margin:0}
+.badge{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#047857;color:#fff;font-size:14px;font-weight:950;flex:0 0 auto}
+.steps{display:grid;gap:12px}
+.step{display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start;border:1px solid var(--line);border-radius:18px;padding:16px;background:var(--soft)}
+.step-num{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#0f172a;color:#fff;font-weight:950}
+.step h3{margin:0 0 5px;font-size:19px}.step p{margin:0;color:var(--muted);line-height:1.5}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.level{color:#fff;border-radius:17px;padding:18px 10px;text-align:center;font-weight:950}.level small{display:block;margin-top:4px;font-weight:800;opacity:.9}
+.quiet{background:var(--green)}.talk{background:var(--yellow)}.loud{background:var(--red)}.listen{background:var(--blue)}
+.rules{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.rules th,.rules td{padding:14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.rules tr:last-child td{border-bottom:0}.rules th{background:var(--soft);font-size:13px}.rules td{font-size:14px;line-height:1.45}.rules td:first-child{font-weight:900}
+.callout{margin-top:16px;border-radius:18px;padding:16px 18px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;line-height:1.5}
+.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.small{font-size:13px;color:var(--muted);line-height:1.5}
+.footer{text-align:center;color:#94a3b8;font-size:12px;font-weight:800;padding:24px}
+@media(max-width:850px){.quick,.levels{grid-template-columns:1fr 1fr}.legend-grid{grid-template-columns:1fr}.section,.hero{padding:20px}}
+@media(max-width:520px){.shell{width:min(100% - 20px,1180px);margin-top:10px}.quick,.levels{grid-template-columns:1fr}.hero h1{font-size:40px}.rules{display:block;overflow-x:auto}.step{grid-template-columns:36px 1fr}.step-num{width:36px;height:36px}}
 </style>
 </head>
-<body><main>
-<div class="top"><a href="../">← VOLTAR</a><strong>Som da Turma</strong></div>
-<h1>Como usar</h1>
-<p>O manual visual será construído aqui com imagens da tela de configuração e da tela durante a aula, acompanhadas de explicações curtas de cada recurso.</p>
-<div class="placeholder">MANUAL VISUAL EM PREPARAÇÃO</div>
-</main></body>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <a class="back" href="../">← VOLTAR</a>
+    <div class="brand">Som da Turma</div>
+  </div>
+
+  <header class="hero">
+    <h1>Como usar</h1>
+    <p>Este manual mostra o fluxo básico do Som da Turma: preparar a aula, acompanhar o ambiente sonoro, registrar trabalhos, entender as paralisações e usar as medalhas conquistadas.</p>
+    <nav class="quick">
+      <a href="#preparar">1. Preparar a turma</a>
+      <a href="#durante">2. Durante a aula</a>
+      <a href="#paralisacao">3. Paralisações</a>
+      <a href="#pontos">4. Pontos e medalhas</a>
+    </nav>
+  </header>
+
+  <section class="section" id="preparar">
+    <h2>1. Preparar a turma</h2>
+    <p>Depois de entrar no perfil da escola, escolha a turma e confira os dados antes de iniciar.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 1180 650" role="img" aria-label="Mapa da tela de preparação com três colunas">
+        <rect width="1180" height="650" fill="#eef2f7"/>
+        <rect x="32" y="28" width="1116" height="594" rx="26" fill="#fff" stroke="#dbe4ee"/>
+        <text x="590" y="82" text-anchor="middle" font-family="Arial" font-size="42" font-weight="700" fill="#0f172a">Som da Turma</text>
+
+        <rect x="58" y="120" width="340" height="455" rx="22" fill="#f8fafc" stroke="#dbe4ee"/>
+        <rect x="420" y="120" width="330" height="455" rx="22" fill="#f8fafc" stroke="#dbe4ee"/>
+        <rect x="772" y="120" width="350" height="455" rx="22" fill="#f8fafc" stroke="#dbe4ee"/>
+
+        <text x="82" y="158" font-family="Arial" font-size="24" font-weight="700" fill="#0f172a">EMEF Dilermando</text>
+        <text x="82" y="202" font-family="Arial" font-size="15" font-weight="700" fill="#475569">TURMA</text>
+        <rect x="82" y="218" width="290" height="52" rx="13" fill="#fff" stroke="#94a3b8"/>
+        <text x="227" y="251" text-anchor="middle" font-family="Arial" font-size="23" font-weight="700" fill="#0f172a">4A</text>
+
+        <rect x="82" y="286" width="138" height="92" rx="16" fill="#fff" stroke="#dbe4ee"/>
+        <text x="151" y="325" text-anchor="middle" font-family="Arial" font-size="29" font-weight="700">15</text>
+        <text x="151" y="350" text-anchor="middle" font-family="Arial" font-size="12" font-weight="700" fill="#64748b">⭐ PONTOS</text>
+        <text x="151" y="368" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#64748b">15/40</text>
+
+        <rect x="234" y="286" width="138" height="92" rx="16" fill="#fff" stroke="#dbe4ee"/>
+        <text x="303" y="325" text-anchor="middle" font-family="Arial" font-size="29" font-weight="700">1</text>
+        <text x="303" y="350" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#64748b">🏅 MEDALHAS</text>
+        <text x="303" y="366" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#64748b">CONQUISTADAS</text>
+
+        <rect x="82" y="392" width="290" height="80" rx="16" fill="#fff7ed" stroke="#fed7aa"/>
+        <text x="104" y="421" font-family="Arial" font-size="25" font-weight="700">1</text>
+        <text x="104" y="445" font-family="Arial" font-size="11" font-weight="700" fill="#9a3412">🏅 DISPONÍVEL PARA USAR</text>
+        <rect x="245" y="408" width="108" height="40" rx="12" fill="#b45309"/>
+        <text x="299" y="433" text-anchor="middle" font-family="Arial" font-size="12" font-weight="700" fill="#fff">USAR 1 MEDALHA</text>
+
+        <text x="82" y="500" font-family="Arial" font-size="14" font-weight="700" fill="#0f172a">⭐ AJUSTAR PONTOS DA TURMA</text>
+        <rect x="82" y="514" width="54" height="42" rx="11" fill="#fff" stroke="#cbd5e1"/>
+        <rect x="145" y="514" width="102" height="42" rx="11" fill="#e2e8f0"/>
+        <rect x="256" y="514" width="116" height="42" rx="11" fill="#fee2e2"/>
+        <text x="196" y="540" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700">+ ADICIONAR</text>
+        <text x="314" y="540" text-anchor="middle" font-family="Arial" font-size="11" font-weight="700" fill="#991b1b">− REMOVER</text>
+
+        <text x="444" y="158" font-family="Arial" font-size="23" font-weight="700">NÍVEIS</text>
+        <rect x="444" y="182" width="282" height="68" rx="16" fill="#15803d"/>
+        <rect x="444" y="262" width="282" height="68" rx="16" fill="#ca8a04"/>
+        <rect x="444" y="342" width="282" height="68" rx="16" fill="#b91c1c"/>
+        <rect x="444" y="422" width="282" height="68" rx="16" fill="#2563eb"/>
+        <text x="585" y="224" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700" fill="#fff">🧠 FOCO TOTAL</text>
+        <text x="585" y="304" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700" fill="#fff">💬 CONVERSA</text>
+        <text x="585" y="384" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700" fill="#fff">🔊 MUITO ALTO</text>
+        <text x="585" y="464" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700" fill="#fff">👂 OUVIR</text>
+        <text x="444" y="520" font-family="Arial" font-size="13" font-weight="700" fill="#475569">🎙️ MICROFONE</text>
+        <line x1="470" y1="545" x2="696" y2="545" stroke="#94a3b8" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="655" cy="545" r="12" fill="#0f172a"/>
+
+        <text x="796" y="158" font-family="Arial" font-size="23" font-weight="700">⚙ CONFIGURAÇÕES</text>
+        <g font-family="Arial" font-size="14" font-weight="700" fill="#334155">
+          <text x="796" y="210">⏱ TEMPO DO PERÍODO</text>
+          <text x="796" y="260">⭐ PONTOS POR PERÍODO</text>
+          <text x="796" y="310">🏅 PONTOS PARA MEDALHA</text>
+          <text x="796" y="360">✅ PONTOS POR TRABALHO</text>
+          <text x="796" y="410">🎯 AULA SEM PARALISAÇÃO</text>
+        </g>
+        <g fill="#fff" stroke="#cbd5e1">
+          <rect x="1015" y="184" width="78" height="34" rx="9"/><rect x="1015" y="234" width="78" height="34" rx="9"/>
+          <rect x="1015" y="284" width="78" height="34" rx="9"/><rect x="1015" y="334" width="78" height="34" rx="9"/><rect x="1015" y="384" width="78" height="34" rx="9"/>
+        </g>
+        <g font-family="Arial" font-size="16" font-weight="700" fill="#0f172a" text-anchor="middle">
+          <text x="1054" y="207">15</text><text x="1054" y="257">1</text><text x="1054" y="307">40</text><text x="1054" y="357">5</text><text x="1054" y="407">1</text>
+        </g>
+        <rect x="796" y="446" width="297" height="44" rx="12" fill="#0f172a"/>
+        <text x="945" y="474" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#fff">SALVAR CONFIGURAÇÕES</text>
+
+        <rect x="82" y="582" width="137" height="0" fill="none"/>
+
+        <!-- markers -->
+        <g font-family="Arial" font-size="17" font-weight="700" text-anchor="middle">
+          <g><circle cx="72" cy="225" r="24" fill="#047857"/><text x="72" y="231" fill="#fff">A</text></g>
+          <g><circle cx="208" cy="300" r="24" fill="#047857"/><text x="208" y="306" fill="#fff">B</text></g>
+          <g><circle cx="364" cy="407" r="24" fill="#047857"/><text x="364" y="413" fill="#fff">C</text></g>
+          <g><circle cx="72" cy="510" r="24" fill="#047857"/><text x="72" y="516" fill="#fff">D</text></g>
+          <g><circle cx="432" cy="180" r="24" fill="#047857"/><text x="432" y="186" fill="#fff">E</text></g>
+          <g><circle cx="1088" cy="172" r="24" fill="#047857"/><text x="1088" y="178" fill="#fff">F</text></g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="legend-grid">
+      <article class="legend-card"><h3><span class="badge">A</span> Perfil e turma</h3><p>O perfil identifica a escola. Escolha a turma para carregar pontos, medalhas e usos já registrados.</p></article>
+      <article class="legend-card"><h3><span class="badge">B</span> Pontos e medalhas</h3><p>Os pontos mostram o progresso até a próxima medalha. “Medalhas conquistadas” é o total histórico da turma.</p></article>
+      <article class="legend-card"><h3><span class="badge">C</span> Medalhas disponíveis</h3><p>São as medalhas conquistadas que ainda podem ser usadas. Usar uma medalha não reduz o total conquistado nem o ranking.</p></article>
+      <article class="legend-card"><h3><span class="badge">D</span> Ajustar pontos da turma</h3><p>Permite acrescentar ou retirar pontos manualmente quando o professor precisar fazer um ajuste.</p></article>
+      <article class="legend-card"><h3><span class="badge">E</span> Níveis e microfone</h3><p>Os quatro níveis ficam visíveis antes da aula. A sensibilidade do microfone pode ser ajustada conforme o ambiente.</p></article>
+      <article class="legend-card"><h3><span class="badge">F</span> Configurações</h3><p>Defina período de foco, pontos por período, pontos por trabalho, pontos para medalha e bônus por aula sem paralisação. Clique em Salvar.</p></article>
+    </div>
+
+    <div class="callout">Configuração padrão atual: <strong>15 segundos = 1 ponto</strong>, <strong>5 pontos por trabalho</strong>, <strong>40 pontos por medalha</strong> e <strong>1 ponto por aula sem paralisação</strong>.</div>
+  </section>
+
+  <section class="section" id="durante">
+    <h2>2. Durante a aula</h2>
+    <p>Depois de clicar em <strong>Começar</strong>, a tela passa a funcionar como uma referência compartilhada para professor e turma.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 1180 650" role="img" aria-label="Mapa da tela durante a aula">
+        <rect width="1180" height="650" fill="#15803d"/>
+        <text x="46" y="58" font-family="Arial" font-size="28" font-weight="700" fill="#fff">🏫 4A</text>
+        <text x="590" y="58" text-anchor="middle" font-family="Arial" font-size="34" font-weight="700" fill="#fff">12:34</text>
+        <text x="1125" y="58" text-anchor="end" font-family="Arial" font-size="20" font-weight="700" fill="#fff">RECORDE 03:18</text>
+
+        <text x="590" y="245" text-anchor="middle" font-family="Arial" font-size="104" font-weight="700" fill="#fff">🧠 FOCO TOTAL</text>
+        <text x="590" y="310" text-anchor="middle" font-family="Arial" font-size="34" font-weight="700" fill="#fff">ÓTIMO PARA CONCENTRAR</text>
+
+        <rect x="65" y="458" width="1050" height="22" rx="11" fill="#ffffff55" stroke="#ffffff88"/>
+        <rect x="65" y="458" width="650" height="22" rx="11" fill="#fff"/>
+        <text x="1115" y="518" text-anchor="end" font-family="Arial" font-size="17" font-weight="700" fill="#fff">🧠 9 / 15</text>
+
+        <text x="65" y="574" font-family="Arial" font-size="22" font-weight="700" fill="#fff">⭐ PONTOS DA AULA: 7</text>
+        <rect x="575" y="545" width="160" height="48" rx="13" fill="#ffffff2b" stroke="#ffffff88"/>
+        <rect x="750" y="545" width="120" height="48" rx="13" fill="#ffffff2b" stroke="#ffffff88"/>
+        <rect x="885" y="545" width="80" height="48" rx="13" fill="#ffffff2b" stroke="#ffffff88"/>
+        <rect x="980" y="545" width="135" height="48" rx="13" fill="#ffffff2b" stroke="#ffffff88"/>
+        <text x="655" y="575" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#fff">✅ TRABALHO +5</text>
+        <text x="810" y="575" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#fff">👂 OUVIR</text>
+        <text x="925" y="575" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#fff">⚙</text>
+        <text x="1048" y="575" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#fff">⏹ ENCERRAR</text>
+
+        <g font-family="Arial" font-size="17" font-weight="700" text-anchor="middle">
+          <g><circle cx="40" cy="58" r="24" fill="#064e3b"/><text x="40" y="64" fill="#fff">A</text></g>
+          <g><circle cx="878" cy="230" r="24" fill="#064e3b"/><text x="878" y="236" fill="#fff">B</text></g>
+          <g><circle cx="730" cy="470" r="24" fill="#064e3b"/><text x="730" y="476" fill="#fff">C</text></g>
+          <g><circle cx="48" cy="565" r="24" fill="#064e3b"/><text x="48" y="571" fill="#fff">D</text></g>
+          <g><circle cx="655" cy="545" r="24" fill="#064e3b"/><text x="655" y="551" fill="#fff">E</text></g>
+          <g><circle cx="810" cy="545" r="24" fill="#064e3b"/><text x="810" y="551" fill="#fff">F</text></g>
+          <g><circle cx="1046" cy="545" r="24" fill="#064e3b"/><text x="1046" y="551" fill="#fff">G</text></g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="legend-grid">
+      <article class="legend-card"><h3><span class="badge">A</span> Turma, tempo e recorde</h3><p>A turma fica identificada durante toda a aula. O cronômetro mostra a duração e o recorde registra o maior período contínuo de foco.</p></article>
+      <article class="legend-card"><h3><span class="badge">B</span> Estado atual</h3><p>A cor e a mensagem indicam o nível de som percebido pelo microfone naquele momento.</p></article>
+      <article class="legend-card"><h3><span class="badge">C</span> Progresso do período</h3><p>A barra cresce até completar o tempo configurado. Ao completar, a turma recebe os pontos definidos para cada período.</p></article>
+      <article class="legend-card"><h3><span class="badge">D</span> Pontos da aula</h3><p>Mostra o total acumulado na aula: pontos de foco, trabalhos registrados e, no encerramento, possível bônus sem paralisação.</p></article>
+      <article class="legend-card"><h3><span class="badge">E</span> Trabalho realizado</h3><p>Use quando a turma concluir uma atividade ou etapa definida pelo professor. O valor é configurável.</p></article>
+      <article class="legend-card"><h3><span class="badge">F</span> Ouvir</h3><p>Ao clicar, a ferramenta espera 5 segundos contínuos de silêncio e depois permanece no estado “Ouvir”. Esse momento não gera pontos.</p></article>
+      <article class="legend-card"><h3><span class="badge">G</span> Encerrar</h3><p>Finaliza a aula, calcula o resultado e salva os dados online quando houver conexão.</p></article>
+    </div>
+
+    <div class="levels">
+      <div class="level quiet">🧠 FOCO TOTAL<small>gera progresso para pontos</small></div>
+      <div class="level talk">💬 CONVERSA<small>interrompe o período atual</small></div>
+      <div class="level loud">🔊 MUITO ALTO<small>pode provocar paralisação</small></div>
+      <div class="level listen">👂 OUVIR<small>momento de escuta</small></div>
+    </div>
+  </section>
+
+  <section class="section" id="paralisacao">
+    <h2>3. Quando a aula é paralisada</h2>
+    <p>O Som da Turma detecta o nível de som, mas quem interpreta a situação é o professor.</p>
+
+    <div class="figure">
+      <svg viewBox="0 0 1180 420" role="img" aria-label="Tela de paralisação com duas decisões do professor">
+        <rect width="1180" height="420" fill="#7f1d1d"/>
+        <text x="590" y="92" text-anchor="middle" font-family="Arial" font-size="70" font-weight="700" fill="#fff">VAMOS REORGANIZAR O SOM</text>
+        <text x="590" y="145" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#fff">O SOM FICOU MUITO ALTO</text>
+        <rect x="220" y="215" width="350" height="64" rx="18" fill="#fff"/>
+        <rect x="610" y="215" width="350" height="64" rx="18" fill="#e0f2fe"/>
+        <text x="395" y="254" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#7f1d1d">🔊 SOM DA TURMA — RECOMEÇAR</text>
+        <text x="785" y="254" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#0c4a6e">🌎 SOM EXTERNO — CONTINUAR</text>
+        <circle cx="395" cy="206" r="25" fill="#047857"/><text x="395" y="212" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#fff">A</text>
+        <circle cx="785" cy="206" r="25" fill="#047857"/><text x="785" y="212" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#fff">B</text>
+      </svg>
+    </div>
+
+    <div class="legend-grid">
+      <article class="legend-card"><h3><span class="badge">A</span> Som da turma — recomeçar</h3><p>Registra uma paralisação e zera somente os <strong>pontos de foco</strong> acumulados naquela aula. Os pontos de trabalhos realizados permanecem.</p></article>
+      <article class="legend-card"><h3><span class="badge">B</span> Som externo — continuar</h3><p>Use quando o barulho veio de fora da turma. Nenhum ponto é perdido e o período em andamento é preservado.</p></article>
+    </div>
+
+    <div class="callout warn">Chegar ao vermelho não deve ser entendido automaticamente como “erro da turma”. A ferramenta sinaliza o som; a decisão sobre o contexto continua sendo pedagógica.</div>
+  </section>
+
+  <section class="section" id="pontos">
+    <h2>4. Como funcionam pontos e medalhas</h2>
+    <p>Os diferentes tipos de ponto ficam separados para que o professor saiba o que aconteceu durante a aula.</p>
+
+    <table class="rules">
+      <thead><tr><th>Situação</th><th>O que acontece</th></tr></thead>
+      <tbody>
+        <tr><td>Período de foco</td><td>Ao completar o tempo configurado, a turma recebe a quantidade de pontos definida em “Pontos por período”.</td></tr>
+        <tr><td>Trabalho realizado</td><td>O professor clica em “Trabalho +X”. Esses pontos não são perdidos em uma paralisação.</td></tr>
+        <tr><td>Aula sem paralisação</td><td>No encerramento, a turma recebe o bônus configurado se não tiver ocorrido nenhuma paralisação causada pelo som da turma.</td></tr>
+        <tr><td>Paralisação da turma</td><td>Zera os pontos de foco acumulados naquela aula. Mantém os pontos de trabalho.</td></tr>
+        <tr><td>Medalha conquistada</td><td>Quando o total acumulado atinge o valor configurado para uma medalha, o total de medalhas conquistadas aumenta.</td></tr>
+        <tr><td>Usar uma medalha</td><td>Diminui apenas as medalhas disponíveis para uso. O total histórico de medalhas conquistadas e o ranking permanecem iguais.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout"><strong>Exemplo:</strong> uma turma conquistou 3 medalhas e já usou 1. O ranking continua mostrando <strong>3 medalhas conquistadas</strong>, enquanto a tela da turma mostra <strong>2 disponíveis para usar</strong>.</div>
+  </section>
+
+  <section class="section">
+    <h2>Fluxo rápido</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><h3>Escolha a turma</h3><p>Confira pontos, medalhas e configurações.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div><h3>Clique em Começar</h3><p>Autorize o microfone quando o navegador pedir.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div><h3>Acompanhe os níveis</h3><p>Use a tela como referência coletiva durante a atividade.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div><h3>Registre trabalhos</h3><p>Clique em “Trabalho +X” quando a turma concluir o que foi combinado.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div><h3>Interprete paralisações</h3><p>Escolha se o som veio da turma ou de fora.</p></div></div>
+      <div class="step"><div class="step-num">6</div><div><h3>Encerre a aula</h3><p>O resultado é salvo e passa a compor os pontos e medalhas da turma.</p></div></div>
+    </div>
+
+    <p class="small" style="margin-top:18px">O indicador de som é relativo ao sinal captado pelo microfone do dispositivo. A ferramenta não mede nível sonoro calibrado em decibéis e não envia gravações de áudio.</p>
+  </section>
+
+  <div class="footer">Som da Turma • manual de uso</div>
+</div>
+</body>
 </html>
