@@ -65,6 +65,7 @@
     .turma-stat{background:#fff;border:1px solid #dbe4ee;border-radius:16px;padding:14px;text-align:center}
     .turma-stat b{display:block;font-size:28px;line-height:1.05}
     .turma-stat span{display:block;font-size:12px;font-weight:950;color:#64748b;margin-top:5px}
+    .turma-points-progress{display:block;margin-top:6px;font-size:12px;font-weight:950;color:#64748b}
     .turma-next{grid-column:1/-1;text-align:center;font-size:12px;font-weight:900;color:#64748b;margin-top:-2px}
     .medal-wallet{grid-column:1/-1;background:#fff7ed;border:1px solid #fed7aa;border-radius:16px;padding:14px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
     .medal-wallet-value b{display:block;font-size:30px;line-height:1}
@@ -139,7 +140,7 @@
   const turmaSummary=document.createElement('div');
   turmaSummary.className='turma-summary hidden';
   turmaSummary.innerHTML=`
-    <div class="turma-stat"><b id="turmaPoints">0</b><span>⭐ PONTOS</span></div>
+    <div class="turma-stat"><b id="turmaPoints">0</b><span>⭐ PONTOS</span><small id="turmaPointsProgress" class="turma-points-progress"></small></div>
     <div class="turma-stat"><b id="turmaMedals">0</b><span>🏅 MEDALHAS CONQUISTADAS</span></div>
     <div class="medal-wallet">
       <div class="medal-wallet-value"><b id="turmaAvailable">0</b><span>🏅 DISPONÍVEIS PARA USAR</span></div>
@@ -212,6 +213,7 @@
   const saveConfigBtn=document.getElementById('saveConfigBtn');
   const configStatus=document.getElementById('configStatus');
   const turmaPoints=document.getElementById('turmaPoints');
+  const turmaPointsProgress=document.getElementById('turmaPointsProgress');
   const turmaMedals=document.getElementById('turmaMedals');
   const turmaAvailable=document.getElementById('turmaAvailable');
   const useMedalBtn=document.getElementById('useMedalBtn');
@@ -482,7 +484,7 @@
     turmaSummary.classList.toggle('hidden',!showDetails);
     manualField?.classList.toggle('hidden',!showDetails);
     if(!showDetails)return;
-    if(turmaNext)turmaNext.textContent='CARREGANDO...';
+    if(turmaPointsProgress)turmaPointsProgress.textContent='...';
     let rows=[];
     try{
       await syncProfile();
@@ -494,13 +496,14 @@
     if(seq!==statsSeq)return;
     const state=stateForRoom(rows,selected);
     if(turmaPoints)turmaPoints.textContent=String(state.points);
+    if(turmaPointsProgress)turmaPointsProgress.textContent=`${state.points}/${state.target}`;
     if(turmaMedals)turmaMedals.textContent=String(state.medals);
     if(turmaAvailable)turmaAvailable.textContent=String(state.available);
     if(useMedalBtn)useMedalBtn.disabled=state.available<=0;
     if(medalUseNote)medalUseNote.textContent=state.used
       ? `${state.used} já usada${state.used===1?'':'s'} • usar não altera as conquistadas nem o ranking.`
       : 'Usar uma medalha não altera as conquistadas nem o ranking.';
-    if(turmaNext)turmaNext.textContent=`${state.points}/${state.target} para a próxima medalha`;
+    if(turmaNext)turmaNext.textContent='';
   }
 
   async function useOneMedal(){
