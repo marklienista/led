@@ -7,6 +7,12 @@
   let currentProfile=null;
   let experienceMode=false;
 
+  // Remove apenas caches das versões antigas do Som da Turma.
+  try{
+    localStorage.removeItem('led_noise_sessions_v1');
+    localStorage.removeItem('led_noise_sessions_v2');
+  }catch(e){}
+
   // A conexão Windows ficou fora desta etapa. Não grava comandos CTRL no banco.
   const nativeFetch=window.fetch.bind(window);
   window.fetch=(input,init={})=>{
