@@ -4,11 +4,12 @@
   ];
   const SOM_TURMA_TABLE='som_turma_eventos';
   const CONFIG_TABLE='som_turma_configuracoes';
-  const DEFAULT_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40};
+  const DEFAULT_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5};
 
   let currentProfile=null;
   let experienceMode=false;
   let statsSeq=0;
+  let settingsDirty=false;
 
   try{
     localStorage.removeItem('led_noise_sessions_v1');
@@ -47,10 +48,11 @@
     .profile-login select:focus,.profile-login input[type=password]:focus{outline:3px solid #93c5fd;border-color:#2563eb}
     .profile-login-error{min-height:22px;text-align:center;color:#991b1b;font-weight:900;margin-top:10px}
     .experience-btn{background:#e0f2fe!important;color:#0c4a6e!important}
-    .setup .panel{width:min(1240px,100%);padding:26px}
+    .setup{padding:18px 28px;place-items:start center}
+    .setup .panel{width:min(1320px,100%);min-height:calc(100vh - 36px);padding:28px;display:flex;flex-direction:column}
     .setup .panel>h1{font-size:clamp(36px,5vw,58px);margin-bottom:22px}
-    .setup-grid{display:grid;grid-template-columns:1.08fr .92fr 1fr;gap:16px;align-items:stretch}
-    .setup-card{background:#f8fafc;border:1px solid #dbe4ee;border-radius:22px;padding:20px;min-width:0}
+    .setup-grid{display:grid;grid-template-columns:1.08fr .92fr 1fr;gap:18px;align-items:stretch;flex:1}
+    .setup-card{background:#f8fafc;border:1px solid #dbe4ee;border-radius:22px;padding:22px;min-width:0;min-height:560px}
     .setup-card h2{margin:0 0 18px;font-size:23px}
     .profile-strip{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin:0 0 20px}
     .profile-name{font-size:22px;font-weight:950;color:#0f172a;line-height:1.15}
@@ -71,8 +73,8 @@
     .setup-card .actions{margin-top:18px;justify-content:flex-start}
     .setup-card .actions .btn{flex:1;min-width:120px}
     .setup-card #dbStatus{text-align:left;margin-top:12px}
-    .levels-card .legend{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px;margin:0 0 22px}
-    .levels-card .legend-item{padding:17px 8px;font-size:17px}
+    .levels-card .legend{display:grid!important;grid-template-columns:1fr!important;gap:12px;margin:0 0 24px}
+    .levels-card .legend-item{padding:22px 12px;font-size:23px;min-height:78px;display:grid;place-items:center}
     .levels-card .field{margin:0}
     .levels-card .sensor-note{margin-top:8px}
     .config-list{display:grid;gap:14px}
@@ -81,8 +83,11 @@
     .config-input-wrap{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
     .config-input-wrap input{width:100%;padding:11px 8px;border:2px solid #cbd5e1;border-radius:13px;font-size:21px;font-weight:950;text-align:center}
     .config-input-wrap span{font-size:12px;font-weight:900;color:#64748b}
-    .config-status{min-height:18px;margin-top:14px;font-size:12px;font-weight:900;color:#166534}
-    .config-help{margin-top:16px;padding-top:14px;border-top:1px solid #e2e8f0;font-size:12px;line-height:1.45;color:#64748b}
+    .config-save{width:100%;margin-top:18px;border:0;border-radius:14px;padding:13px 16px;background:#0f172a;color:#fff;font-weight:950;font-size:16px}
+    .config-save:disabled{background:#cbd5e1;color:#64748b;cursor:default}
+    .config-status{min-height:18px;margin-top:10px;font-size:12px;font-weight:900;color:#166534}
+    .config-help{margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0;font-size:12px;line-height:1.45;color:#64748b}
+    .online-footer{margin-top:auto!important;padding-top:16px;text-align:center!important;font-size:12px!important}
     @media(max-width:920px){
       .setup-grid{grid-template-columns:1fr}
       .setup-card{padding:18px}
@@ -99,7 +104,7 @@
   login.className='profile-login';
   login.innerHTML=`
     <div class="panel">
-      <h1>🔇 Som da Turma</h1>
+      <h1>Som da Turma</h1>
       <div class="field">
         <label for="schoolProfile">🏫 PERFIL</label>
         <select id="schoolProfile">${PROFILES.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
@@ -146,7 +151,12 @@
         <label for="cfgMedalPoints">🏅 PONTOS PARA MEDALHA</label>
         <div class="config-input-wrap"><input id="cfgMedalPoints" type="number" min="1" max="10000" step="1"><span>pts</span></div>
       </div>
+      <div class="config-item">
+        <label for="cfgWorkPoints">✅ PONTOS POR TRABALHO</label>
+        <div class="config-input-wrap"><input id="cfgWorkPoints" type="number" min="1" max="100" step="1"><span>pts</span></div>
+      </div>
     </div>
+    <button id="saveConfigBtn" class="config-save" type="button" disabled>SALVAR CONFIGURAÇÕES</button>
     <div id="configStatus" class="config-status"></div>
     <div class="config-help">As configurações ficam salvas no perfil e valem também em outros computadores.</div>`;
 
@@ -170,16 +180,18 @@
     leftCard.append(turmaSummary);
     if(manualField)leftCard.append(manualField);
     if(setupActions)leftCard.append(setupActions);
-    if(dbStatus)leftCard.append(dbStatus);
     if(legend)centerCard.append(legend);
     if(micField)centerCard.append(micField);
     if(micError)centerCard.append(micError);
     rightCard.append(configBox);
+    if(dbStatus){dbStatus.classList.add('online-footer');setupPanel.append(dbStatus);}
   }
 
   const cfgPeriodSeconds=document.getElementById('cfgPeriodSeconds');
   const cfgPeriodPoints=document.getElementById('cfgPeriodPoints');
   const cfgMedalPoints=document.getElementById('cfgMedalPoints');
+  const cfgWorkPoints=document.getElementById('cfgWorkPoints');
+  const saveConfigBtn=document.getElementById('saveConfigBtn');
   const configStatus=document.getElementById('configStatus');
   const turmaPoints=document.getElementById('turmaPoints');
   const turmaMedals=document.getElementById('turmaMedals');
@@ -291,7 +303,8 @@
     return{
       periodSeconds:Math.max(1,Math.min(300,Math.floor(Number(x.periodSeconds??x.periodo_seg??15)||15))),
       periodPoints:Math.max(1,Math.min(100,Math.floor(Number(x.periodPoints??x.pontos_periodo??1)||1))),
-      medalPoints:Math.max(1,Math.min(10000,Math.floor(Number(x.medalPoints??x.pontos_medalha??40)||40)))
+      medalPoints:Math.max(1,Math.min(10000,Math.floor(Number(x.medalPoints??x.pontos_medalha??40)||40))),
+      workPoints:Math.max(1,Math.min(100,Math.floor(Number(x.workPoints??x.pontos_trabalho??5)||5)))
     };
   }
 
@@ -302,6 +315,7 @@
     if(cfgPeriodSeconds)cfgPeriodSeconds.value=String(s.periodSeconds);
     if(cfgPeriodPoints)cfgPeriodPoints.value=String(s.periodPoints);
     if(cfgMedalPoints)cfgMedalPoints.value=String(s.medalPoints);
+    if(cfgWorkPoints)cfgWorkPoints.value=String(s.workPoints);
     return s;
   }
 
@@ -315,14 +329,26 @@
     try{localStorage.setItem(configLocalKey(),JSON.stringify(normalizedSettings(s)))}catch(e){}
   }
 
+  function setSettingsDirty(value){
+    settingsDirty=!!value;
+    if(saveConfigBtn)saveConfigBtn.disabled=!settingsDirty;
+    if(settingsDirty&&configStatus){
+      configStatus.textContent='ALTERAÇÕES NÃO SALVAS';
+      configStatus.style.color='#92400e';
+    }
+  }
+
   async function saveSettings(){
+    if(!settingsDirty&&!experienceMode)return;
     const s=applySettings({
       periodSeconds:cfgPeriodSeconds?.value,
       periodPoints:cfgPeriodPoints?.value,
-      medalPoints:cfgMedalPoints?.value
+      medalPoints:cfgMedalPoints?.value,
+      workPoints:cfgWorkPoints?.value
     });
     if(experienceMode||!currentProfile){
       if(configStatus)configStatus.textContent='🧪 CONFIGURAÇÃO DE TESTE • NÃO SALVA';
+      setSettingsDirty(false);
       refreshTurmaStats();
       return;
     }
@@ -338,13 +364,16 @@
           periodo_seg:s.periodSeconds,
           pontos_periodo:s.periodPoints,
           pontos_medalha:s.medalPoints,
+          pontos_trabalho:s.workPoints,
           atualizado_em:new Date().toISOString()
         })
       });
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       if(configStatus){configStatus.textContent='✅ CONFIGURAÇÕES SALVAS';configStatus.style.color='#166534'}
+      setSettingsDirty(false);
     }catch(e){
       if(configStatus){configStatus.textContent='💾 SALVAS NESTE COMPUTADOR';configStatus.style.color='#92400e'}
+      setSettingsDirty(false);
     }
     refreshTurmaStats();
   }
@@ -352,24 +381,27 @@
   async function loadSettings(){
     if(experienceMode||!currentProfile){
       applySettings(DEFAULT_SETTINGS);
+      setSettingsDirty(false);
       if(configStatus)configStatus.textContent='🧪 ALTERAÇÕES NÃO SERÃO SALVAS';
       return;
     }
     applySettings(localSettings());
     try{
-      const q=new URLSearchParams({select:'periodo_seg,pontos_periodo,pontos_medalha',perfil:`eq.${currentProfile.id}`,limit:'1'});
+      const q=new URLSearchParams({select:'periodo_seg,pontos_periodo,pontos_medalha,pontos_trabalho',perfil:`eq.${currentProfile.id}`,limit:'1'});
       const response=await nativeFetch(`${SUPABASE_URL}/rest/v1/${CONFIG_TABLE}?${q}`,{headers:{apikey:SUPABASE_KEY}});
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       const rows=await response.json();
       if(rows[0]){
         const s=applySettings(rows[0]);
         writeLocalSettings(s);
+        setSettingsDirty(false);
         if(configStatus){configStatus.textContent='✅ CONFIGURAÇÕES SALVAS';configStatus.style.color='#166534'}
       }else{
         applySettings(DEFAULT_SETTINGS);
         await saveSettings();
       }
     }catch(e){
+      setSettingsDirty(false);
       if(configStatus){configStatus.textContent='💾 CONFIGURAÇÕES DESTE COMPUTADOR';configStatus.style.color='#92400e'}
     }
   }
@@ -488,7 +520,10 @@
 
   roomInput?.addEventListener('input',()=>{clearTimeout(roomInput._statsTimer);roomInput._statsTimer=setTimeout(refreshTurmaStats,180)});
   roomInput?.addEventListener('change',refreshTurmaStats);
-  [cfgPeriodSeconds,cfgPeriodPoints,cfgMedalPoints].forEach(input=>input?.addEventListener('change',saveSettings));
+  [cfgPeriodSeconds,cfgPeriodPoints,cfgMedalPoints,cfgWorkPoints].forEach(input=>{
+    input?.addEventListener('input',()=>setSettingsDirty(true));
+  });
+  saveConfigBtn?.addEventListener('click',saveSettings);
 
   if(manualMsg){
     new MutationObserver(()=>{if(manualMsg.textContent&&!manualMsg.textContent.includes('SALVANDO'))setTimeout(refreshTurmaStats,100)})
