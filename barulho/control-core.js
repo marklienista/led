@@ -5,11 +5,11 @@
   const SCORE_PREFIX='R2|';
   const MANUAL_PREFIX='R2M|';
   const LOCAL_V2='led_noise_sessions_v2';
-  const WORK_POINTS=5;
-  const SETTINGS=window.SOM_TURMA_SETTINGS||(window.SOM_TURMA_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40});
+  const SETTINGS=window.SOM_TURMA_SETTINGS||(window.SOM_TURMA_SETTINGS={periodSeconds:15,periodPoints:1,medalPoints:40,workPoints:5});
   function periodMs(){return Math.max(1,Math.min(300,Number(SETTINGS.periodSeconds)||15))*1000}
   function periodPoints(){return Math.max(1,Math.min(100,Math.floor(Number(SETTINGS.periodPoints)||1)))}
   function medalTarget(){return Math.max(1,Math.min(10000,Math.floor(Number(SETTINGS.medalPoints)||40)))}
+  function workPoints(){return Math.max(1,Math.min(100,Math.floor(Number(SETTINGS.workPoints)||5)))}
 
   const roomInput=document.getElementById('roomInput');
   const sensitivityInput=document.getElementById('sensitivity');
@@ -113,7 +113,7 @@
   workDoneBtn.id='workDoneBtn';
   workDoneBtn.className='mini work-done';
   workDoneBtn.type='button';
-  workDoneBtn.textContent=`✅ TRABALHO +${WORK_POINTS}`;
+  workDoneBtn.textContent=`✅ TRABALHO +${workPoints()}`;
   toolsGroup?.prepend(workDoneBtn,document.createTextNode(' '));
 
   let externalBtn=document.getElementById('externalNoiseBtn');
@@ -295,11 +295,11 @@
       const now=performance.now();
       if(now-lastWorkClick<800)return;
       lastWorkClick=now;
-      lessonWorkPoints+=WORK_POINTS;
+      lessonWorkPoints+=workPoints();
       pointText();
       pulsePoints();
-      workDoneBtn.textContent=`✅ +${WORK_POINTS} PONTOS!`;
-      setTimeout(()=>{if(workDoneBtn)workDoneBtn.textContent=`✅ TRABALHO +${WORK_POINTS}`},850);
+      workDoneBtn.textContent=`✅ +${workPoints()} PONTOS!`;
+      setTimeout(()=>{if(workDoneBtn)workDoneBtn.textContent=`✅ TRABALHO +${workPoints()}`},850);
     };
   }
 
