@@ -4,6 +4,7 @@ on:
     paths:
       - '.github/workflows/diagnostico-supabase.yml'
   workflow_dispatch:
+
 jobs:
   diagnostico:
     runs-on: ubuntu-latest
@@ -15,15 +16,5 @@ jobs:
           set +e
           URL=$(grep -o "SUPABASE_URL='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
           KEY=$(grep -o "SUPABASE_KEY='[^']*'" barulho/index.html | head -1 | cut -d"'" -f2)
-          REST="$URL/rest/v1/"
-          curl -sS "$REST" -H "apikey: $KEY" -H "Accept: application/openapi+json" -o /tmp/schema.json
-          python - <<'PY'
-import json
-try:
-    d=json.load(open('/tmp/schema.json'))
-    defs=d.get('definitions',{})
-    print('TABLES=' + ','.join(sorted(defs.keys())))
-except Exception as e:
-    print('SCHEMA_ERROR='+repr(e))
-    print(open('/tmp/schema.json').read()[:2000])
-PY
+          curl -sS "$URL/rest/v1/" -H "apikey: $KEY" -H "Accept: application/openapi+json" -o /tmp/schema.json
+          python -c "import json; d=json.load(open('/tmp/schema.json')); print('TABLES='+','.join(sorted(d.get('definitions',{}).keys())))"
