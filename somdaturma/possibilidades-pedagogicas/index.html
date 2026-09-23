@@ -3,18 +3,209 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="Do cuidado com o volume à investigação, à participação e à autoria: possibilidades pedagógicas do Som da Turma, em diálogo com a BNCC Computação e o Currículo da Cidade de São Paulo.">
 <title>Possibilidades pedagógicas • Som da Turma</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#eef2f7;color:#0f172a}
-main{width:min(1120px,calc(100% - 32px));margin:24px auto;background:#fff;border:1px solid #dbe4ee;border-radius:26px;padding:28px;min-height:calc(100vh - 48px)}
-a{color:#2563eb;text-decoration:none;font-weight:900}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
-h1{font-size:clamp(38px,6vw,64px);margin:28px 0 10px}p{color:#64748b;line-height:1.6;font-size:17px}.placeholder{margin-top:30px;border:2px dashed #cbd5e1;border-radius:22px;padding:46px;text-align:center;color:#94a3b8;font-weight:900}
+:root{--ink:#0f172a;--text:#334155;--muted:#526277;--line:#dbe4ee;--bg:#eef2f7;--soft:#f8fafc;--blue:#1d4ed8;--green:#047857;--warm:#fff7ed}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.65}a{color:var(--blue);text-underline-offset:3px}a:hover{text-decoration-thickness:2px}a:focus-visible,summary:focus-visible,button:focus-visible{outline:3px solid #2563eb;outline-offset:5px;border-radius:4px}.skip{position:absolute;left:18px;top:-100px;background:#fff;padding:12px;z-index:10}.skip:focus{top:12px}.shell{width:min(1180px,calc(100% - 36px));margin:22px auto 40px}.topbar{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px;font-size:14px;font-weight:800}.topbar nav{display:flex;gap:20px;flex-wrap:wrap}.topbar a{text-decoration:none}.brand{font-weight:900}.hero,.section{background:#fff;border:1px solid var(--line);border-radius:26px;padding:clamp(22px,3.4vw,40px)}.hero{box-shadow:0 16px 44px #0f172a0c}.eyebrow{margin:0 0 12px;color:var(--green);font-size:12px;font-weight:850;letter-spacing:.11em;text-transform:uppercase}h1{font-size:clamp(35px,5.2vw,60px);line-height:1.07;letter-spacing:-.035em;max-width:960px;margin:0 0 20px}h2{font-size:clamp(25px,3.3vw,35px);line-height:1.2;letter-spacing:-.02em;margin:0 0 18px}h3{font-size:21px;line-height:1.3;margin:0 0 12px}p{color:var(--text);margin:0 0 16px}p:last-child{margin-bottom:0}.lead{font-size:clamp(19px,2.2vw,24px);line-height:1.5;max-width:880px}.intro-note{font-size:14px;max-width:930px;color:var(--muted)}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px}.quick a{border:1px solid var(--line);background:var(--soft);padding:13px 15px;border-radius:14px;color:var(--ink);font-size:14px;line-height:1.35;font-weight:750;text-decoration:none;display:flex;align-items:center}.quick a:hover{border-color:#94a3b8;background:#f1f5f9}.section{margin-top:22px}.section-number{font-size:12px;font-weight:850;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}.readable{max-width:930px}.callout{border:1px solid #b8d9ce;border-left:5px solid var(--green);border-radius:16px;background:#f0faf5;padding:20px 22px;margin:22px 0}.callout p{color:#134e4a}.callout.warm{background:var(--warm);border-color:#fed7aa;border-left-color:#b45309}.callout.warm p{color:#78350f}.callout.blue{background:#eff6ff;border-color:#bfdbfe;border-left-color:#2563eb}.callout.blue p{color:#1e3a8a}.grid-three,.grid-two{display:grid;gap:16px;margin:22px 0}.grid-three{grid-template-columns:repeat(3,1fr)}.grid-two{grid-template-columns:repeat(2,1fr)}.mini-card{border:1px solid var(--line);border-radius:18px;background:var(--soft);padding:21px;min-width:0}.mini-card h3{font-size:20px}.mini-card p{font-size:15px}.mini-card .question{border-top:1px solid var(--line);padding-top:12px;margin-top:14px;font-weight:750;color:var(--ink)}.source-note{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.5}.ref{font-size:.82em;white-space:nowrap;font-weight:750}.axes{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}.axes span,.tag{display:inline-block;border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:750;line-height:1.4;color:#334155}.activity-list{display:grid;gap:14px;margin-top:24px}.activity{border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden}.activity summary{cursor:pointer;list-style:none;padding:21px 22px;background:var(--soft);display:flex;align-items:center;gap:16px}.activity summary::-webkit-details-marker{display:none}.activity-number{display:grid;place-items:center;width:39px;height:39px;flex:0 0 39px;background:#e6f3ed;color:#065f46;border-radius:12px;font-weight:850}.activity-title{flex:1;min-width:0}.activity-title strong{display:block;font-size:20px;line-height:1.3}.activity-title small{display:block;margin-top:5px;color:var(--muted);font-size:13px}.activity summary:after{content:'+';font-size:24px;font-weight:500;color:var(--green)}.activity[open] summary:after{content:'−'}.activity-body{padding:24px}.activity-body p{max-width:940px}.prompt{font-weight:750;color:#065f46}.curriculum{border-top:1px solid var(--line);padding-top:16px;margin-top:20px;font-size:14px}.curriculum p{margin-bottom:9px}.curriculum code{font-family:ui-monospace,Consolas,monospace;font-size:.91em;background:#f1f5f9;padding:2px 5px;border-radius:4px;white-space:nowrap}.label{font-weight:800;color:var(--ink)}.distinction{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0}.distinction div{padding:20px;border:1px solid var(--line);border-radius:17px;background:var(--soft)}.distinction b{display:block;margin-bottom:8px}.distinction p{font-size:15px}.practice{border-top:1px solid var(--line);padding-top:17px;margin-top:18px}.practice strong{color:var(--ink)}.sequence{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}.sequence article{border:1px solid var(--line);padding:18px;border-radius:16px;background:var(--soft)}.sequence b{display:block;color:var(--green);font-size:13px;margin-bottom:6px}.sequence h3{font-size:18px}.sequence p{font-size:14px}.references{padding-left:23px}.references li{padding:10px 0;color:var(--text)}.references small{display:block;font-size:13px;color:var(--muted);margin-top:6px}.ending{font-size:clamp(20px,2.5vw,28px);font-weight:750;line-height:1.45;color:var(--ink);max-width:850px}.footer{display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;padding:24px 4px;color:var(--muted);font-size:12px}.footer a{font-weight:750}.print-button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);border:0}
+@media(max-width:850px){.quick{grid-template-columns:1fr 1fr}.grid-three,.grid-two,.distinction{grid-template-columns:1fr}.sequence{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.shell{width:calc(100% - 20px);margin-top:12px}.hero,.section{padding:21px 18px;border-radius:20px}.topbar{align-items:flex-start}.quick a{padding:12px 10px;font-size:13px}.activity summary{padding:17px 13px;gap:10px}.activity-title strong{font-size:18px}.activity-body{padding:20px 16px}.activity-number{width:32px;height:32px;flex-basis:32px}.sequence{grid-template-columns:1fr}.callout{padding:17px}.lead{font-size:20px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:#fff;font-size:10.5pt}.shell{width:100%;margin:0}.topbar,.quick,.footer,.skip{display:none!important}.hero,.section{box-shadow:none;border:0;border-radius:0;padding:12px 0;margin:0 0 20px}h1{font-size:29pt}h2{font-size:20pt}h3{font-size:14pt}.lead{font-size:14pt}.grid-three,.grid-two{display:block}.mini-card{margin:10px 0;break-inside:avoid}.activity summary{background:none}.activity-body{padding:12px}.activity{margin:12px 0}.activity summary:after{display:none}.callout,.sequence article,.references li{break-inside:avoid}.section{break-inside:auto}a{color:inherit}.source-note{font-size:9pt}}
 </style>
 </head>
-<body><main>
-<div class="top"><a href="../">← VOLTAR</a><strong>Som da Turma</strong></div>
+<body>
+<a class="skip" href="#conteudo">Ir ao conteúdo</a>
+<div class="shell">
+<div class="topbar"><a class="brand" href="../">Som da Turma</a><nav aria-label="Navegação da ferramenta"><a href="../">← Voltar à entrada</a><a href="../manual/">Como usar</a></nav></div>
+<main id="conteudo">
+<header class="hero">
+<p class="eyebrow">Para professores • reflexão e prática</p>
 <h1>Possibilidades pedagógicas</h1>
-<p>Este espaço reunirá situações de uso, combinados com a turma, sentidos possíveis para pontos e medalhas e cuidados para que a ferramenta apoie a autorregulação coletiva.</p>
-<div class="placeholder">CONTEÚDO PEDAGÓGICO EM PREPARAÇÃO</div>
-</main></body>
+<p class="lead">Organizar o som pode ser necessário.<br>Compreendê-lo e cuidar dele juntos amplia a proposta.</p>
+<p class="intro-note">O Som da Turma pode apoiar a gestão da aula e também se tornar objeto de investigação. Esta página apresenta uma leitura pedagógica da ferramenta e propostas de atividades em diálogo com a BNCC Computação e o Currículo da Cidade de São Paulo. Não é uma prescrição única de uso nem uma certificação de alinhamento curricular.</p>
+<nav class="quick" aria-label="Nesta página"><a href="#controle">Controle e autonomia</a><a href="#curriculos">Diálogo com os currículos</a><a href="#atividades">Seis possibilidades de atividade</a><a href="#medalhas">Pontos, medalhas e competição</a><a href="#inclusao">Participação e inclusão</a><a href="#avaliacao">O que observar</a><a href="#comecar">Um começo possível</a><a href="#referencias">Fontes e referências</a></nav>
+</header>
+
+<section class="section" id="controle" aria-labelledby="titulo-controle">
+<p class="section-number">01 • Um ponto de partida honesto</p>
+<h2 id="titulo-controle">Sim, a ferramenta também pode servir ao controle.</h2>
+<div class="readable">
+<p>Há momentos em que o professor precisa interromper conversas, dar uma orientação, garantir que alguém seja ouvido ou reorganizar uma atividade. <strong>Regular o volume nessas situações não é, por si só, algo negativo.</strong> Pode ser uma condição para que o grupo consiga trabalhar. Nem toda utilização precisa se transformar em um projeto de pesquisa para ter uma função legítima.</p>
+<p>Ao apresentar um limite, emitir um aviso e associar consequências ao som, o Som da Turma exerce uma forma de <strong>regulação externa</strong>. Negar isso não ajuda a compreender seu uso. A questão pedagógica é: regular o quê, por qual motivo, durante quanto tempo e com quais consequências para a participação das crianças?</p>
+<p>A posição adotada aqui distingue <strong>autoridade pedagógica de autoritarismo</strong>: organizar condições de escuta é diferente de exigir obediência como finalidade ou desqualificar a voz dos estudantes. As Orientações Didáticas paulistanas aproximam o pensamento computacional de ideias freirianas como diálogo, protagonismo e autonomia. A distinção aplicada a esta ferramenta é nossa interpretação pedagógica dessa perspectiva, não uma recomendação específica dos documentos sobre o aplicativo. <a class="ref" href="#ref-od">[3, p. 10]</a></p>
+<p>Não cabe atribuir ao programa, como se fosse uma pessoa, a responsabilidade pela relação educativa. Mas a interface também não é neutra: nomes, cores, pontos, perdas e rankings favorecem determinados usos. <strong>O professor interpreta e decide; o desenho da ferramenta facilita ou dificulta essas decisões.</strong> As condições materiais da sala, a acústica e a organização da atividade também precisam entrar na análise.</p>
+</div>
+<div class="callout"><p><strong>O limite não é organizar o silêncio quando ele faz sentido. É fazer do silêncio a medida de uma boa aula, de uma boa turma ou de uma boa criança.</strong></p></div>
+<div class="grid-three">
+<article class="mini-card"><h3>Organizar</h3><p>O professor usa o sinal para tornar um combinado mais claro e retomar condições de escuta.</p><p class="question">“Agora precisamos ouvir a orientação.”</p></article>
+<article class="mini-card"><h3>Regular coletivamente</h3><p>A turma compreende a finalidade, propõe estratégias, percebe os efeitos e revisa os combinados com o professor.</p><p class="question">“Como conversar sem impedir a dupla ao lado de trabalhar?”</p></article>
+<article class="mini-card"><h3>Investigar e criar</h3><p>O grupo examina o microfone, os dados, as regras e as escolhas de quem programou; depois produz explicações ou alternativas.</p><p class="question">“O que o computador sabe — e o que ele não sabe?”</p></article>
+</div>
+<p class="source-note">Esses são usos pedagógicos possíveis, não modos diferentes do aplicativo. Passar do primeiro aos demais exige mediação e participação; a simples reação à cor não comprova autonomia.</p>
+<div class="callout blue"><p><strong>“Foco total” é o nome de uma faixa do medidor, não uma medição da atenção.</strong> O sistema responde ao sinal captado pelo microfone. Não compreende a conversa, não identifica seu autor e não verifica se houve aprendizagem. O verde também pode acompanhar desinteresse; uma boa discussão pode produzir bastante som. <a class="ref" href="#ref-funcionamento">[4]</a></p></div>
+</section>
+
+<section class="section" id="curriculos" aria-labelledby="titulo-curriculos">
+<p class="section-number">02 • Referências, não um selo automático</p>
+<h2 id="titulo-curriculos">Onde a proposta encontra os currículos</h2>
+<div class="grid-two">
+<article class="mini-card"><h3>BNCC Computação</h3><div class="axes"><span>Pensamento Computacional</span><span>Mundo Digital</span><span>Cultura Digital</span></div><p>O complemento de Computação articula esses três eixos. Nas competências do Ensino Fundamental, inclui análise crítica de impactos, criação cooperativa de soluções e decisões responsáveis. <a class="ref" href="#ref-bncc">[1, p. 11]</a></p><p><strong>Nossa aproximação:</strong> estudar regras e algoritmos; compreender entrada, processamento e saída; discutir as consequências de transformar uma leitura do microfone em pontos ou decisões.</p></article>
+<article class="mini-card"><h3>Currículo da Cidade • TPA</h3><div class="axes"><span>Programação</span><span>Tecnologias da Informação e Comunicação</span><span>Letramento Digital</span></div><p>A edição de 2019 propõe o pensamento computacional em abordagem construcionista, integrando esses eixos. A Matriz de Saberes inclui comunicação, autonomia, participação e colaboração. <a class="ref" href="#ref-cidade">[2, pp. 33–35 e 80]</a></p><p><strong>Nossa aproximação:</strong> partir de uma questão vivida pela turma, formular hipóteses, testar, produzir registros e comunicar conclusões. O estudante não precisa ficar apenas no papel de usuário obediente.</p></article>
+</div>
+<p>Os dois documentos têm organizações próprias. Não tratamos seus eixos como sinônimos nem estabelecemos uma equivalência oficial entre códigos. Nas atividades abaixo, as relações curriculares são <strong>propostas de planejamento</strong>, condicionadas ao que os estudantes efetivamente fizerem.</p>
+<div class="callout"><p><strong>Exibir o medidor não equivale a ensinar Computação.</strong> Para mobilizar uma habilidade, é preciso propor uma ação correspondente: representar informações, explicar dispositivos, construir um algoritmo, avaliar dados ou criar uma produção digital. A evidência está nessa ação, não no placar.</p></div>
+</section>
+
+<section class="section" id="atividades" aria-labelledby="titulo-atividades">
+<p class="section-number">03 • Da experiência cotidiana à aprendizagem</p>
+<h2 id="titulo-atividades">Seis possibilidades para experimentar</h2>
+<p>São propostas elaboradas para esta página, não atividades transcritas dos currículos. Os tempos são sugestões para pequenas etapas e podem ser ampliados. Para testar o medidor sem alterar o histórico das turmas, use <strong>Experimentar sem salvar</strong>; isso não elimina os avisos e as regras durante a experiência.</p>
+<div class="activity-list">
+<details class="activity" id="atividade-1" open>
+<summary><span class="activity-number" aria-hidden="true">1</span><span class="activity-title"><strong>Que som ajuda nesta atividade?</strong><small>1º ao 3º ano • 10 a 15 minutos • oralidade, leitura e representação</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “Ler sozinho, ler para alguém e criar uma história em dupla precisam do mesmo som?”</p>
+<p><span class="label">Proposta.</span> Apresente três situações e peça que as crianças expliquem quando precisam falar, ouvir ou se concentrar individualmente. Leiam juntos palavras da interface e criem cartões com palavras, desenhos e símbolos para representar os combinados. Testem se outra dupla entende os cartões sem explicação adicional.</p>
+<p><span class="label">Registro.</span> Produzam um pequeno cartaz digital, com desenho e legenda, como “FALAR PERTO” ou “OUVIR QUEM ESTÁ CONTANDO”. A escrita pode ser espontânea, compartilhada ou ditada ao professor. Ler em voz alta e discutir a escrita fazem parte da atividade; não são desvios a eliminar.</p>
+<p><span class="label">O que observar.</span> A criança relaciona o sinal ao seu significado, explica uma escolha e participa da elaboração do combinado? Reconhecer a cor, sem compreender sua finalidade, é apenas um primeiro passo.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF01CO05</code> — representação da informação por diferentes códigos. <a class="ref" href="#ref-bncc">[1, p. 12]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF01TPA10</code> e <code>EF02TPA11</code>, para textos e desenhos colaborativos; <code>EF03TPA14</code>, para leitura do mundo por imagens, ícones e textos. <a class="ref" href="#ref-cidade">[2, pp. 89, 91 e 93]</a></p></div>
+</div>
+</details>
+
+<details class="activity" id="atividade-2">
+<summary><span class="activity-number" aria-hidden="true">2</span><span class="activity-title"><strong>O microfone sabe quem falou?</strong><small>2º e 3º anos • 10 a 15 minutos • dispositivos e investigação</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “A tela consegue diferenciar uma conversa, uma cadeira e um som que veio do corredor?”</p>
+<p><span class="label">Proposta.</span> Em modo experiência, formulem previsões e comparem sons cotidianos moderados. Primeiro, mantenham posição e sensibilidade. Depois, alterem somente uma condição, como a distância de quem fala. Não é necessário gritar ou produzir ruídos intensos.</p>
+<p><span class="label">Registro.</span> Organizem cartões “microfone”, “programa” e “tela”. O microfone fornece um sinal; o programa aplica critérios; a tela apresenta uma resposta. Distingam o objeto físico das instruções que o utilizam. Registrem uma previsão confirmada ou revista.</p>
+<p><span class="label">O que observar.</span> Os estudantes explicam por que o mesmo aviso pode ter causas diferentes? Conseguem distinguir o dispositivo do programa? A conclusão não é que o microfone “se enganou”: ele mediu algo que, sozinho, não explica a situação.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF02CO04</code> — hardware e software; <code>EF03CO06</code> — interfaces físicas de entrada e saída. <a class="ref" href="#ref-bncc">[1, pp. 16 e 20]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF02TPA01</code>, funções de dispositivos e periféricos; <code>EF03TPA02</code>, funcionalidade dos softwares; <code>EF03TPA15</code>, hipóteses para questões cotidianas. <a class="ref" href="#ref-cidade">[2, pp. 90, 92–93]</a></p></div>
+</div>
+</details>
+
+<details class="activity" id="atividade-3">
+<summary><span class="activity-number" aria-hidden="true">3</span><span class="activity-title"><strong>Da cor ao dado — e do dado à explicação</strong><small>3º e 4º anos • 15 a 20 minutos • investigação e registro</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “Anotar ‘vermelho’ conta tudo o que aconteceu?”</p>
+<p><span class="label">Proposta.</span> Façam seis observações em intervalos combinados. Em uma tabela, registrem momento, situação, indicação da tela e interpretação do grupo. Mantenham o mesmo equipamento, posição e sensibilidade; anotem mudanças inevitáveis. Se uma parada interromper a observação, registrem também esse fato.</p>
+<p><span class="label">Registro.</span> Comparem o dado isolado com o conjunto de informações: “vermelho” é diferente de “vermelho enquanto uma cadeira foi arrastada”. Produzam uma conclusão curta com a estrutura “Observamos… / Nossa hipótese é… / Precisamos testar…”. A coleta é feita pelas crianças, não por uma exportação automática do aplicativo.</p>
+<p><span class="label">O que observar.</span> O grupo distingue observação de interpretação e revê uma hipótese? O medidor não é um decibelímetro calibrado; o placar também não substitui essa tabela, pois inclui trabalhos, bônus e ajustes do professor.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF03CO04</code> — relação entre dado e informação. <a class="ref" href="#ref-bncc">[1, p. 20]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF03TPA15</code> e <code>EF04TPA16</code>, investigação de problemas cotidianos com recursos midiáticos. <a class="ref" href="#ref-cidade">[2, pp. 93 e 97]</a> A proposta se inspira também na aprendizagem baseada na investigação. <a class="ref" href="#ref-od">[3, pp. 40–41]</a></p></div>
+</div>
+</details>
+
+<details class="activity" id="atividade-4">
+<summary><span class="activity-number" aria-hidden="true">4</span><span class="activity-title"><strong>Quem escreveu as regras do medidor?</strong><small>5º ano • 20 a 30 minutos • algoritmos e decisões</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “O computador escolheu sozinho dar um ponto a cada período?”</p>
+<p><span class="label">Proposta.</span> Representem uma regra simplificada com cartões: ler o sinal, compará-lo ao limite, acumular tempo de foco ou reiniciar a contagem, conferir se o período terminou e repetir. Incluam decisões “se… então… senão…”. Um grupo descreve; outro simula a execução e aponta ambiguidades.</p>
+<p><span class="label">Teste.</span> Usem sequências fictícias: um período inteiro de foco; conversa pouco antes do fim; som externo. Separem aquilo que o programa pode calcular daquilo que depende da interpretação do professor. Alterem uma regra no modelo e prevejam suas consequências antes de testá-la.</p>
+<p><span class="label">O que observar.</span> Os estudantes explicam sequência, repetição e condição e corrigem instruções imprecisas? O modelo é uma simplificação didática, não uma reprodução completa do código. Modificar uma configuração não é, por si só, programar.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF05CO04</code> — criação e simulação de algoritmos com sequências, repetições e condições. <a class="ref" href="#ref-bncc">[1, p. 30]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF05TPA02</code>, planejamento com condicionantes e decisões. Se houver implementação e depuração de um programa, pode-se acrescentar <code>EF05TPA03</code>. <a class="ref" href="#ref-cidade">[2, p. 98]</a></p></div>
+</div>
+</details>
+
+<details class="activity" id="atividade-5">
+<summary><span class="activity-number" aria-hidden="true">5</span><span class="activity-title"><strong>Onde ficam os resultados? Quem deve vê-los?</strong><small>4º e 5º anos • 15 a 20 minutos • dados e responsabilidade</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “Como o resultado aparece em outro computador? Precisamos saber quem fez cada barulho?”</p>
+<p><span class="label">Proposta.</span> Com o professor operando o perfil da escola, observem um resultado já salvo em dois dispositivos. Desenhem o percurso entre computador, conexão, serviço remoto e outra tela. Comparem essa situação com o modo experiência, que não guarda resultados de turmas.</p>
+<p><span class="label">Registro.</span> Produzam dois desenhos, “neste computador” e “em um serviço remoto”. Conversem sobre o que precisa ser registrado e sobre dados desnecessários. Neste exercício, não é preciso identificar crianças, gravar suas vozes ou publicar situações constrangedoras.</p>
+<p><span class="label">O que observar.</span> A criança distingue armazenamento local e remoto e justifica um cuidado com dados? Ver um resultado na internet não prova, sozinho, que toda informação está protegida. O docente continua responsável por autorizações, acesso e divulgação adequados.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF04CO07</code> — ética no tratamento de dados; <code>EF05CO06</code> — armazenamento local ou remoto. <a class="ref" href="#ref-bncc">[1, pp. 26 e 30]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF05TPA08</code>, privacidade em ambientes virtuais; <code>EF05TPA13</code>, intencionalidade na apropriação das tecnologias. <a class="ref" href="#ref-cidade">[2, pp. 98–99]</a></p></div>
+</div>
+</details>
+
+<details class="activity" id="atividade-6">
+<summary><span class="activity-number" aria-hidden="true">6</span><span class="activity-title"><strong>Da descoberta à produção da turma</strong><small>1º ao 5º ano • uma ou mais aulas • alfabetização e autoria</small></span></summary>
+<div class="activity-body">
+<p class="prompt">Pergunta disparadora: “O que outra turma precisa saber para cuidar do som sem deixar de conversar e aprender?”</p>
+<p><span class="label">Proposta.</span> Transformem as descobertas em cartaz digital, apresentação ou áudio produzido em ferramenta apropriada. Nos primeiros anos, usem desenhos, palavras, pequenas legendas e escrita compartilhada. Nos demais, incluam um problema, uma evidência e uma proposta.</p>
+<p><span class="label">Autoria.</span> Façam uma produção que vá além de “fiquem quietos”: expliquem como o medidor funciona, em que situações conversar é necessário e o que pode melhorar na organização ou no espaço. Revisem coletivamente antes de compartilhar. Durante a discussão, a gravação de voz ou a apresentação, não mantenham uma cobrança de silêncio incompatível com a tarefa.</p>
+<p><span class="label">O que observar.</span> Há clareza para o público, revisão do texto e participação efetiva? Reconhecer uma etapa concluída com pontos pode acompanhar o processo, mas não substitui a leitura e a devolutiva sobre o trabalho.</p>
+<div class="curriculum"><p><strong>BNCC Computação:</strong> <code>EF03CO08</code> e <code>EF04CO06</code> — expressão e criação com ferramentas digitais. <a class="ref" href="#ref-bncc">[1, pp. 22 e 26]</a></p><p><strong>Currículo da Cidade:</strong> <code>EF01TPA10</code>, <code>EF02TPA11</code>, <code>EF03TPA10</code> e <code>EF04TPA12</code>, com exigências diferentes de produção e colaboração em cada ano. <a class="ref" href="#ref-cidade">[2, pp. 89, 91–92 e 97]</a></p></div>
+</div>
+</details>
+</div>
+<p class="source-note">As faixas indicam possibilidades de adaptação, não autorização para atribuir códigos de outro ano ao registro de uma turma. Selecione o objetivo correspondente ao ano e à ação planejada. Leia o enunciado completo nas fontes.</p>
+</section>
+
+<section class="section" id="medalhas" aria-labelledby="titulo-medalhas">
+<p class="section-number">04 • Não confundir engajamento com aprendizagem</p>
+<h2 id="titulo-medalhas">Pontos e medalhas: competição, colaboração ou as duas?</h2>
+<div class="readable">
+<p><strong>As duas podem coexistir.</strong> Uma turma pode cooperar internamente para conquistar uma medalha e competir com outras turmas no ranking. Trocar “pontos” por “medalhas” não elimina a comparação. Tampouco um prêmio coletivo garante colaboração: é preciso observar como o grupo age para alcançá-lo.</p>
+<p>As Orientações Didáticas de São Paulo distinguem uma gamificação persuasiva, centrada em competição e recompensas, de uma construção colaborativa e cooperativa, movida por desafios, missões e descobertas. Recomendam a segunda perspectiva para o trabalho educativo. Isso não equivale a proibir toda pontuação: exige perguntar qual relação de aprendizagem ela sustenta. <a class="ref" href="#ref-od">[3, p. 49]</a></p>
+</div>
+<div class="distinction"><div><b>Quando o foco vira apenas o placar</b><p>Os estudantes podem evitar perguntas, vigiar colegas, apressar uma produção ou procurar um “culpado” pela perda. Esses são riscos a observar, não efeitos inevitáveis da ferramenta.</p></div><div><b>Quando a conquista acompanha um projeto comum</b><p>A turma define uma estratégia, ajuda quem precisa, reconhece contribuições diferentes e conversa sobre o que conseguiu realizar. A medalha registra um marco; não determina o valor de ninguém.</p></div></div>
+<div class="readable">
+<p class="practice"><strong>Pontos de trabalho.</strong> Combine antes o que caracteriza a etapa concluída: escrever e revisar uma legenda, testar uma solução, escutar a apresentação dos grupos. Não reduza a conclusão a velocidade ou acerto perfeito. Os critérios podem reconhecer processos e contribuições diferentes.</p>
+<p class="practice"><strong>Perda de pontos de foco.</strong> A regra de zerar esses pontos após uma paralisação confirmada pelo professor é uma consequência coletiva. Mesmo preservando os pontos de trabalho, pode ser vivida como punição. Não a apresente como algo que “o computador decidiu” nem permita que se transforme em acusação a uma criança. Se isso acontecer, reveja o uso da dinâmica.</p>
+<p class="practice"><strong>Bônus sem paralisação.</strong> Reconheça a organização do grupo sem transformar pedidos de ajuda, pausas necessárias ou discordâncias em fracasso. Usar “Ouvir” para orientar não é uma paralisação por excesso de som. O bônus pode ser ajustado, inclusive para zero. <a class="ref" href="../manual/#pontos">Consulte as regras no manual.</a></p>
+<p class="practice"><strong>Ranking.</strong> Não o utilize como avaliação de aprendizagem ou classificação de “melhores turmas”. Tempo de uso, atividades, número de estudantes, microfones, sensibilidade e critérios de pontuação podem ser diferentes. A comparação mais útil pode ser a conversa da própria turma sobre estratégias e avanços.</p>
+</div>
+<div class="callout warm"><p><strong>Medalha usada não é conquista apagada.</strong> O aplicativo separa medalhas conquistadas e disponíveis. O professor pode combinar uma escolha coletiva: qual jogo explorar, qual brincadeira realizar em um momento planejado ou como celebrar uma etapa. O benefício não precisa ser material.</p><p><strong>Brincar não deve depender de ganhar.</strong> O Currículo da Cidade reconhece a brincadeira como direito fundamental. A recomendação desta página é usar medalhas para escolhas e celebrações adicionais, não para condicionar recreio, alimentação, banheiro, participação, ajuda ou o direito de ser ouvido. <a class="ref" href="#ref-cidade">[2, p. 41]</a></p></div>
+</section>
+
+<section class="section" id="inclusao" aria-labelledby="titulo-inclusao">
+<p class="section-number">05 • O combinado precisa caber nas pessoas</p>
+<h2 id="titulo-inclusao">Participação, contexto e inclusão</h2>
+<p>O Currículo da Cidade se orienta por educação integral, equidade e educação inclusiva. A orientação não é fazer todos se adaptarem do mesmo modo, mas construir condições de participação e aprendizagem para diferentes estudantes. <a class="ref" href="#ref-cidade">[2, pp. 12 e 25–26]</a></p>
+<div class="grid-two">
+<article class="mini-card"><h3>Não transformar colegas em fiscais</h3><p>O microfone não identifica quem produziu um som. Evite indicar “responsáveis pelo silêncio” encarregados de vigiar ou repreender crianças. Funções rotativas podem ser de registro, observação do ambiente e proposição de melhorias.</p></article>
+<article class="mini-card"><h3>Não penalizar modos de participar</h3><p>Vocalizações involuntárias, necessidades de comunicação e diferentes formas de expressão não devem virar culpa individual. Ajuste a proposta e os apoios. Se o medidor estiver criando uma barreira, interromper seu uso também é uma decisão pedagógica.</p></article>
+<article class="mini-card"><h3>Explicar além da cor</h3><p>Leia e explique as mensagens. Combine sinais e formas de comunicação acessíveis ao grupo; cor e texto projetado, sozinhos, não atendem necessariamente a todos. Nos primeiros anos, retome poucas palavras e uma orientação de cada vez.</p></article>
+<article class="mini-card"><h3>Olhar também para a sala</h3><p>Antes de atribuir o problema à turma, observe posição do microfone, ruídos de móveis, sons externos, disposição dos grupos e necessidade de movimento. “Som externo” corrige uma interpretação inadequada, mas não substitui melhorias no ambiente.</p></article>
+</div>
+<p><strong>A ferramenta não precisa ficar ligada o tempo todo.</strong> Música, debate, leitura compartilhada e trabalho em grupo têm exigências sonoras próprias. Não há um modo automático que compreenda a finalidade de cada atividade: cabe ao professor ajustar, pausar quando for pertinente ou encerrar o acompanhamento.</p>
+</section>
+
+<section class="section" id="avaliacao" aria-labelledby="titulo-avaliacao">
+<p class="section-number">06 • Avaliar o processo, não a obediência à tela</p>
+<h2 id="titulo-avaliacao">O que observar para saber se valeu a pena</h2>
+<p>A proposta de avaliação do Currículo da Cidade enfatiza acompanhamento, devolutivas e decisões sobre o ensino. Por isso, nesta proposta, pontos e medalhas não substituem evidências das aprendizagens. <a class="ref" href="#ref-cidade">[2, pp. 53–55]</a></p>
+<div class="grid-three">
+<article class="mini-card"><h3>Compreensão</h3><p>A criança explica o que a tela indica, o que não indica e por que determinado volume faz sentido para aquela atividade?</p></article>
+<article class="mini-card"><h3>Participação</h3><p>O grupo consegue ouvir, pedir ajuda, argumentar e colaborar sem hostilizar colegas? Os combinados são compreendidos e podem ser revistos?</p></article>
+<article class="mini-card"><h3>Produção e autonomia</h3><p>Há registros, hipóteses revistas, textos ou algoritmos melhorados? As estratégias de cuidado continuam em momentos sem o medidor?</p></article>
+</div>
+<p>Essas perguntas orientam observação, não diagnóstico individual. Para quem utilizou a ferramenta apenas na organização de uma aula, a avaliação pode ser mais simples: ela tornou a orientação clara e ajudou o trabalho a continuar, sem criar novos conflitos?</p>
+<p><strong>Não há, nesta página, uma comprovação de eficácia do Som da Turma.</strong> Os currículos fundamentam possibilidades de planejamento; não demonstram que o aplicativo aumenta a atenção, reduz conflitos ou melhora resultados. Esses efeitos precisam ser acompanhados nas experiências reais de uso.</p>
+</section>
+
+<section class="section" id="comecar" aria-labelledby="titulo-comecar">
+<p class="section-number">07 • Uma primeira experiência possível</p>
+<h2 id="titulo-comecar">Comece pequeno e retome a conversa</h2>
+<p>Roteiro sugerido de 20 a 25 minutos para apresentar o recurso. Nas primeiras explorações, priorize compreender o sinal antes de iniciar uma disputa por medalhas.</p>
+<div class="sequence">
+<article><b>3 MINUTOS</b><h3>Definir a necessidade</h3><p>“Hoje, o que precisamos conseguir ouvir ou fazer juntos?”</p></article>
+<article><b>5 MINUTOS</b><h3>Testar o sinal</h3><p>Em modo experiência, comparem uma fala próxima e distante, sem gritar. Digam o que mudou.</p></article>
+<article><b>10 MINUTOS</b><h3>Realizar uma tarefa</h3><p>Façam uma pequena produção. Explique o combinado de volume e garanta espaço para perguntas.</p></article>
+<article><b>5 MINUTOS</b><h3>Registrar uma descoberta</h3><p>Escrevam ou ditem uma frase: “O medidor ajudou quando…” ou “Precisamos mudar…”.</p></article>
+</div>
+<p class="ending">O objetivo não é que a turma obedeça melhor a uma máquina. É que disponha de mais uma referência para trabalhar, compreender a tecnologia e cuidar das condições de aprender em conjunto.</p>
+</section>
+
+<section class="section" id="referencias" aria-labelledby="titulo-referencias">
+<p class="section-number">08 • Para consultar e aprofundar</p>
+<h2 id="titulo-referencias">Fontes e referências</h2>
+<p>As sínteses curriculares estão identificadas ao longo da página. As atividades, os critérios de observação e a discussão do uso são propostas pedagógicas elaboradas para o Som da Turma. As páginas indicadas são as numeradas nos documentos, não a posição no leitor de PDF.</p>
+<ol class="references">
+<li id="ref-bncc"><strong>BRASIL. Ministério da Educação; Conselho Nacional de Educação.</strong> <em>Computação — Complemento à BNCC.</em> Anexo ao Parecer CNE/CEB nº 2/2022.<br><a href="https://www.computacional.com.br/docs_oficiais/Tabelas-Computacao.pdf" target="_blank" rel="noopener noreferrer">Consultar o documento (PDF, cópia pública no portal Computacional)</a> · <a href="https://acervoportal.mec.gov.br/conselho-nacional-de-educacao/base-nacional-comum-curricular-bncc" target="_blank" rel="noopener noreferrer">Registro dos atos no CNE/MEC</a><small>Competências do Ensino Fundamental, p. 11; habilidades utilizadas: pp. 12, 16, 20, 22, 26 e 30. Os nomes dos eixos e códigos pertencem ao documento; a relação com esta ferramenta é uma proposta de planejamento.</small></li>
+<li id="ref-cidade"><strong>SÃO PAULO (Município). Secretaria Municipal de Educação. COPED.</strong> <em>Currículo da Cidade: Ensino Fundamental: Tecnologias para Aprendizagem.</em> 2. ed. São Paulo: SME/COPED, 2019.<br><a href="https://acervodigital.sme.prefeitura.sp.gov.br/acervo/curriculo-da-cidade-ensino-fundamental-tecnologias-para-aprendizagem/" target="_blank" rel="noopener noreferrer">Consultar no Acervo Digital da SME</a><small>Referência: a edição de 2019. Princípios, pp. 12 e 25–26; Matriz de Saberes, pp. 33–35; infância e brincar, p. 41; avaliação, pp. 53–55; eixos, p. 80; objetivos dos anos iniciais, pp. 89–99.</small></li>
+<li id="ref-od"><strong>SÃO PAULO (Município). Secretaria Municipal de Educação. COPED.</strong> <em>Orientações Didáticas do Currículo da Cidade: Tecnologias para Aprendizagem.</em> 2. ed. São Paulo: SME/COPED, 2019.<br><a href="https://acervodigital.sme.prefeitura.sp.gov.br/acervo/orientacoes-didaticas-do-curriculo-da-cidade-tecnologias-para-aprendizagem/" target="_blank" rel="noopener noreferrer">Consultar no Acervo Digital da SME</a><small>Diálogo, protagonismo e autonomia, p. 10; investigação, pp. 40–41; perspectivas da gamificação, p. 49. Trata-se de um documento distinto do currículo, utilizado aqui como apoio didático.</small></li>
+<li id="ref-funcionamento"><strong>Som da Turma.</strong> Funcionamento da versão documentada nesta página.<br><a href="../manual/">Como usar</a> · <a href="https://github.com/marklienista/led/blob/main/somdaturma/control-core.js" target="_blank" rel="noopener noreferrer">Código da dinâmica</a><small>A consulta ao código permite distinguir o que o sistema calcula das interpretações pedagógicas feitas a partir dele.</small></li>
+</ol>
+<p class="source-note">Consulta às fontes e revisão desta página: 23 de setembro de 2026. Não há endosso do MEC ou da SME ao aplicativo. As conexões propostas não substituem a leitura dos documentos nem o planejamento da escola.</p>
+</section>
+</main>
+<footer class="footer"><span>Som da Turma • possibilidades pedagógicas • acesso público</span><div><a href="#conteudo">Voltar ao início</a> · <button class="print-button" type="button" id="printPage">Imprimir esta página</button></div></footer>
+</div>
+<script>
+// Expande as propostas apenas para impressão; preserva a leitura escolhida na tela.
+(()=>{let opened=[];window.addEventListener('beforeprint',()=>{opened=[...document.querySelectorAll('details.activity')].map(el=>[el,el.open]);opened.forEach(([el])=>el.open=true)});window.addEventListener('afterprint',()=>{opened.forEach(([el,value])=>el.open=value)});document.getElementById('printPage').addEventListener('click',()=>window.print());})();
+</script>
+</body>
 </html>
