@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Da Natureza à Invenção</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">🌿➡️🛠️ Da Natureza à Invenção<small id="headerYear">Escolha o ano</small></div>
+    <div class="tools"><button id="soundBtn" class="tool" title="Som">🔊</button><button id="fullBtn" class="tool" title="Tela cheia">⛶</button></div>
+  </div>
+</header>
+<main>
+<section id="year" class="screen">
+  <div class="card start-card">
+    <div class="eyebrow">🔧 Monte os caminhos</div>
+    <h1>Qual é o seu ano?</h1>
+    <div class="year-grid">
+      <button class="year-choice year3" data-year="3"><b>3º</b><span>ano</span></button>
+      <button class="year-choice year5" data-year="5"><b>5º</b><span>ano</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="home" class="screen hidden">
+  <div class="card home">
+    <div class="year-badge year-label"></div>
+    <h1>Quem forma a dupla?</h1>
+    <p>Uma pessoa movimenta as peças. A outra ajuda a pensar. Depois vocês trocam.</p>
+    <div class="duo-names">
+      <div><label for="playerOne">Nome ou apelido:</label><input id="playerOne" maxlength="9" autocomplete="off" placeholder="Nome 1"></div>
+      <div><label for="playerTwo">Nome ou apelido:</label><input id="playerTwo" maxlength="9" autocomplete="off" placeholder="Nome 2"></div>
+    </div>
+    <div id="nameError" class="name-error hidden">Digite os dois nomes para começar.</div>
+    <button id="startBtn" class="primary">Começar →</button>
+    <div class="note">20 missões • 1000 pontos • sem cronômetro</div>
+    <button id="changeYearBtn" class="text-button">← Trocar o ano</button>
+    <div class="home-ranking"><h2>🏆 Ranking da escola • <span class="year-label"></span></h2><div id="homeRanking" class="ranking-list"></div></div>
+  </div>
+</section>
+
+<section id="game" class="screen hidden">
+  <div class="game">
+    <div class="status">
+      <div class="statusline">
+        <span><span class="year-chip year-label"></span> <span id="teamLabel"></span> • <span id="roundText"></span></span>
+        <span class="game-status-actions"><span class="score">⭐ <span id="scoreText">0</span> / 1000</span><button class="game-home-button">⌂ Início</button></span>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+    </div>
+
+    <div class="card play">
+      <div class="mission-head">
+        <div>
+          <div class="concept-label">OBJETIVO</div>
+          <h2>Construam o caminho até <span id="targetName"></span></h2>
+          <p id="missionNote"></p>
+        </div>
+        <div id="targetVisual" class="target-visual"></div>
+      </div>
+
+      <div id="roleHint" class="role-hint"></div>
+      <div id="chain" class="chain"></div>
+
+      <div class="bank-title">Peças disponíveis</div>
+      <div id="bank" class="bank"></div>
+      <div class="tap-hint">Arraste a peça ou clique nela e depois no espaço.</div>
+
+      <div id="missionFeedback" class="mission-feedback hidden"></div>
+      <div class="nextrow"><button id="nextMissionBtn" class="next hidden">Próxima missão →</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="summary" class="screen hidden">
+  <div class="card summary">
+    <div class="year-badge year-label"></div>
+    <div id="medalIcon" class="medal-icon">🏆</div>
+    <h2 id="medalTitle"></h2>
+    <p id="summaryMsg"></p>
+    <div id="finalScore" class="bigscore">0</div><p class="score-caption">pontos de 1000</p>
+    <div class="learning-box"><b>💡 Ideia principal</b><span>As pessoas transformam materiais da natureza para criar objetos, alimentos, ferramentas e construções.</span></div>
+    <div class="stats">
+      <div class="stat"><strong id="perfectMissions">0/20</strong><span>Missões sem erro</span></div>
+      <div class="stat"><strong id="totalMistakes">0</strong><span>Tentativas corrigidas</span></div>
+      <div class="stat"><strong id="completedMissions">20</strong><span>Missões concluídas</span></div>
+    </div>
+    <div class="ranking-box"><h3>🏆 Ranking da escola • <span class="year-label"></span></h3><div id="summaryRanking" class="ranking-list"></div></div>
+    <div class="actions"><button id="againBtn" class="primary">Jogar de novo</button><button id="homeBtn" class="secondary">Trocar dupla</button><button id="summaryYearBtn" class="secondary">Trocar ano</button></div>
+  </div>
+</section>
+</main>
+
+<script src="../invencoes/assets/sprite-part-1.js"></script>
+<script src="../invencoes/assets/sprite-part-2.js"></script>
+<script src="../invencoes/assets/sprite-part-3.js"></script>
+<script src="../invencoes/assets/sprite-part-4.js"></script>
+<script src="../invencoes/assets/sprite-part-5.js"></script>
+<script src="data.js"></script>
+<script src="visuals.js"></script>
+<script src="app.js"></script>
+<script src="../game-base.js"></script>
+</body>
+</html>
