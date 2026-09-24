@@ -10,7 +10,7 @@ function show(id){['year','home','game','summary'].forEach(x=>document.getElemen
 function clean(v){return String(v||'').trim().replace(/\s+/g,' ').slice(0,9)}
 function norm(v){return String(v||'').toLocaleLowerCase('pt-BR')}
 function makeTeam(a,b){return[a,b].sort((x,y)=>x.localeCompare(y,'pt-BR',{sensitivity:'base'})).join(' + ')}
-function prefix(){return `CHAIN${selectedYear}|`}
+function prefix(){return `N${selectedYear}|`}
 function localKey(){return `chain_rank_${selectedYear}`}
 function applyYear(){document.body.dataset.year=String(selectedYear);document.getElementById('headerYear').textContent=`${selectedYear}º ano`;document.querySelectorAll('.year-label').forEach(x=>x.textContent=`${selectedYear}º ano`)}
 function selectYear(y){selectedYear=Number(y);applyYear();playerOne=playerTwo=teamName='';document.getElementById('playerOne').value='';document.getElementById('playerTwo').value='';show('home');renderRanking('homeRanking')}
