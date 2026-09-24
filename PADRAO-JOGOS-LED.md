@@ -1,13 +1,13 @@
 # Padrão de desenvolvimento dos jogos do LED
 
-Este documento define a base comum para os jogos digitais do Laboratório de Educação Digital. A base deve dar unidade à experiência sem obrigar todos os jogos a terem a mesma mecânica.
+Este documento define a base comum para os jogos digitais do Laboratório de Educação Digital. A base deve dar unidade à experiência sem obrigar todos os jogos a terem a mesma mecânica.\n\n## Escopo atual do projeto\n\nA partir de setembro de 2026, os novos jogos deste projeto serão desenvolvidos para **3º e 5º anos**. Jogos anteriores podem continuar acessíveis para outros anos, mas o desenvolvimento novo não precisa manter 2º e 4º anos.
 
 ## 1. Princípios pedagógicos
 
 - O jogo deve ter um objetivo de aprendizagem claro e explícito para o professor.
 - A mecânica deve estar a serviço do conteúdo, e não o contrário.
 - Priorizar participação ativa, diálogo, tomada de decisão, tentativa, feedback e possibilidade de refazer.
-- Para 2º ao 5º ano, a experiência deve também favorecer leitura, compreensão de frases curtas, ampliação de vocabulário e oralidade entre pares.
+- Para os anos atendidos, a experiência deve também favorecer leitura, compreensão, ampliação de vocabulário e oralidade entre pares.
 - O erro deve gerar informação e nova tentativa, nunca punição ou constrangimento.
 - Evitar cronômetro por padrão. Tempo só entra quando fizer sentido pedagógico.
 - O ranking é um elemento de engajamento, não o objetivo central da atividade.
@@ -15,7 +15,7 @@ Este documento define a base comum para os jogos digitais do Laboratório de Edu
 ## 2. Fluxo-base de entrada
 
 1. Tela inicial simples: título do jogo e pergunta "Qual é o seu ano?".
-2. Opções: 2º, 3º, 4º e 5º ano.
+2. Mostrar apenas os anos atendidos pelo jogo. No escopo atual dos novos jogos: **3º e 5º ano**.
 3. Após selecionar o ano: tela com dois campos para primeiro nome ou apelido da dupla.
 4. Botão "Começar".
 5. Durante todo o jogo, manter o ano visível.
@@ -266,3 +266,4 @@ A escolha da mecânica vem depois dessas respostas.
 - fallback local testado quando o banco estiver indisponível;
 - teste em tela de notebook;
 - post do Padlet pronto com título, instrução curta e link.
+\n\n## 17. Jogos de construção e montagem\n\nQuando a aprendizagem envolver transformação, sequência, relação entre partes ou processos, preferir mecânicas em que a dupla **constrói a resposta** em vez de apenas escolhê-la. Exemplos: arrastar e encaixar, ordenar etapas, montar cadeias, completar estruturas ou combinar materiais. Sempre que possível, oferecer também interação por clique para reduzir a dependência de precisão do mouse.\n
