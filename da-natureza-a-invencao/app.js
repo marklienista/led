@@ -84,4 +84,36 @@ async function renderRanking(id,highlight=''){const box=document.getElementById(
 async function finish(){show('summary');saveLocal();const m=medalFor(score);document.getElementById('medalIcon').textContent=m.icon;document.getElementById('medalTitle').textContent=m.title;document.getElementById('summaryMsg').textContent=m.msg;document.getElementById('finalScore').textContent=score;document.getElementById('perfectMissions').textContent=`${perfectMissions}/20`;document.getElementById('totalMistakes').textContent=totalMistakes;try{await saveOnline()}catch(e){}await renderRanking('summaryRanking',teamName)}
 function start(){const a=clean(document.getElementById('playerOne').value),b=clean(document.getElementById('playerTwo').value),err=document.getElementById('nameError');if(!a||!b){err.textContent='Digite os dois nomes para começar.';err.classList.remove('hidden');return}if(norm(a)===norm(b)){err.textContent='Digite dois nomes diferentes.';err.classList.remove('hidden');return}playerOne=a;playerTwo=b;teamName=makeTeam(a,b);err.classList.add('hidden');buildSession();missionIndex=0;score=0;totalMistakes=0;perfectMissions=0;show('game');renderMission()}
 function goHome(){document.getElementById('playerOne').value=playerOne;document.getElementById('playerTwo').value=playerTwo;show('home');renderRanking('homeRanking',teamName)}
-document.querySelectorAll('.year-choice').forEach(b=>b.onclick=()=>selectYear(b.dataset.year));document.getElementById('startBtn').onclick=start;document.getElementById('changeYearBtn').onclick=changeYear;document.getElementById('summaryYearBtn').onclick=changeYear;document.getElementById('againBtn').onclick=start;document.getElementById('homeBtn').onclick=goHome;document.getElementById('soundBtn').onclick=()=>{soundOn=!soundOn;document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇'};document.getElementById('fullBtn').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()};document.getElementById('playerTwo').addEventListener('keydown',e=>{if(e.key==='Enter')start()});show('year');
+function fullscreenElement(){return document.fullscreenElement||document.webkitFullscreenElement||document.msFullscreenElement||null}
+async function enterFullscreen(){
+ const el=document.documentElement;
+ const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+ if(fn)try{await fn.call(el)}catch(e){}
+}
+async function exitFullscreen(){
+ const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;
+ if(fn&&fullscreenElement())try{await fn.call(document)}catch(e){}
+}
+function syncFullscreenButton(){
+ const btn=document.getElementById('fullBtn');
+ if(!btn)return;
+ const active=!!fullscreenElement();
+ btn.textContent=active?'⤡':'⛶';
+ btn.title=active?'Sair da tela cheia (Esc)':'Tela cheia';
+}
+function toggleFullscreen(){if(fullscreenElement())exitFullscreen();else enterFullscreen()}
+
+document.querySelectorAll('.year-choice').forEach(b=>b.onclick=()=>selectYear(b.dataset.year));
+document.getElementById('startBtn').onclick=start;
+document.getElementById('changeYearBtn').onclick=changeYear;
+document.getElementById('summaryYearBtn').onclick=changeYear;
+document.getElementById('againBtn').onclick=start;
+document.getElementById('homeBtn').onclick=goHome;
+document.getElementById('soundBtn').onclick=()=>{soundOn=!soundOn;document.getElementById('soundBtn').textContent=soundOn?'🔊':'🔇'};
+document.getElementById('fullBtn').onclick=toggleFullscreen;
+document.getElementById('playerTwo').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
+document.addEventListener('fullscreenchange',syncFullscreenButton);
+document.addEventListener('webkitfullscreenchange',syncFullscreenButton);
+window.addEventListener('keydown',e=>{if((e.key==='Escape'||e.key==='Esc')&&fullscreenElement())exitFullscreen()},{capture:true});
+syncFullscreenButton();
+show('year');
