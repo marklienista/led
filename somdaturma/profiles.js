@@ -183,9 +183,14 @@
         <section class="public-card author-card">
           <div>
             <h2>Autor</h2>
-            <p>Espaço reservado para apresentar o projeto, sua criação e autoria.</p>
+            <p><strong>Marcelo Santos</strong> cria pequenas soluções práticas para quem trabalha com educação.</p>
+            <p>O Som da Turma faz parte desse repertório de ferramentas criadas a partir de problemas reais da escola.</p>
           </div>
-          <div class="author-placeholder">EM BREVE</div>
+          <a class="resource-link" href="../profissional/">
+            <b>Conheça outras soluções</b>
+            <span>Veja outras ferramentas, projetos e formas de entrar em contato.</span>
+            <span class="resource-action">VER O ECOSSISTEMA →</span>
+          </a>
         </section>
       </div>
 
