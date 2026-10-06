@@ -2,7 +2,7 @@ const TOTAL_MISSIONS=20,MAX_SCORE=1000;
 const SUPABASE_URL='https://eyfmhnlzduoobdmwexmc.supabase.co';
 const SUPABASE_KEY='sb_publishable_as-eMTlem4cWd29PVNFAhg_uVLIqZKu';
 const SUPABASE_TABLE='invencoes_ranking';
-const GRADE_PLAN={3:{1:6,2:6,3:5,4:3},5:{1:3,2:5,3:6,4:6}};
+const GRADE_PLAN={3:{1:6,2:6,3:5,4:3},4:{1:6,2:6,3:5,4:3},5:{1:3,2:5,3:6,4:6}};
 let selectedYear=null,playerOne='',playerTwo='',teamName='',session=[],missionIndex=0,score=0,totalMistakes=0,perfectMissions=0,missionMistakes=0,placed=[],selectedPiece=null,soundOn=true;
 
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
@@ -23,7 +23,8 @@ function buildSession(){
   session.push(...all.slice(0,GRADE_PLAN[selectedYear][level]));
  }
 }
-function currentSteps(m){return selectedYear===3?m.simple:m.advanced}
+function usesSimpleMode(){return selectedYear===3||selectedYear===4}
+function currentSteps(m){return usesSimpleMode()?m.simple:m.advanced}
 function roleText(){
  const mover=missionIndex%2===0?playerOne:playerTwo,helper=missionIndex%2===0?playerTwo:playerOne;
  return `🖱️ ${mover} movimenta as peças. 💬 ${helper} observa e ajuda a decidir. Na próxima missão, vocês trocam.`;
@@ -33,7 +34,7 @@ function allCandidateCards(m){
  const count=Math.min(3,Math.max(0,m.level-1));
  const candidates=[];
  for(const other of MISSION_BANK){
-  const arr=selectedYear===3?other.simple:other.advanced;
+  const arr=usesSimpleMode()?other.simple:other.advanced;
   for(const c of arr)if(!used.has(c.label)&&!candidates.some(x=>x.label===c.label))candidates.push(c);
  }
  return shuffle(candidates).slice(0,count);
@@ -46,7 +47,7 @@ function renderMission(){
  const chain=document.getElementById('chain');chain.innerHTML='';
  steps.forEach((s,i)=>{
    const wrap=document.createElement('div');wrap.className='slot-wrap';
-   const slot=document.createElement('div');slot.className='slot';slot.dataset.index=i;slot.innerHTML=`<small>${selectedYear===3?(i===0?'Da natureza':'Material'):(i===0?'Recurso natural':i===1?'Material obtido':'Transformação')}</small><strong>Coloque uma peça</strong>`;
+   const slot=document.createElement('div');slot.className='slot';slot.dataset.index=i;slot.innerHTML=`<small>${usesSimpleMode()?(i===0?'Da natureza':'Material'):(i===0?'Recurso natural':i===1?'Material obtido':'Transformação')}</small><strong>Coloque uma peça</strong>`;
    slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('ready')});slot.addEventListener('dragleave',()=>slot.classList.remove('ready'));slot.addEventListener('drop',e=>{e.preventDefault();slot.classList.remove('ready');placePiece(e.dataTransfer.getData('text/plain'),i)});slot.onclick=()=>{if(selectedPiece)placePiece(selectedPiece,i)};
    wrap.appendChild(slot);const arrow=document.createElement('div');arrow.className='arrow';arrow.textContent='→';wrap.appendChild(arrow);chain.appendChild(wrap);
  });
@@ -59,7 +60,7 @@ function findPiece(label){return [...document.querySelectorAll('.piece')].find(x
 function placePiece(label,index){
  if(!label||placed[index])return;const m=session[missionIndex],steps=currentSteps(m),expected=steps[index],feedback=document.getElementById('missionFeedback');
  if(label===expected.label){
-  placed[index]=true;const slot=document.querySelector(`.slot[data-index="${index}"]`);slot.className='slot correct';slot.innerHTML=`<small>${selectedYear===3?(index===0?'Da natureza':'Material'):(index===0?'Recurso natural':index===1?'Material obtido':'Transformação')}</small><div class="mini-art">${renderCardArt(expected)}</div><strong>${expected.label}</strong>`;
+  placed[index]=true;const slot=document.querySelector(`.slot[data-index="${index}"]`);slot.className='slot correct';slot.innerHTML=`<small>${usesSimpleMode()?(index===0?'Da natureza':'Material'):(index===0?'Recurso natural':index===1?'Material obtido':'Transformação')}</small><div class="mini-art">${renderCardArt(expected)}</div><strong>${expected.label}</strong>`;
   const piece=findPiece(label);if(piece)piece.remove();selectedPiece=null;tone(true);
   if(placed.every(Boolean))completeMission();else{feedback.className='mission-feedback good';feedback.textContent='Boa! Essa peça faz parte do caminho.'}
  }else{
