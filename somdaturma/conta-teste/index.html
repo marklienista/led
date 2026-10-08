@@ -30,7 +30,7 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
 @media(max-width:960px){.layout{grid-template-columns:1fr 1fr}.card.auth{grid-column:1/-1;grid-row:1}.hero{grid-template-columns:1fr 0.8fr}}
 @media(max-width:700px){.hero,.layout,.private-grid{grid-template-columns:1fr}.card.auth{grid-column:auto}.private-grid .full{grid-column:auto}.shell{width:calc(100% - 18px)}.card,.panel{padding:20px}.hero{padding:25px}.top{padding:15px 8px}}
 </style>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.50.0/dist/umd/supabase.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script defer src="./conta.js"></script>
 </head>
 <body>
@@ -50,7 +50,7 @@ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:
 </section>
 <div class="layout">
 <section class="card" aria-labelledby="porque"><h2 id="porque">Para que serve</h2><p>Em uma explicação, leitura ou trabalho coletivo, os níveis ajudam a tornar visível um combinado. A ferramenta não mede atenção nem qualidade da aula.</p><ul><li>Usar com o microfone durante a atividade.</li><li>Registrar trabalhos e consultar resultados na versão atual.</li><li>Explorar possibilidades pedagógicas além do controle de volume.</li></ul><div class="links" style="margin-top:20px"><a href="../manual/">Ler o manual</a><a href="../possibilidades-pedagogicas/">Explorar propostas pedagógicas</a></div></section>
-<section class="card auth" id="conta" aria-labelledby="conta-titulo"><h2 id="conta-titulo">Conta do professor</h2><p class="hint">Área adulta experimental. Os registros criados aqui são privados e não entram no ranking atual.</p>
+<section class="card auth" id="conta" aria-labelledby="conta-titulo"><h2 id="conta-titulo">Conta do professor</h2><p class="hint">Área adulta experimental. Os registros criados aqui são privados e não entram no ranking atual. O ranking anterior continua público e separado.</p>
 <div id="loginSection"><form id="authForm" class="form-grid"><div class="field"><label for="email">E-mail do profissional</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254"></div><div class="field"><label for="password">Senha</label><input id="password" name="password" type="password" autocomplete="current-password" required minlength="6"></div><button id="loginBtn" class="action primary" type="submit">Entrar</button><button id="registerBtn" class="action secondary" type="button">Criar conta</button></form><p class="hint" style="margin-top:13px">O cadastro pode exigir confirmação pelo e-mail. Não use contas de estudantes.</p></div>
 <div id="loggedSection" hidden><p><strong>Conectado:</strong> <span id="loggedEmail"></span></p><div class="actions"><a class="action secondary" href="#dados">Minhas configurações</a><button id="logoutBtn" class="action plain" type="button">Sair</button></div></div>
 <p id="authStatus" class="feedback info" role="status" aria-live="polite"></p></section>
