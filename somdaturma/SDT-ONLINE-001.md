@@ -50,3 +50,27 @@ Todas: RLS ativa; políticas com `(select auth.uid()) = usuario_id` para `authen
 A parte de **esquema/RLS** do SDT-ONLINE-001 está pronta e validada. **Banco liberado para a etapa sequencial do ApertaLetra**, que deve alterar somente as suas próprias tabelas/artefatos. Som da Turma encerra escritas no banco nesta etapa; qualquer teste complementar deve coordenar exclusividade de escrita e não modificar os objetos do ApertaLetra.
 
 Próximo passo no Som da Turma: validação real de duas contas e correção pontual, se houver falha. Manter versão pública atual até decisão de substituição.
+
+
+## Adendo visual CFT-003 — 08/10/2026
+
+**Diretriz recebida de Crafting:** a identidade autoral transversal entrou em auditoria. O trabalho funcional aprovado em CFT-002 **não fica bloqueado** por decisões gráficas; conservar o que já existe, sem reiniciar ou desfazer a implementação. Não lançar.
+
+### 1. Funcional concluído/preservado
+- Entrada de teste, link para aula coletiva gratuita, seção de conta adulta, fluxo de autenticação implementado e as quatro tabelas privadas com RLS por `auth.uid()` permanecem como estavam.
+- Isolamento do banco e testes de interface simulados anteriores são evidências preservadas; **não transformar esses testes em prova de cadastro/login reais.**
+- Perfil antigo e ranking público não foram migrados. O código da aula/microfone, resumo, ausência de gravação de áudio e o uso coletivo permanecem intocados.
+- Próxima validação funcional pendente: duas contas adultas reais, confirmação por e-mail/redirect, acesso próprio e cruzado, repetição em outro dispositivo e conferência de acessibilidade/responsividade quando pertinente. Corrigir apenas falhas reproduzidas.
+
+### 2. Visual provisório, não homologado como identidade
+- Paleta, fontes, acabamento dos cartões, ilustração esquemática dos níveis, assinatura textual `Marcelo Santos`, posição da seção `Sobre/Autoria` e links para outras criações e formações são **hipóteses de interface**, não padrões definitivos.
+- A entrada da prévia já tem variáveis em `:root` (`--ink`, `--muted`, `--line`, `--bg`, `--brand`, `--blue`, `--sun`). Reutilizar ou ampliar esses tokens somente quando uma alteração funcional pedir; **não fazer uma refatoração cosmética neste adendo**.
+- Preservar distinção cromática e textual dos níveis funcionais (foco, conversa, muito alto, ouvir), legibilidade, foco de teclado, contraste, redução de movimento e reflow; não mudar o monitor coletivo para inserir autoria.
+- Conteúdo factual, estado `Em desenvolvimento`, links e caminho de retorno rápido podem ser corrigidos normalmente, mesmo antes da decisão gráfica.
+
+### 3. Aguardando decisão de CFT-003
+- Logotipo/símbolo novo, paleta transversal, tipografia e sistema comum de ícones, assinatura gráfica autoral, templates definitivos de e-mail/apresentação/vídeo, animação/movimento e migração visual ampla.
+- Não alterar perceptivelmente o logotipo do Apertaquem nem inferir que decisões deste produto governam os demais.
+- Após decisão visual consolidada, ajustar tokens e posicionamentos em tarefa curta e testar a interface afetada. O adendo **não** autoriza preços, limites, lançamento, conta universal ou mudança no banco do ApertaLetra.
+
+**Resultado deste adendo:** atualização de orientação no condutor do Som da Turma, sem mudança do banco, do código funcional, da versão pública ou dos testes anteriores. Banco permanece liberado para a etapa sequencial do ApertaLetra.
