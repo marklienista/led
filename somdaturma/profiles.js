@@ -290,6 +290,115 @@
   const medalUseMsg=document.getElementById('medalUseMsg');
   const turmaNext=document.getElementById('turmaNext');
 
+  // UI da projeção: elemento visual, sem escrever no banco.
+  const liveScoreboard=document.createElement('div');
+  liveScoreboard.id='liveScoreboard';
+  liveScoreboard.className='live-scoreboard hidden';
+  liveScoreboard.innerHTML=`
+    <div class="live-score-item">
+      <span class="live-score-label">⭐ PONTOS DA TURMA</span>
+      <strong id="liveTurmaPoints">—</strong>
+      <span id="liveTurmaTarget" class="live-score-note">para a próxima medalha</span>
+    </div>
+    <div class="live-score-item">
+      <span class="live-score-label">🏅 MEDALHAS</span>
+      <strong id="liveTurmaMedals">—</strong>
+      <span id="liveTurmaAvailable" class="live-score-note">disponíveis —</span>
+      <span id="liveScoreSource" class="live-score-source"></span>
+    </div>`;
+  document.querySelector('#monitor .bottom')?.prepend(liveScoreboard);
+
+  const finalScoreboard=document.createElement('section');
+  finalScoreboard.id='finalScoreboard';
+  finalScoreboard.className='final-scoreboard hidden';
+  finalScoreboard.setAttribute('aria-label','Conquistas acumuladas da turma');
+  finalScoreboard.innerHTML=`
+    <h2>CONQUISTAS DA TURMA</h2>
+    <div class="final-score-grid">
+      <div class="final-score-item">
+        <b id="finalTurmaPoints">—</b>
+        <span>⭐ PONTOS PARA A PRÓXIMA MEDALHA</span>
+      </div>
+      <div class="final-score-item">
+        <b id="finalTurmaMedals">—</b>
+        <span>🏅 MEDALHAS CONQUISTADAS</span>
+      </div>
+      <div class="final-score-item">
+        <b id="finalTurmaAvailable">—</b>
+        <span>🏅 MEDALHAS LIVRES PARA USAR</span>
+      </div>
+    </div>
+    <p class="final-score-note" id="finalScoreNote"></p>`;
+  document.getElementById('resultBanner')?.after(finalScoreboard);
+
+  // O número de pontos é o saldo restante para a próxima medalha; as
+  // medalhas já conquistadas não são revertidas pelo uso de uma medalha.
+  let lastRoomSnapshot=null;
+  let projectionRoom='';
+  let projectionBase=null;
+  let projectionPoints=0;
+  let projectionPhase='idle';
+  let projectionSeq=0;
+  function projectionOf(base,earned){
+    const target=Math.max(1,Number(base.target)||40);
+    const combined=Math.max(0,Number(base.points)||0)+Math.max(0,Number(earned)||0);
+    const medalsNew=Math.floor(combined/target);
+    return {
+      points:combined%target,
+      target,
+      medals:(Number(base.medals)||0)+medalsNew,
+      available:Math.max(0,(Number(base.available)||0)+medalsNew)
+    };
+  }
+  function scoreNote(source){
+    return source==='local'
+      ? 'Somente os registros deste computador; resultados de outros dispositivos podem não aparecer.'
+      : 'Pontos restantes até a próxima medalha. Medalhas já usadas não reduzem as conquistadas.';
+  }
+  function renderLiveProjection(){
+    if(experienceMode||!currentProfile||!projectionRoom){
+      liveScoreboard.classList.add('hidden');
+      return;
+    }
+    liveScoreboard.classList.remove('hidden');
+    if(!projectionBase){
+      document.getElementById('liveTurmaPoints').textContent='…';
+      document.getElementById('liveTurmaTarget').textContent='carregando pontuação';
+      document.getElementById('liveTurmaMedals').textContent='…';
+      document.getElementById('liveTurmaAvailable').textContent='aguardando dados da turma';
+      document.getElementById('liveScoreSource').textContent='';
+      return;
+    }
+    const totals=projectionOf(projectionBase.state,projectionPoints);
+    document.getElementById('liveTurmaPoints').textContent=String(totals.points);
+    document.getElementById('liveTurmaTarget').textContent='/ '+totals.target+' para a próxima';
+    document.getElementById('liveTurmaMedals').textContent=String(totals.medals);
+    document.getElementById('liveTurmaAvailable').textContent=totals.available+' livres';
+    document.getElementById('liveScoreSource').textContent=
+      projectionBase.source==='local'?'● NESTE COMPUTADOR':'';
+  }
+  window.addEventListener('somturma:pontos-aula',event=>{
+    projectionPoints=Math.max(0,Number(event.detail?.pontos)||0);
+    if(projectionPhase==='starting'||projectionPhase==='live')renderLiveProjection();
+  });
+  window.addEventListener('somturma:aula-encerrada',event=>{
+    projectionPhase='finished';
+    const data=event.detail||{};
+    if(experienceMode||!currentProfile||!projectionRoom||data.turma!==projectionRoom){
+      finalScoreboard.classList.add('hidden');
+      return;
+    }
+    const totals=projectionBase
+      ? projectionOf(projectionBase.state,data.pontosDaAula)
+      : stateForRoom(scopedLocalSessions(),projectionRoom);
+    const source=projectionBase?.source||'local';
+    document.getElementById('finalTurmaPoints').textContent=totals.points+' / '+totals.target;
+    document.getElementById('finalTurmaMedals').textContent=String(totals.medals);
+    document.getElementById('finalTurmaAvailable').textContent=String(totals.available);
+    document.getElementById('finalScoreNote').textContent=scoreNote(source);
+    finalScoreboard.classList.remove('hidden');
+  });
+
   async function sha256(text){
     const data=new TextEncoder().encode(text);
     const digest=await crypto.subtle.digest('SHA-256',data);
@@ -546,6 +655,17 @@
     return{medals,points,target,used,available};
   }
 
+  async function roomScoreSnapshot(roomName){
+    try{
+      await syncProfile();
+      const rows=await scopedOnlineSessions();
+      rows.push(...scopedLocalSessions().filter(x=>!x.synced));
+      return{state:stateForRoom(rows,roomName),source:'online'};
+    }catch(e){
+      return{state:stateForRoom(scopedLocalSessions(),roomName),source:'local'};
+    }
+  }
+
   async function refreshTurmaStats(){
     const seq=++statsSeq;
     const selected=cleanRoom(roomInput?.value);
@@ -554,16 +674,10 @@
     manualField?.classList.toggle('hidden',!showDetails);
     if(!showDetails)return;
     if(turmaPointsProgress)turmaPointsProgress.textContent='...';
-    let rows=[];
-    try{
-      await syncProfile();
-      rows=await scopedOnlineSessions();
-      rows.push(...scopedLocalSessions().filter(x=>!x.synced));
-    }catch(e){
-      rows=scopedLocalSessions();
-    }
+    const snapshot=await roomScoreSnapshot(selected);
     if(seq!==statsSeq)return;
-    const state=stateForRoom(rows,selected);
+    const state=snapshot.state;
+    lastRoomSnapshot={room:selected,...snapshot};
     if(turmaPoints)turmaPoints.textContent=String(state.points);
     if(turmaPointsProgress)turmaPointsProgress.textContent=`${state.points}/${state.target}`;
     if(turmaMedals)turmaMedals.textContent=String(state.medals);
@@ -700,10 +814,39 @@
   const enhancedStart=startLesson;
   startLesson=async function(){
     let previous='';
+    const selected=experienceMode?'':cleanRoom(roomInput?.value);
+    const requestId=++projectionSeq;
+    projectionRoom=selected;
+    projectionPoints=0;
+    projectionPhase='starting';
+    projectionBase=selected&&lastRoomSnapshot?.room===selected
+      ? {state:lastRoomSnapshot.state,source:lastRoomSnapshot.source}
+      : null;
+    finalScoreboard.classList.add('hidden');
+    renderLiveProjection();
+    // A conferência remota atualiza a projeção, mas não impede começar a aula.
+    // Nunca incorpora o resultado de uma aula já encerrada ao saldo inicial.
+    if(selected&&!experienceMode&&currentProfile){
+      void roomScoreSnapshot(selected).then(snapshot=>{
+        if(projectionSeq!==requestId||projectionRoom!==selected||projectionPhase==='finished')return;
+        projectionBase=snapshot;
+        if(projectionPhase==='starting'||projectionPhase==='live')renderLiveProjection();
+      });
+    }
     if(experienceMode&&roomInput){previous=roomInput.value;roomInput.value='EXPERIÊNCIA'}
-    await enhancedStart();
-    if(experienceMode&&roomInput)roomInput.value=previous;
-    if(experienceMode&&active){room='EXPERIÊNCIA';document.getElementById('roomLabel').textContent='🧪 EXPERIÊNCIA'}
+    try{
+      await enhancedStart();
+    }finally{
+      if(experienceMode&&roomInput)roomInput.value=previous;
+    }
+    if(active){
+      projectionPhase='live';
+      if(experienceMode){room='EXPERIÊNCIA';document.getElementById('roomLabel').textContent='🧪 EXPERIÊNCIA'}
+      renderLiveProjection();
+    }else{
+      projectionPhase='idle';
+      liveScoreboard.classList.add('hidden');
+    }
   };
   document.getElementById('startBtn').onclick=startLesson;
 
