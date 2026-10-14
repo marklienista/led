@@ -163,13 +163,19 @@
   let waitRaf=0,waitLast=0,waitQuietMs=0,waitSmooth=0;
   let lastSent='',pending=null;
   let pendingStopSilenceMs=0;
+  let lastReportedLessonPoints=null;
 
   function cleanRoom(v){return String(v||'').trim().toUpperCase().replace(/\|/g,'').replace(/\s+/g,' ').slice(0,12)}
   function lessonPoints(){return lessonFocusPoints+lessonWorkPoints}
   function pointText(){
     const box=document.getElementById('pointLive');
     if(!box)return;
-    box.textContent=`⭐ PONTOS DA AULA: ${lessonPoints()}`;
+    const pontos=lessonPoints();
+    box.textContent=`⭐ PONTOS DA AULA: ${pontos}`;
+    if(lastReportedLessonPoints!==pontos){
+      lastReportedLessonPoints=pontos;
+      window.dispatchEvent(new CustomEvent('somturma:pontos-aula',{detail:{pontos}}));
+    }
   }
   function updateFocusProgress(now=performance.now()){
     if(!focusFill||!focusLabel)return;
@@ -310,6 +316,7 @@
     lessonWorkPoints=0;
     silenceForPointMs=0;
     focusFlashUntil=0;
+    lastReportedLessonPoints=null;
     await baseStartLesson();
     if(active){pointText();updateFocusProgress();setPauseLabel()}
   };
@@ -449,7 +456,8 @@
     for(const s of ordered){
       if(!s.room)continue;
       const k=s.room.toUpperCase();
-      const x=map.get(k)||{room:k,medals:0,progress:0,record:0,lessons:0};
+      const x=map.get(k)||{room:k,medals:0,progress:0,record:0,lessons:0,used:0};
+      x.used+=Math.max(0,Number(s.medalUse)||0);
       const delta=Number(s.point)||0;
       if(delta>=0){
         x.progress+=delta;
@@ -472,7 +480,7 @@
     rows.forEach((x,i)=>{
       const r=document.createElement('div');
       r.className='rank-row';
-      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">${x.progress}/${medalTarget()} para a próxima</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${x.progress} pontos</span></div>`;
+      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">${x.progress}/${medalTarget()} para a próxima medalha</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${Math.max(0,x.medals-x.used)} livres</span></div>`;
       box.appendChild(r);
     });
   }
@@ -587,6 +595,7 @@
     if(roomInput)roomInput.value='';
     room='';document.getElementById('roomLabel').textContent='Turma';
     show('summary');
+    window.dispatchEvent(new CustomEvent('somturma:aula-encerrada',{detail:{turma:endedRoom,pontosDaAula:total,bonus:noStopBonus}}));
     document.getElementById('saveStatus').textContent='SALVANDO...';
     try{await saveOnline(s);markSynced(s.id);document.getElementById('saveStatus').textContent='✅ SALVO';document.getElementById('saveStatus').className='status-note online'}
     catch(e){document.getElementById('saveStatus').textContent='💾 SALVO NESTE COMPUTADOR';document.getElementById('saveStatus').className='status-note offline'}
