@@ -318,3 +318,20 @@
   #summary .actions{margin-top:clamp(10px,1.7vh,16px)}
   #summary .actions .btn{padding:clamp(10px,1.5vh,13px) 16px}
 }
+
+/* Resumo da turma na configuração, sem disputar espaço com a área de controle. */
+#setup .turma-summary .turma-stat b{
+  font-size:clamp(29px,2.7vw,43px);
+}
+#setup .turma-summary .medal-wallet-value b{
+  font-size:clamp(32px,2.8vw,44px);
+}
+@media(max-width:550px){
+  #ranking.ranking-medals .rank-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  #ranking.ranking-medals .rank-head h1{
+    font-size:clamp(28px,8vw,42px);
+  }
+}
