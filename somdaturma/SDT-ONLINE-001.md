@@ -74,3 +74,26 @@ Próximo passo no Som da Turma: validação real de duas contas e correção pon
 - Após decisão visual consolidada, ajustar tokens e posicionamentos em tarefa curta e testar a interface afetada. O adendo **não** autoriza preços, limites, lançamento, conta universal ou mudança no banco do ApertaLetra.
 
 **Resultado deste adendo:** atualização de orientação no condutor do Som da Turma, sem mudança do banco, do código funcional, da versão pública ou dos testes anteriores. Banco permanece liberado para a etapa sequencial do ApertaLetra.
+
+
+## SDT-PROJECAO-001 — telas de projeção e saldo da turma (14/10/2026)
+
+**Escopo:** correção funcional/visual solicitada: interrupção com controles acessíveis, quadro de medalhas maior, pontos da turma e saldo de medalhas durante e ao encerrar a aula. Identidade gráfica permanece provisória conforme CFT-003; sem lançamento.
+
+**Arquivos desta execução:**
+- \`somdaturma/projecao.css\`: CSS complementar com tokens reversíveis, escala da interrupção limitada também por altura, botões sem corte e quadro de medalhas em 1–3 colunas conforme largura; compactação do resumo em projetores 720p/768p e do monitor em celulares baixos.
+- \`somdaturma/control-core.js\`: emite eventos apenas de apresentação \`somturma:pontos-aula\` e \`somturma:aula-encerrada\`; o ranking de medalhas passa a mostrar também quantas estão livres, sem mudar o cálculo ou persistência.
+- \`somdaturma/profiles.js\`: usa o mesmo estado \`stateForRoom\` e o mesmo objetivo de pontos de medalha; mostra saldo atual para a próxima medalha, medalhas conquistadas e disponíveis; atualização durante a aula é **prévia**, sujeita à penalidade por paralisação confirmada; encerramento usa os pontos de foco/trabalho e o bônus real antes de apresentar o total. Quando a rede falha, informa que o saldo pode refletir apenas os dados daquele navegador.
+- \`somdaturma/index.html\` e \`control-sync.js\`: carregam CSS e JS versionados, sem alterar entrada/autenticação ou o processo de áudio.
+
+**Semântica preservada:** pontos da aula ≠ saldo da turma. O saldo exibido é o restante até a próxima medalha, após converter pontos suficientes; medalhas conquistadas não diminuem quando uma é usada, apenas o número de disponíveis. O bônus por aula sem paralisação conta somente no encerramento. Pontos de foco perdidos por paralisação confirmada não voltam; pontos de trabalho persistem.
+
+**Verificações:**
+- JavaScript dos três arquivos de execução com sintaxe válida, eventos vinculados, elementos IDs únicos e referências versionadas presentes.
+- Oito cenários determinísticos de pontuação com resultado correto: saldo zero; cruzamento do limite, inclusive medalha usada; trabalho preservado após paralisação; bônus que converte medalha; ajuste negativo sem apagar medalha; consumo de medalha; múltiplas medalhas e filtro por turma.
+- Renderização responsiva em HTML de teste representativo com CSS equivalente ao patch, usando Chromium nas larguras 1920, 1366, 1024, 800, 390 e 320. Em 1366×768, os três botões da interrupção e os dois controles do resumo ficam dentro da tela; quadro maior tem duas colunas e em >=1730 usa três. Em 390×667 e 320×568, botões da interrupção e controles da aula permanecem alcançáveis. Em alturas muito pequenas, o resumo pode exigir rolagem vertical.
+- **Limite de prova:** renderizações com fixture representativa e testes matemáticos/sintáticos; não foram realizadas uma aula real com microfone, votação de medalha em escola ou validação física no projetor. Não declarar homologação integrada em hardware.
+
+**Proteções:** dados reais, tabelas Supabase, políticas RLS, ranking histórico, autenticação experimental, microfone, gravação de áudio e telas de outras ferramentas inalterados. Não houve novo projeto, preço, restrição premium, cobrança ou lançamento. Alterações aplicadas somente ao fluxo visual existente, preservando o status de produto em desenvolvimento.
+
+**Próximo passo mínimo:** conferir no projetor real a visibilidade dos botões e o saldo de uma turma conhecida, fazendo uma aula curta de teste em que o encerramento confirme pontos/medalhas/medalhas disponíveis. Corrigir apenas divergência comprovada; sem redesign antes do CFT-003.
