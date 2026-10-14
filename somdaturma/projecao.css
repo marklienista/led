@@ -297,3 +297,24 @@
   #summary .final-score-item b{min-width:68px}
   #summary .final-score-item span{margin:0;font-size:13px}
 }
+
+/* Resumo compacto para projetores 720p/768p: mantém o botão Nova aula visível. */
+@media(max-height:900px){
+  #summary.summary{padding:clamp(9px,1.8vh,17px)}
+  #summary .panel{padding:clamp(14px,1.7vh,20px)}
+  #summary .panel h1{font-size:clamp(32px,5.1vh,45px);margin-bottom:7px}
+  #summary .result-banner{padding:clamp(12px,1.8vh,18px);margin:7px 0 11px}
+  #summary .result-banner h2{font-size:clamp(27px,4.8vh,40px);margin-bottom:3px}
+  #summary .result-banner p{font-size:clamp(15px,2.5vh,19px)}
+  #summary .final-scoreboard{padding:clamp(11px,1.5vh,16px);margin:8px 0 12px}
+  #summary .final-scoreboard h2{font-size:clamp(19px,2.9vh,25px);margin-bottom:8px}
+  #summary .final-score-item{padding:clamp(10px,1.5vh,14px)}
+  #summary .final-score-item b{font-size:clamp(28px,4.6vh,43px)}
+  #summary .final-score-item span{font-size:clamp(11px,1.8vh,15px)}
+  #summary .final-score-note{font-size:clamp(11px,1.6vh,14px);margin-top:7px}
+  #summary .stat{padding:clamp(9px,1.3vh,12px)}
+  #summary .stat b{font-size:clamp(24px,4.4vh,36px)}
+  #summary .stat span{font-size:clamp(11px,1.55vh,13px)}
+  #summary .actions{margin-top:clamp(10px,1.7vh,16px)}
+  #summary .actions .btn{padding:clamp(10px,1.5vh,13px) 16px}
+}
