@@ -375,7 +375,7 @@
     document.getElementById('liveTurmaMedals').textContent=String(totals.medals);
     document.getElementById('liveTurmaAvailable').textContent=totals.available+' livres';
     document.getElementById('liveScoreSource').textContent=
-      projectionBase.source==='local'?'● NESTE COMPUTADOR':'';
+      projectionBase.source==='local'?'PRÉVIA • NESTE COMPUTADOR':'PRÉVIA ATÉ ENCERRAR A AULA';
   }
   window.addEventListener('somturma:pontos-aula',event=>{
     projectionPoints=Math.max(0,Number(event.detail?.pontos)||0);
