@@ -335,3 +335,19 @@
     font-size:clamp(28px,8vw,42px);
   }
 }
+
+/* Em celular baixo, manter os controles da aula alcançáveis sem miniaturizar o projetor. */
+@media(max-width:730px) and (max-height:700px){
+  #monitor .monitor-inner{padding:9px;gap:0}
+  #monitor .center{padding:10px 6px}
+  #monitor .state-copy h2{font-size:clamp(40px,13vw,65px)}
+  #monitor .state-copy p{font-size:clamp(18px,5vw,25px);margin-top:12px}
+  #monitor .bottom{gap:7px}
+  #monitor .live-score-item{padding:7px 10px;gap:3px 9px}
+  #monitor .live-score-item strong{font-size:28px}
+  #monitor .live-score-note{font-size:12px}
+  #monitor .live-score-source{font-size:11px}
+  #monitor .meter-shell{height:16px}
+  #monitor .teacher-tools{gap:6px}
+  #monitor .teacher-tools .mini{font-size:13px;padding:7px 9px}
+}
