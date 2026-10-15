@@ -11,7 +11,7 @@
   core.onload=()=>{
     const loadProfiles=()=>{
       const profiles=document.createElement('script');
-      profiles.src='profiles.js?v=20261014-1';
+      profiles.src='profiles.js?v=20261015-1';
       document.head.appendChild(profiles);
     };
     const microphone=document.createElement('script');
