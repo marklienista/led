@@ -83,7 +83,7 @@ Próximo passo no Som da Turma: validação real de duas contas e correção pon
 **Arquivos desta execução:**
 - \`somdaturma/projecao.css\`: CSS complementar com tokens reversíveis, escala da interrupção limitada também por altura, botões sem corte e quadro de medalhas em 1–3 colunas conforme largura; compactação do resumo em projetores 720p/768p e do monitor em celulares baixos.
 - \`somdaturma/control-core.js\`: emite eventos apenas de apresentação \`somturma:pontos-aula\` e \`somturma:aula-encerrada\`; o ranking de medalhas passa a mostrar também quantas estão livres, sem mudar o cálculo ou persistência.
-- \`somdaturma/profiles.js\`: usa o mesmo estado \`stateForRoom\` e o mesmo objetivo de pontos de medalha; mostra saldo atual para a próxima medalha, medalhas conquistadas e disponíveis; atualização durante a aula é **prévia**, sujeita à penalidade por paralisação confirmada; encerramento usa os pontos de foco/trabalho e o bônus real antes de apresentar o total. Quando a rede falha, informa que o saldo pode refletir apenas os dados daquele navegador.
+- \`somdaturma/profiles.js\`: usa o mesmo estado \`stateForRoom\` e o mesmo objetivo de pontos de medalha; mostra saldo atual para a próxima medalha, medalhas conquistadas e disponíveis; o saldo da turma permanece anterior à aula durante a execução (ajuste de 15/10); os pontos da aula aparecem separadamente e só são somados ao encerramento, depois das eventuais paralisações e do bônus real. Quando a rede falha, informa que o saldo pode refletir apenas os dados daquele navegador.
 - \`somdaturma/index.html\` e \`control-sync.js\`: carregam CSS e JS versionados, sem alterar entrada/autenticação ou o processo de áudio.
 
 **Semântica preservada:** pontos da aula ≠ saldo da turma. O saldo exibido é o restante até a próxima medalha, após converter pontos suficientes; medalhas conquistadas não diminuem quando uma é usada, apenas o número de disponíveis. O bônus por aula sem paralisação conta somente no encerramento. Pontos de foco perdidos por paralisação confirmada não voltam; pontos de trabalho persistem.
@@ -97,3 +97,14 @@ Próximo passo no Som da Turma: validação real de duas contas e correção pon
 **Proteções:** dados reais, tabelas Supabase, políticas RLS, ranking histórico, autenticação experimental, microfone, gravação de áudio e telas de outras ferramentas inalterados. Não houve novo projeto, preço, restrição premium, cobrança ou lançamento. Alterações aplicadas somente ao fluxo visual existente, preservando o status de produto em desenvolvimento.
 
 **Próximo passo mínimo:** conferir no projetor real a visibilidade dos botões e o saldo de uma turma conhecida, fazendo uma aula curta de teste em que o encerramento confirme pontos/medalhas/medalhas disponíveis. Corrigir apenas divergência comprovada; sem redesign antes do CFT-003.
+
+
+## SDT-PROJECAO-002 — soma somente ao encerrar (15/10/2026)
+
+**Solicitação:** não antecipar o acréscimo dos pontos da aula ao saldo acumulado da turma. Durante a aula, `PONTOS DA TURMA` e medalhas permanecem no estado inicial conhecido; `PONTOS DA AULA` evoluem independentemente na interface existente. Somente ao encerrar o Som da Turma aplica a soma, incluindo o bônus de aula sem paralisação quando existir, e atualiza pontos remanescentes para a próxima medalha, medalhas conquistadas e disponíveis. Penalidades de foco já ocorrem dentro do cálculo dos pontos da aula; medalhas usadas permanecem separadas.
+
+**Implementação:** mudança restrita a `somdaturma/profiles.js` (o placar ao vivo passa a renderizar somente `projectionBase.state`; removida a atualização do placar em cada evento de pontos), com renovação de cache em `control-sync.js` e `index.html` para `20261015-1`. `control-core.js`, CSS, microfone, persistência de dados, contas e banco intactos. Identidade visual ainda provisória CFT-003.
+
+**Testes:** sintaxe JS válida e 11 casos determinísticos de apresentação: cinco progressões de pontos da aula preservam os mesmos valores de turma no placar ao vivo; seis resultados finais somam corretamente e convertem pontos em medalhas. Exemplo: saldo inicial 38/40 e 2 medalhas (1 livre), aula acrescenta 5 pontos → durante a aula mantém 38/40 e 2 medalhas; no encerramento passa a 3/40 e 3 medalhas (2 livres). Testes de código/simulação, ainda sem prova física de aula e projetor. Status: alteração integrada à página pública, mas não constitui lançamento do produto.
+
+**Próximo passo:** testar em uma aula curta de verdade a separação entre saldo da turma e pontos da aula; conferir o resumo final no projetor. Não reabrir desenho das demais telas por esta mudança.
