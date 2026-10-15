@@ -336,7 +336,6 @@
   let lastRoomSnapshot=null;
   let projectionRoom='';
   let projectionBase=null;
-  let projectionPoints=0;
   let projectionPhase='idle';
   let projectionSeq=0;
   function projectionOf(base,earned){
@@ -369,18 +368,16 @@
       document.getElementById('liveScoreSource').textContent='';
       return;
     }
-    const totals=projectionOf(projectionBase.state,projectionPoints);
+    // Durante a aula, o saldo da turma é o anterior; os pontos da aula ficam
+    // separados em #pointLive e só entram no total no encerramento.
+    const totals=projectionBase.state;
     document.getElementById('liveTurmaPoints').textContent=String(totals.points);
     document.getElementById('liveTurmaTarget').textContent='/ '+totals.target+' para a próxima';
     document.getElementById('liveTurmaMedals').textContent=String(totals.medals);
     document.getElementById('liveTurmaAvailable').textContent=totals.available+' livres';
     document.getElementById('liveScoreSource').textContent=
-      projectionBase.source==='local'?'PRÉVIA • NESTE COMPUTADOR':'PRÉVIA ATÉ ENCERRAR A AULA';
+      projectionBase.source==='local'?'SALDO ANTES DA AULA • NESTE COMPUTADOR':'SALDO ANTES DA AULA';
   }
-  window.addEventListener('somturma:pontos-aula',event=>{
-    projectionPoints=Math.max(0,Number(event.detail?.pontos)||0);
-    if(projectionPhase==='starting'||projectionPhase==='live')renderLiveProjection();
-  });
   window.addEventListener('somturma:aula-encerrada',event=>{
     projectionPhase='finished';
     const data=event.detail||{};
@@ -817,7 +814,6 @@
     const selected=experienceMode?'':cleanRoom(roomInput?.value);
     const requestId=++projectionSeq;
     projectionRoom=selected;
-    projectionPoints=0;
     projectionPhase='starting';
     projectionBase=selected&&lastRoomSnapshot?.room===selected
       ? {state:lastRoomSnapshot.state,source:lastRoomSnapshot.source}
