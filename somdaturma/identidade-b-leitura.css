@@ -1,0 +1,153 @@
+/* CFT-003 · Som da Turma · continuidade visual nas páginas adultas de leitura.
+   Referência B — Recortes em uso; sem substituir texto, imagens ou cores pedagógicas semânticas. */
+body.sdt-doc-b{
+  --ink:#232922;
+  --muted:#586151;
+  --line:#d8dcd1;
+  --paper:#fffdf9;
+  --bg:#faf9f5;
+  --soft:#f5f0e4;
+  background:#faf9f5;
+  color:#232922;
+  font-family:Arial,Helvetica,system-ui,sans-serif;
+}
+body.sdt-doc-b :is(a,button,summary,input):focus-visible{
+  outline:3px solid #174c9d;
+  outline-offset:4px;
+}
+body.sdt-doc-b .topbar{
+  border-bottom:1px solid #d8dcd1;
+}
+body.sdt-doc-b .topbar .brand{
+  color:#232922;
+  background:linear-gradient(transparent 72%,#f2c641 72%);
+  text-decoration:none;
+  font-size:clamp(17px,2vw,22px);
+  font-weight:800;
+}
+body.sdt-doc-b .topbar a:hover{text-decoration:underline;text-underline-offset:4px}
+body.sdt-doc-b .hero{
+  background:#fffdf9;
+  color:#232922;
+  border:1px solid #d8dcd1;
+  border-radius:8px;
+  box-shadow:none;
+  position:relative;
+  isolation:isolate;
+}
+body.sdt-doc-b .hero::before{
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  width:clamp(70px,12vw,170px);
+  height:clamp(16px,2.4vw,28px);
+  right:clamp(12px,3vw,35px);
+  top:-8px;
+  background:#f2c641;
+  clip-path:polygon(3% 0,100% 6%,97% 100%,0 92%);
+  z-index:-1;
+}
+body.sdt-doc-b .hero h1{
+  font-weight:650;
+  color:#232922;
+  letter-spacing:-.04em;
+}
+body.sdt-doc-b .hero p{
+  color:#586151;
+}
+body.sdt-doc-b .section{
+  background:#fffdf9;
+  border:1px solid #d8dcd1;
+  border-radius:8px;
+  box-shadow:none;
+}
+body.sdt-doc-b .section h2{
+  font-weight:700;
+  letter-spacing:-.025em;
+}
+body.sdt-doc-b :is(.quick a,.mini-card,.legend-card,.step,.callout,.figure,.brief,.activity,.path-card,.deep-reading,.curriculum-details){
+  border-radius:6px;
+}
+body.sdt-doc-b .quick a{
+  border:1px solid #d8dcd1;
+  background:#f7f2e9;
+  color:#232922;
+}
+body.sdt-doc-b .quick a:nth-child(2n){
+  background:#eaf1ed;
+}
+body.sdt-doc-b .quick a:hover{
+  background:#f9efc8;
+}
+body.sdt-doc-b .step,.sdt-doc-b .mini-card{
+  background:#f8f6ef;
+  border-color:#d8dcd1;
+}
+body.sdt-doc-b .step-num,
+body.sdt-doc-b .badge{
+  border-radius:5px;
+  background:#0f4f42;
+}
+body.sdt-doc-b .section-number,
+body.sdt-doc-b .eyebrow{
+  color:#0f4f42;
+}
+body.sdt-doc-b .button.primary{
+  border-radius:5px;
+  background:#0f4f42;
+  border-color:#0f4f42;
+  color:white;
+}
+body.sdt-doc-b .hero-visual{
+  border-radius:8px;
+  background:#eaf1ed;
+}
+body.sdt-doc-b .visual-signal,
+body.sdt-doc-b .visual-paths>div{
+  border-radius:5px;
+}
+body.sdt-doc-b .brief{
+  border-radius:7px;
+  background:#f1eee2;
+  border-color:#d8dcd1;
+}
+body.sdt-doc-b .deep-reading,
+body.sdt-doc-b .curriculum-details{
+  background:#fcfbf7;border-color:#d8dcd1;
+}
+body.sdt-doc-b .activity{
+  background:#fffdf9;
+  border-color:#d8dcd1;
+}
+body.sdt-doc-b .activity[open]{
+  background:#fcfbf7;
+}
+body.sdt-doc-b :is(.callout,.sensor-callout,.central-quote){
+  border-radius:6px;
+}
+body.sdt-doc-b .sdt-doc-credit{
+  font-size:12px;
+  color:#586151;
+  font-weight:700;
+  letter-spacing:0;
+}
+body.sdt-doc-b .sdt-doc-credit b{
+  color:#232922;
+  font-weight:800;
+  background:linear-gradient(transparent 72%,#f2c641 72%);
+}
+body.sdt-doc-b :is(.button,.action,button){
+  touch-action:manipulation;
+}
+@media(max-width:740px){
+  body.sdt-doc-b .hero::before{right:10px;width:66px}
+  body.sdt-doc-b .topbar{flex-wrap:wrap;gap:9px}
+  body.sdt-doc-b .sdt-doc-credit{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.sdt-doc-b *,body.sdt-doc-b *::before,body.sdt-doc-b *::after{
+    transition:none!important;
+    animation:none!important;
+    scroll-behavior:auto!important;
+  }
+}
