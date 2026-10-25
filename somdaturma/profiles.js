@@ -136,14 +136,21 @@
     }
   `;
   document.head.appendChild(css);
+  document.body.classList.add('sdt-identity-b');
+  const identityB=document.createElement('link');
+  identityB.rel='stylesheet';
+  identityB.href='identidade-b.css?v=20261025-1';
+  document.head.appendChild(identityB);
 
   const login=document.createElement('section');
   login.className='profile-login';
   login.innerHTML=`
     <div class="public-shell">
       <header class="public-head">
+        <div class="sdt-entry-kicker">INVENÇÕES PRÁTICAS PARA A EDUCAÇÃO</div>
         <h1>Som da Turma</h1>
         <p>Uma referência visual para professor e turma perceberem e regularem coletivamente o ambiente sonoro durante as atividades.</p>
+        <span class="sdt-entry-status">Em desenvolvimento · uso experimental</span>
       </header>
 
       <div class="public-grid">
@@ -182,15 +189,22 @@
 
         <section class="public-card author-card">
           <div>
-            <h2>Autor</h2>
-            <p><strong>Marcelo Santos</strong> cria pequenas soluções práticas para quem trabalha com educação.</p>
-            <p>O Som da Turma faz parte desse repertório de ferramentas criadas a partir de problemas reais da escola.</p>
+            <h2>Sobre / autoria</h2>
+            <p class="sdt-entry-authorship"><span>Criado por Marcelo Santos</span></p>
+            <p>Ferramenta construída a partir de situações reais da escola. O professor e a turma dão sentido aos combinados.</p>
           </div>
-          <a class="resource-link" href="../profissional/">
-            <b>Conheça outras soluções</b>
-            <span>Veja outras ferramentas, projetos e formas de entrar em contato.</span>
-            <span class="resource-action">VER O ECOSSISTEMA →</span>
-          </a>
+          <div class="resource-list">
+            <a class="resource-link" href="https://marklienista.github.io/">
+              <b>Outras ferramentas</b>
+              <span>Conheça as invenções e os projetos do autor.</span>
+              <span class="resource-action">CONHECER →</span>
+            </a>
+            <a class="resource-link" href="https://marklienista.github.io/formacoes/">
+              <b>Formações sob consulta</b>
+              <span>Conheça possibilidades de trabalho com equipes e instituições.</span>
+              <span class="resource-action">VER FORMAÇÕES →</span>
+            </a>
+          </div>
         </section>
       </div>
 
@@ -255,12 +269,37 @@
   centerCard.className='setup-card levels-card';
   const rightCard=document.createElement('div');
   rightCard.className='setup-card config-card';
+  rightCard.id='sdtConfigPanel';
+  rightCard.hidden=true;
+  leftCard.id='sdtClassPanel';
+  centerCard.id='sdtLevelsPanel';
   centerCard.innerHTML='<h2>NÍVEIS</h2>';
   rightCard.innerHTML='<h2>⚙️ CONFIGURAÇÕES</h2>';
+  const setupHead=document.createElement('div');
+  setupHead.className='sdt-setup-head';
+  setupHead.innerHTML=`
+    <div class="sdt-view-switch" role="group" aria-label="Área de preparação">
+      <button id="sdtClassView" type="button" aria-pressed="true">Preparar aula</button>
+      <button id="sdtConfigView" type="button" aria-pressed="false" aria-controls="sdtConfigPanel">⚙️ Configurações</button>
+    </div>
+    <div class="sdt-setup-hint">As configurações ficam disponíveis nesta aba, sem ocupar a preparação da turma.</div>`;
+  const classView=setupHead.querySelector('#sdtClassView');
+  const configView=setupHead.querySelector('#sdtConfigView');
+  function setSettingsView(isConfig){
+    leftCard.hidden=isConfig;
+    centerCard.hidden=isConfig;
+    rightCard.hidden=!isConfig;
+    setupGrid.classList.toggle('settings-view',isConfig);
+    classView.setAttribute('aria-pressed',String(!isConfig));
+    configView.setAttribute('aria-pressed',String(isConfig));
+  }
+  classView.addEventListener('click',()=>setSettingsView(false));
+  configView.addEventListener('click',()=>setSettingsView(true));
+  setSettingsView(false);
 
   const mainTitle=setupPanel?.querySelector('h1');
   if(setupPanel&&mainTitle){
-    mainTitle.after(setupGrid);
+    mainTitle.after(setupHead,setupGrid);
     setupGrid.append(leftCard,centerCard,rightCard);
     leftCard.append(strip,expNote);
     if(roomField)leftCard.append(roomField);
@@ -271,6 +310,13 @@
     if(micField)centerCard.append(micField);
     if(micError)centerCard.append(micError);
     rightCard.append(configBox);
+    const aboutDetails=document.createElement('details');
+    aboutDetails.className='sdt-about-details';
+    aboutDetails.innerHTML=`
+      <summary>Sobre e autoria</summary>
+      <p><strong>Criado por Marcelo Santos.</strong> O Som da Turma ajuda a perceber o ambiente sonoro, sem medir atenção ou gravar áudio. A interpretação continua sendo do professor e da turma.</p>
+      <p><a href="manual/">Como usar</a> · <a href="possibilidades-pedagogicas/">Possibilidades pedagógicas</a> · <a href="https://marklienista.github.io/">Outras ferramentas</a> · <a href="https://marklienista.github.io/formacoes/">Formações sob consulta</a></p>`;
+    setupPanel.append(aboutDetails);
     if(dbStatus){dbStatus.classList.add('online-footer');setupPanel.append(dbStatus);}
   }
 
@@ -738,6 +784,7 @@
   }
 
   function applyUi(){
+    setSettingsView(false);
     const profileName=document.getElementById('profileName');
     if(profileName)profileName.textContent=experienceMode?'🧪 EXPERIÊNCIA':`🏫 ${currentProfile?.name||''}`;
     roomField?.classList.toggle('hidden',experienceMode);
