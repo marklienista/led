@@ -223,15 +223,35 @@
   const turmaSummary=document.createElement('div');
   turmaSummary.className='turma-summary hidden';
   turmaSummary.innerHTML=`
-    <div class="turma-stat"><b id="turmaPoints">0</b><span>⭐ PONTOS</span><small id="turmaPointsProgress" class="turma-points-progress"></small></div>
-    <div class="turma-stat"><b id="turmaMedals">0</b><span>🏅 MEDALHAS CONQUISTADAS</span></div>
-    <div class="medal-wallet">
-      <div class="medal-wallet-value"><b id="turmaAvailable">0</b><span>🏅 DISPONÍVEIS PARA USAR</span></div>
-      <button id="useMedalBtn" class="use-medal-btn" type="button" disabled>USAR 1 MEDALHA</button>
-      <div id="medalUseNote" class="medal-use-note">Usar uma medalha não altera as conquistadas nem o ranking.</div>
-      <div id="medalUseMsg" class="medal-use-msg" aria-live="polite"></div>
+    <div class="turma-stat turma-stat-primary">
+      <b id="turmaPoints">0</b>
+      <span>⭐ PONTOS ACUMULADOS</span>
+      <small id="turmaPointsProgress" class="turma-points-progress"></small>
     </div>
-    <div id="turmaNext" class="turma-next"></div>`;
+    <div class="turma-stat">
+      <b id="turmaMedals">0</b><span>🏅 MEDALHAS CONQUISTADAS</span>
+    </div>
+    <div class="turma-stat">
+      <b id="turmaAvailable">0</b><span>🏅 MEDALHAS DISPONÍVEIS</span>
+    </div>
+    <div class="medal-flow">
+      <section class="medal-action medal-exchange">
+        <span class="medal-step">1 · TROCAR PONTOS</span>
+        <h3>Conquistar uma medalha</h3>
+        <p id="medalExchangeGuide">Escolha uma turma para consultar os pontos.</p>
+        <button id="convertMedalBtn" class="medal-action-btn" type="button" disabled>Trocar pontos por 1 medalha</button>
+        <p id="medalConvertMsg" class="medal-feedback" role="status" aria-live="polite"></p>
+      </section>
+      <section class="medal-action medal-spend">
+        <span class="medal-step">2 · USAR MEDALHA</span>
+        <h3>Utilizar uma conquista</h3>
+        <p>Quando a turma decidir usar uma medalha, registre aqui. O total conquistado não diminui.</p>
+        <button id="useMedalBtn" class="medal-action-btn secondary" type="button" disabled>Usar 1 medalha disponível</button>
+        <p id="medalUseNote" class="medal-use-note">Somente as medalhas disponíveis diminuem.</p>
+        <p id="medalUseMsg" class="medal-feedback" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+    <div id="turmaNext" class="turma-next">Os pontos não são trocados automaticamente: o professor confirma quando a turma conquista uma medalha.</div>`;
 
   const configBox=document.createElement('div');
   configBox.innerHTML=`
@@ -331,6 +351,10 @@
   const turmaPointsProgress=document.getElementById('turmaPointsProgress');
   const turmaMedals=document.getElementById('turmaMedals');
   const turmaAvailable=document.getElementById('turmaAvailable');
+  const convertMedalBtn=document.getElementById('convertMedalBtn');
+  const medalExchangeGuide=document.getElementById('medalExchangeGuide');
+  const medalConvertMsg=document.getElementById('medalConvertMsg');
+  let medalActionBusy=false;
   const useMedalBtn=document.getElementById('useMedalBtn');
   const medalUseNote=document.getElementById('medalUseNote');
   const medalUseMsg=document.getElementById('medalUseMsg');
@@ -344,7 +368,7 @@
     <div class="live-score-item">
       <span class="live-score-label">⭐ PONTOS DA TURMA</span>
       <strong id="liveTurmaPoints">—</strong>
-      <span id="liveTurmaTarget" class="live-score-note">para a próxima medalha</span>
+      <span id="liveTurmaTarget" class="live-score-note">pontos acumulados</span>
     </div>
     <div class="live-score-item">
       <span class="live-score-label">🏅 MEDALHAS</span>
@@ -363,7 +387,7 @@
     <div class="final-score-grid">
       <div class="final-score-item">
         <b id="finalTurmaPoints">—</b>
-        <span>⭐ PONTOS PARA A PRÓXIMA MEDALHA</span>
+        <span>⭐ PONTOS ACUMULADOS</span>
       </div>
       <div class="final-score-item">
         <b id="finalTurmaMedals">—</b>
@@ -377,28 +401,25 @@
     <p class="final-score-note" id="finalScoreNote"></p>`;
   document.getElementById('resultBanner')?.after(finalScoreboard);
 
-  // O número de pontos é o saldo restante para a próxima medalha; as
-  // medalhas já conquistadas não são revertidas pelo uso de uma medalha.
+  // Os pontos ficam acumulados até o professor confirmar uma troca.
+  // Usar uma medalha reduz apenas as disponíveis, nunca as conquistadas.
   let lastRoomSnapshot=null;
   let projectionRoom='';
   let projectionBase=null;
   let projectionPhase='idle';
   let projectionSeq=0;
   function projectionOf(base,earned){
-    const target=Math.max(1,Number(base.target)||40);
-    const combined=Math.max(0,Number(base.points)||0)+Math.max(0,Number(earned)||0);
-    const medalsNew=Math.floor(combined/target);
     return {
-      points:combined%target,
-      target,
-      medals:(Number(base.medals)||0)+medalsNew,
-      available:Math.max(0,(Number(base.available)||0)+medalsNew)
+      points:Math.max(0,Number(base.points)||0)+Math.max(0,Number(earned)||0),
+      target:Math.max(1,Number(base.target)||40),
+      medals:Math.max(0,Number(base.medals)||0),
+      available:Math.max(0,Number(base.available)||0)
     };
   }
   function scoreNote(source){
     return source==='local'
-      ? 'Somente os registros deste computador; resultados de outros dispositivos podem não aparecer.'
-      : 'Pontos restantes até a próxima medalha. Medalhas já usadas não reduzem as conquistadas.';
+      ? 'Saldo deste computador. A troca de pontos por medalhas é confirmada pelo professor na preparação.'
+      : 'Os pontos da aula foram somados. Para conquistar uma medalha, o professor deve trocar os pontos na preparação.';
   }
   function renderLiveProjection(){
     if(experienceMode||!currentProfile||!projectionRoom){
@@ -408,7 +429,7 @@
     liveScoreboard.classList.remove('hidden');
     if(!projectionBase){
       document.getElementById('liveTurmaPoints').textContent='…';
-      document.getElementById('liveTurmaTarget').textContent='carregando pontuação';
+      document.getElementById('liveTurmaTarget').textContent='carregando saldo';
       document.getElementById('liveTurmaMedals').textContent='…';
       document.getElementById('liveTurmaAvailable').textContent='aguardando dados da turma';
       document.getElementById('liveScoreSource').textContent='';
@@ -418,7 +439,7 @@
     // separados em #pointLive e só entram no total no encerramento.
     const totals=projectionBase.state;
     document.getElementById('liveTurmaPoints').textContent=String(totals.points);
-    document.getElementById('liveTurmaTarget').textContent='/ '+totals.target+' para a próxima';
+    document.getElementById('liveTurmaTarget').textContent=totals.points>=totals.target?'prontos para troca após a aula':'faltam '+(totals.target-totals.points)+' para trocar';
     document.getElementById('liveTurmaMedals').textContent=String(totals.medals);
     document.getElementById('liveTurmaAvailable').textContent=totals.available+' livres';
     document.getElementById('liveScoreSource').textContent=
@@ -435,7 +456,7 @@
       ? projectionOf(projectionBase.state,data.pontosDaAula)
       : stateForRoom(scopedLocalSessions(),projectionRoom);
     const source=projectionBase?.source||'local';
-    document.getElementById('finalTurmaPoints').textContent=totals.points+' / '+totals.target;
+    document.getElementById('finalTurmaPoints').textContent=String(totals.points);
     document.getElementById('finalTurmaMedals').textContent=String(totals.medals);
     document.getElementById('finalTurmaAvailable').textContent=String(totals.available);
     document.getElementById('finalScoreNote').textContent=scoreNote(source);
@@ -470,7 +491,7 @@
     return{
       perfil:currentProfile.id,
       turma:cleanRoom(s.room),
-      tipo:s.medalUse?'medalha_usada':(s.manual?'ajuste':'sessao'),
+      tipo:s.medalConversion?'medalha_trocada':(s.medalUse?'medalha_usada':(s.manual?'ajuste':'sessao')),
       pontos:Number(s.point)||0,
       recorde_seg:Math.max(0,Number(s.record)||0),
       foco_pontos:Math.max(0,Number(s.focusPoints)||0),
@@ -493,6 +514,8 @@
       workPoints:Math.max(0,Number(row.trabalho_pontos)||0),
       noStopBonus:Math.max(0,Number(row.bonus_sem_parada)||0),
       medalUse:Math.max(0,Number(row.medalhas_usadas)||0),
+      medalConversion:row.tipo==='medalha_trocada',
+      tipo:row.tipo,
       stops:Math.max(0,Number(row.paradas)||0),
       duration:Math.max(0,Number(row.duracao_seg)||0),
       quietPct:Math.max(0,Math.min(100,Number(row.silencio_pct)||0)),
@@ -683,19 +706,12 @@
   }
 
   function stateForRoom(rows,roomName){
-    const target=Math.max(1,Number(window.SOM_TURMA_SETTINGS?.medalPoints)||40);
-    let medals=0,points=0,used=0;
-    const ordered=rows.filter(x=>cleanRoom(x.room)===roomName).sort((a,b)=>timeValue(a.ts)-timeValue(b.ts));
-    for(const row of ordered){
-      used+=Math.max(0,Number(row.medalUse)||0);
-      const delta=Number(row.point)||0;
-      if(delta>=0){
-        points+=delta;
-        while(points>=target){medals++;points-=target}
-      }else points=Math.max(0,points+delta);
+    const ledger=window.SOM_TURMA_MEDAL_LEDGER;
+    if(!ledger){
+      // A ausência do módulo não pode fazer o sistema voltar a dar medalhas sozinho.
+      throw new Error('Não foi possível carregar a regra de medalhas. Atualize a página.');
     }
-    const available=Math.max(0,medals-used);
-    return{medals,points,target,used,available};
+    return ledger.calculate(rows,roomName,window.SOM_TURMA_SETTINGS?.medalPoints);
   }
 
   async function roomScoreSnapshot(roomName){
@@ -722,14 +738,21 @@
     const state=snapshot.state;
     lastRoomSnapshot={room:selected,...snapshot};
     if(turmaPoints)turmaPoints.textContent=String(state.points);
-    if(turmaPointsProgress)turmaPointsProgress.textContent=`${state.points}/${state.target}`;
+    if(turmaPointsProgress)turmaPointsProgress.textContent=state.canExchange?'A turma já pode trocar pontos por uma medalha.':`Faltam ${state.remaining} para trocar por uma medalha.`;
     if(turmaMedals)turmaMedals.textContent=String(state.medals);
     if(turmaAvailable)turmaAvailable.textContent=String(state.available);
-    if(useMedalBtn)useMedalBtn.disabled=state.available<=0;
+    if(convertMedalBtn)convertMedalBtn.disabled=medalActionBusy||!state.canExchange||state.conflicts>0;
+    if(convertMedalBtn)convertMedalBtn.textContent=`Trocar ${state.target} pontos por 1 medalha`;
+    if(medalExchangeGuide)medalExchangeGuide.textContent=state.conflicts
+      ? 'Há uma troca com dados inconsistentes. Verifique o histórico antes de continuar.'
+      : state.canExchange
+        ? `A turma tem ${state.points} pontos. Você decide quando usar ${state.target} deles para conquistar 1 medalha.`
+        : `A turma tem ${state.points} pontos. São necessários ${state.target} para conquistar 1 medalha.`;
+    if(useMedalBtn)useMedalBtn.disabled=medalActionBusy||state.available<=0;
     if(medalUseNote)medalUseNote.textContent=state.used
       ? `${state.used} já usada${state.used===1?'':'s'} • usar não altera as conquistadas nem o ranking.`
       : 'Usar uma medalha não altera as conquistadas nem o ranking.';
-    if(turmaNext)turmaNext.textContent='';
+    if(turmaNext)turmaNext.textContent='Medalhas não são concedidas automaticamente; a troca e o uso são decisões do professor.';
   }
 
   async function useOneMedal(){
@@ -799,6 +822,7 @@
     turmaSummary.classList.add('hidden');
     manualField?.classList.add('hidden');
     if(medalUseMsg)medalUseMsg.textContent='';
+    if(medalConvertMsg)medalConvertMsg.textContent='';
   }
 
   async function enter(profile){
@@ -848,6 +872,7 @@
   });
   saveConfigBtn?.addEventListener('click',saveSettings);
   useMedalBtn?.addEventListener('click',useOneMedal);
+  convertMedalBtn?.addEventListener('click',convertPointsToMedal);
 
   if(manualMsg){
     new MutationObserver(()=>{if(manualMsg.textContent&&!manualMsg.textContent.includes('SALVANDO'))setTimeout(refreshTurmaStats,100)})
