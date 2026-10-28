@@ -66,7 +66,7 @@ a{color:var(--blue);text-decoration:none;font-weight:900}
 
   <section class="section" id="preparar">
     <h2>1. Preparar a turma</h2>
-    <div class="callout"><strong>Configurações em uma aba:</strong> a preparação agora abre com Turma e Níveis. Use o botão <strong>Configurações</strong> para ajustar período, pontos e medalhas. Volte a <strong>Preparar aula</strong> antes de iniciar. O esquema ilustrado abaixo mostra a disposição anterior em três colunas.</div>
+    <div class="callout"><strong>Turma em primeiro lugar:</strong> após entrar, escolha a turma e veja os pontos e medalhas. Os quatro níveis de som aparecem abaixo, como referência. A aba <strong>Configurações</strong> continua disponível para ajustar período e valores. O esquema ilustrado abaixo mostra uma disposição anterior da interface.</div>
     <p>Depois de entrar no perfil da escola, escolha a turma e confira os dados antes de iniciar.</p>
 
     <div class="figure">
@@ -154,7 +154,7 @@ a{color:var(--blue);text-decoration:none;font-weight:900}
 
     <div class="legend-grid">
       <article class="legend-card"><h3><span class="badge">A</span> Perfil e turma</h3><p>O perfil identifica a escola. Escolha a turma para carregar pontos, medalhas e usos já registrados.</p></article>
-      <article class="legend-card"><h3><span class="badge">B</span> Pontos e medalhas</h3><p>Os pontos mostram o progresso até a próxima medalha. “Medalhas conquistadas” é o total histórico da turma.</p></article>
+      <article class="legend-card"><h3><span class="badge">B</span> Pontos e medalhas</h3><p>Os pontos ficam acumulados. Ao atingir o valor configurado, o professor pode trocar os pontos por uma medalha; a troca não acontece automaticamente. “Medalhas conquistadas” é o total histórico.</p></article>
       <article class="legend-card"><h3><span class="badge">C</span> Medalhas disponíveis</h3><p>São as medalhas conquistadas que ainda podem ser usadas. Usar uma medalha não reduz o total conquistado nem o ranking.</p></article>
       <article class="legend-card"><h3><span class="badge">D</span> Ajustar pontos da turma</h3><p>Permite acrescentar ou retirar pontos manualmente quando o professor precisar fazer um ajuste.</p></article>
       <article class="legend-card"><h3><span class="badge">E</span> Níveis e microfone</h3><p>Os quatro níveis ficam visíveis antes da aula. A sensibilidade do microfone pode ser ajustada conforme o ambiente.</p></article>
@@ -259,12 +259,12 @@ a{color:var(--blue);text-decoration:none;font-weight:900}
         <tr><td>Trabalho realizado</td><td>O professor clica em “Trabalho +X”. Esses pontos não são perdidos em uma paralisação.</td></tr>
         <tr><td>Aula sem paralisação</td><td>No encerramento, a turma recebe o bônus configurado se não tiver ocorrido nenhuma paralisação causada pelo som da turma.</td></tr>
         <tr><td>Paralisação da turma</td><td>Zera os pontos de foco acumulados naquela aula. Mantém os pontos de trabalho.</td></tr>
-        <tr><td>Medalha conquistada</td><td>Quando o total acumulado atinge o valor configurado para uma medalha, o total de medalhas conquistadas aumenta.</td></tr>
+        <tr><td>Trocar pontos por medalha</td><td>Ao selecionar a turma, o professor pode trocar a quantidade configurada de pontos por 1 medalha e confirmar a operação. Os pontos são descontados somente na troca; nenhuma medalha surge automaticamente.</td></tr>
         <tr><td>Usar uma medalha</td><td>Diminui apenas as medalhas disponíveis para uso. O total histórico de medalhas conquistadas e o ranking permanecem iguais.</td></tr>
       </tbody>
     </table>
 
-    <div class="callout"><strong>Exemplo:</strong> uma turma conquistou 3 medalhas e já usou 1. O ranking continua mostrando <strong>3 medalhas conquistadas</strong>, enquanto a tela da turma mostra <strong>2 disponíveis para usar</strong>.</div>
+    <div class="callout"><strong>Exemplo:</strong> a turma tem 85 pontos e o valor definido é 40. Antes da troca, continua com 85 pontos e nenhuma nova medalha. Quando o professor confirma a troca de 40 pontos, passa a ter 45 pontos e mais 1 medalha conquistada. As medalhas já usadas não diminuem o total histórico conquistado.</div>
   </section>
 
   <section class="section">
@@ -275,7 +275,7 @@ a{color:var(--blue);text-decoration:none;font-weight:900}
       <div class="step"><div class="step-num">3</div><div><h3>Acompanhe os níveis</h3><p>Use a tela como referência coletiva durante a atividade.</p></div></div>
       <div class="step"><div class="step-num">4</div><div><h3>Registre trabalhos</h3><p>Clique em “Trabalho +X” quando a turma concluir o que foi combinado.</p></div></div>
       <div class="step"><div class="step-num">5</div><div><h3>Interprete paralisações</h3><p>Escolha se o som veio da turma ou de fora.</p></div></div>
-      <div class="step"><div class="step-num">6</div><div><h3>Encerre a aula</h3><p>O resultado é salvo e passa a compor os pontos e medalhas da turma.</p></div></div>
+      <div class="step"><div class="step-num">6</div><div><h3>Encerre a aula</h3><p>Os pontos da aula se somam ao saldo da turma. As medalhas só são concedidas quando o professor, depois de selecionar a turma, confirma uma troca de pontos.</p></div></div>
     </div>
 
     <p class="small" style="margin-top:18px">O indicador de som é relativo ao sinal captado pelo microfone do dispositivo. A ferramenta não mede nível sonoro calibrado em decibéis e não envia gravações de áudio.</p>
