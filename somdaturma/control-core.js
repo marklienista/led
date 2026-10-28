@@ -451,25 +451,9 @@
   }
 
   function medalStates(rows){
-    const map=new Map();
-    const ordered=[...rows].sort((a,b)=>timeValue(a.ts)-timeValue(b.ts));
-    for(const s of ordered){
-      if(!s.room)continue;
-      const k=s.room.toUpperCase();
-      const x=map.get(k)||{room:k,medals:0,progress:0,record:0,lessons:0,used:0};
-      x.used+=Math.max(0,Number(s.medalUse)||0);
-      const delta=Number(s.point)||0;
-      if(delta>=0){
-        x.progress+=delta;
-        while(x.progress>=medalTarget()){x.medals++;x.progress-=medalTarget()}
-      }else{
-        x.progress=Math.max(0,x.progress+delta);
-      }
-      x.record=Math.max(x.record,Number(s.record)||0);
-      if(!s.manual)x.lessons++;
-      map.set(k,x);
-    }
-    return[...map.values()];
+    const ledger=window.SOM_TURMA_MEDAL_LEDGER;
+    if(!ledger)throw new Error('Não foi possível carregar a regra de medalhas.');
+    return ledger.allRooms(rows,medalTarget());
   }
 
   function drawMedals(rows){
@@ -480,7 +464,7 @@
     rows.forEach((x,i)=>{
       const r=document.createElement('div');
       r.className='rank-row';
-      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">${x.progress}/${medalTarget()} para a próxima medalha</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${Math.max(0,x.medals-x.used)} livres</span></div>`;
+      r.innerHTML=`<div class="rank-pos">${i+1}º</div><div class="rank-room">${x.room}<div class="hint">⭐ ${x.points} pontos acumulados · ${x.points>=x.target?'pode trocar':'faltam '+x.remaining+' para trocar'}</div></div><div class="rank-data medal-data"><b>🏅 ${x.medals}</b><span>${x.available} disponíveis</span></div>`;
       box.appendChild(r);
     });
   }
@@ -506,7 +490,7 @@
       status.textContent='● NESTE COMPUTADOR';
       status.className='status-note offline';
     }
-    const states=medalStates(rows).sort((a,b)=>b.medals-a.medals||b.progress-a.progress||a.room.localeCompare(b.room,'pt-BR'));
+    const states=medalStates(rows).sort((a,b)=>b.medals-a.medals||b.points-a.points||a.room.localeCompare(b.room,'pt-BR'));
     drawMedals(states);
   };
   if(rankingBtn)rankingBtn.onclick=renderRanking;
