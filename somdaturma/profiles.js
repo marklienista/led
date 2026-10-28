@@ -755,6 +755,64 @@
     if(turmaNext)turmaNext.textContent='Medalhas não são concedidas automaticamente; a troca e o uso são decisões do professor.';
   }
 
+  async function convertPointsToMedal(){
+    const selected=cleanRoom(roomInput?.value);
+    const profile=currentProfile;
+    if(!selected||experienceMode||!profile||medalActionBusy)return;
+    medalActionBusy=true;
+    if(convertMedalBtn)convertMedalBtn.disabled=true;
+    if(useMedalBtn)useMedalBtn.disabled=true;
+    if(medalConvertMsg)medalConvertMsg.textContent='Conferindo pontos da turma...';
+    try{
+      const {state,source}=await roomScoreSnapshot(selected);
+      if(currentProfile!==profile||cleanRoom(roomInput?.value)!==selected)return;
+      if(state.conflicts){
+        if(medalConvertMsg)medalConvertMsg.textContent='A troca precisa ser conferida: foram encontrados eventos inconsistentes.';
+        return;
+      }
+      if(!state.canExchange){
+        if(medalConvertMsg)medalConvertMsg.textContent='Ainda faltam '+state.remaining+' pontos para trocar por uma medalha.';
+        return;
+      }
+      const after=state.points-state.target;
+      const accepted=window.confirm(
+        'Trocar '+state.target+' pontos da turma '+selected+' por 1 medalha?\n\n'+
+        'Pontos: '+state.points+' → '+after+'\n'+
+        'Medalhas conquistadas: '+state.medals+' → '+(state.medals+1)+'\n\n'+
+        'A troca só acontece depois desta confirmação.'
+      );
+      if(!accepted){
+        if(medalConvertMsg)medalConvertMsg.textContent='Troca cancelada. Os pontos continuam guardados.';
+        return;
+      }
+      // A troca é um evento próprio: custo registrado, ID único e nenhuma
+      // alteração de aulas, pontos anteriores ou medalhas já usadas.
+      const event={
+        id:'T'+sessionId(),room:selected,point:-state.target,
+        medalConversion:true,manual:true,record:0,duration:0,
+        quietPct:0,stops:0,ts:Date.now(),synced:false
+      };
+      const stored=scopedLocalSessions();
+      stored.push(event);
+      scopedWriteLocal(stored);
+      const keptLocal=scopedLocalSessions().some(x=>x.id===event.id);
+      try{
+        await scopedSaveOnline(event);
+        scopedMarkSynced(event.id);
+        if(medalConvertMsg)medalConvertMsg.textContent='1 medalha conquistada! '+after+' pontos continuam disponíveis.';
+      }catch(error){
+        if(medalConvertMsg)medalConvertMsg.textContent=keptLocal
+          ? 'Troca guardada neste computador; será sincronizada quando a rede voltar.'
+          : 'Não foi possível registrar a troca. Não continue antes de verificar a conexão.';
+      }
+    }catch(error){
+      if(medalConvertMsg)medalConvertMsg.textContent='Não foi possível conferir os pontos: '+String(error?.message||error).slice(0,100);
+    }finally{
+      medalActionBusy=false;
+      await refreshTurmaStats();
+    }
+  }
+
   async function useOneMedal(){
     const selected=cleanRoom(roomInput?.value);
     if(!selected||experienceMode||!currentProfile)return;
