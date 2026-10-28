@@ -139,7 +139,7 @@
   document.body.classList.add('sdt-identity-b');
   const identityB=document.createElement('link');
   identityB.rel='stylesheet';
-  identityB.href='identidade-b.css?v=20261025-1';
+  identityB.href='identidade-b.css?v=20261028-1';
   document.head.appendChild(identityB);
 
   const login=document.createElement('section');
