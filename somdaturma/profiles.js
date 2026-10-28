@@ -939,7 +939,12 @@
   document.getElementById('tryModeBtn').onclick=enterExperience;
   document.getElementById('profileExit').onclick=exitProfile;
 
-  roomInput?.addEventListener('input',()=>{clearTimeout(roomInput._statsTimer);roomInput._statsTimer=setTimeout(refreshTurmaStats,180)});
+  roomInput?.addEventListener('input',()=>{
+    if(medalConvertMsg)medalConvertMsg.textContent='';
+    if(medalUseMsg)medalUseMsg.textContent='';
+    clearTimeout(roomInput._statsTimer);
+    roomInput._statsTimer=setTimeout(refreshTurmaStats,180);
+  });
   roomInput?.addEventListener('change',refreshTurmaStats);
   [cfgPeriodSeconds,cfgPeriodPoints,cfgMedalPoints,cfgWorkPoints,cfgNoStopPoints].forEach(input=>{
     input?.addEventListener('input',()=>setSettingsDirty(true));
