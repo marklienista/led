@@ -324,7 +324,15 @@
     leftCard.append(strip,expNote);
     if(roomField)leftCard.append(roomField);
     leftCard.append(turmaSummary);
-    if(manualField)leftCard.append(manualField);
+    if(manualField){
+      const manualDetails=document.createElement('details');
+      manualDetails.id='sdtManualDetails';
+      manualDetails.className='sdt-manual-details hidden';
+      const manualTitle=document.createElement('summary');
+      manualTitle.textContent='Ajustar pontos manualmente';
+      manualDetails.append(manualTitle,manualField);
+      leftCard.append(manualDetails);
+    }
     if(setupActions)leftCard.append(setupActions);
     if(legend)centerCard.append(legend);
     if(micField)centerCard.append(micField);
@@ -347,6 +355,7 @@
   const cfgNoStopPoints=document.getElementById('cfgNoStopPoints');
   const saveConfigBtn=document.getElementById('saveConfigBtn');
   const configStatus=document.getElementById('configStatus');
+  const manualDetails=document.getElementById('sdtManualDetails');
   const turmaPoints=document.getElementById('turmaPoints');
   const turmaPointsProgress=document.getElementById('turmaPointsProgress');
   const turmaMedals=document.getElementById('turmaMedals');
@@ -730,6 +739,7 @@
     const selected=cleanRoom(roomInput?.value);
     const showDetails=!experienceMode&&!!currentProfile&&!!selected;
     turmaSummary.classList.toggle('hidden',!showDetails);
+    manualDetails?.classList.toggle('hidden',!showDetails);
     manualField?.classList.toggle('hidden',!showDetails);
     if(!showDetails)return;
     if(turmaPointsProgress)turmaPointsProgress.textContent='...';
@@ -750,8 +760,8 @@
         : `A turma tem ${state.points} pontos. São necessários ${state.target} para conquistar 1 medalha.`;
     if(useMedalBtn)useMedalBtn.disabled=medalActionBusy||state.available<=0;
     if(medalUseNote)medalUseNote.textContent=state.used
-      ? `${state.used} já usada${state.used===1?'':'s'} • usar não altera as conquistadas nem o ranking.`
-      : 'Usar uma medalha não altera as conquistadas nem o ranking.';
+      ? `${state.used} já usada${state.used===1?'':'s'}. O total conquistado não diminui.`
+      : 'Somente as medalhas disponíveis diminuem quando usadas.';
     if(turmaNext)turmaNext.textContent='Medalhas não são concedidas automaticamente; a troca e o uso são decisões do professor.';
   }
 
@@ -879,6 +889,7 @@
     }
     turmaSummary.classList.add('hidden');
     manualField?.classList.add('hidden');
+    if(manualDetails){manualDetails.classList.add('hidden');manualDetails.open=false;}
     if(medalUseMsg)medalUseMsg.textContent='';
     if(medalConvertMsg)medalConvertMsg.textContent='';
   }
