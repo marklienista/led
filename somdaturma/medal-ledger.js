@@ -5,7 +5,7 @@
    Módulo sem rede, DOM, áudio ou persistência. */
 (()=>{
   'use strict';
-  const LEGACY_BEFORE=Date.parse('2026-10-28T17:40:53.704Z');
+  const LEGACY_BEFORE=Date.parse('2026-10-28T17:52:11.350655Z');
   function cleanRoom(value){
     return String(value||'').trim().toUpperCase().replace(/\|/g,'').replace(/\s+/g,' ').slice(0,12);
   }
