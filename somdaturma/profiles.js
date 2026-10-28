@@ -825,53 +825,58 @@
 
   async function useOneMedal(){
     const selected=cleanRoom(roomInput?.value);
-    if(!selected||experienceMode||!currentProfile)return;
+    const profile=currentProfile;
+    if(!selected||experienceMode||!profile||medalActionBusy)return;
+    medalActionBusy=true;
+    if(convertMedalBtn)convertMedalBtn.disabled=true;
     useMedalBtn.disabled=true;
-    if(medalUseMsg){medalUseMsg.textContent='VERIFICANDO...';medalUseMsg.style.color='#64748b'}
-    let rows=[];
+    if(medalUseMsg)medalUseMsg.textContent='Conferindo medalhas da turma...';
     try{
-      await syncProfile();
-      rows=await scopedOnlineSessions();
-      rows.push(...scopedLocalSessions().filter(x=>!x.synced));
-    }catch(e){
-      rows=scopedLocalSessions();
+      const snapshot=await roomScoreSnapshot(selected);
+      if(currentProfile!==profile||cleanRoom(roomInput?.value)!==selected)return;
+      const state=snapshot.state;
+      if(state.conflicts){
+        if(medalUseMsg)medalUseMsg.textContent='Existem registros a conferir antes de usar medalhas.';
+        return;
+      }
+      if(state.available<=0){
+        if(medalUseMsg)medalUseMsg.textContent='Ainda não há medalhas disponíveis. Troque pontos quando a turma alcançar a meta.';
+        return;
+      }
+      const accepted=window.confirm(
+        'Usar 1 medalha disponível da turma '+selected+'?\n\n'+
+        'Medalhas disponíveis: '+state.available+' → '+(state.available-1)+'\n'+
+        'Medalhas conquistadas: '+state.medals+' (não muda).'+
+        (snapshot.source==='local'?'\n\nA rede está indisponível. O registro ficará neste computador até a sincronização.':'')
+      );
+      if(!accepted){
+        if(medalUseMsg)medalUseMsg.textContent='Uso cancelado. A medalha continua disponível.';
+        return;
+      }
+      const event={
+        id:'U'+sessionId(),room:selected,point:0,record:0,
+        duration:0,quietPct:0,stops:0,ts:Date.now(),
+        synced:false,manual:true,medalUse:1
+      };
+      const stored=scopedLocalSessions();
+      stored.push(event);
+      scopedWriteLocal(stored);
+      const keptLocal=scopedLocalSessions().some(x=>x.id===event.id);
+      try{
+        await scopedSaveOnline(event);
+        scopedMarkSynced(event.id);
+        if(medalUseMsg)medalUseMsg.textContent='Uma medalha foi usada. O total conquistado continua igual.';
+      }catch(error){
+        if(medalUseMsg)medalUseMsg.textContent=keptLocal
+          ? 'Uso guardado neste computador; será sincronizado quando a rede voltar.'
+          : 'Não foi possível registrar o uso. Confira a conexão antes de tentar novamente.';
+      }
+    }catch(error){
+      if(medalUseMsg)medalUseMsg.textContent='Não foi possível conferir as medalhas: '+String(error?.message||error).slice(0,100);
+    }finally{
+      medalActionBusy=false;
+      await refreshTurmaStats();
     }
-    const state=stateForRoom(rows,selected);
-    if(state.available<=0){
-      if(medalUseMsg){medalUseMsg.textContent='NENHUMA MEDALHA DISPONÍVEL';medalUseMsg.style.color='#92400e'}
-      useMedalBtn.disabled=true;
-      return;
-    }
-    const ok=window.confirm(`Usar 1 medalha da turma ${selected}?\n\nAs ${state.medals} medalha${state.medals===1?' conquistada':'s conquistadas'} e o ranking continuam iguais. Apenas as disponíveis para usar diminuem em 1.`);
-    if(!ok){
-      useMedalBtn.disabled=false;
-      if(medalUseMsg)medalUseMsg.textContent='';
-      return;
-    }
-    const event={
-      id:'U'+sessionId(),
-      room:selected,
-      point:0,
-      record:0,
-      duration:0,
-      quietPct:0,
-      stops:0,
-      ts:Date.now(),
-      synced:false,
-      manual:true,
-      medalUse:1
-    };
-    const local=scopedLocalSessions();
-    local.push(event);
-    scopedWriteLocal(local);
-    try{
-      await scopedSaveOnline(event);
-      scopedMarkSynced(event.id);
-      if(medalUseMsg){medalUseMsg.textContent='✅ 1 MEDALHA USADA';medalUseMsg.style.color='#166534'}
-    }catch(e){
-      if(medalUseMsg){medalUseMsg.textContent='💾 USO REGISTRADO NESTE COMPUTADOR';medalUseMsg.style.color='#92400e'}
-    }
-    await refreshTurmaStats();
   }
 
   function applyUi(){
