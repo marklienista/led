@@ -7,11 +7,11 @@
   };
 
   const core=document.createElement('script');
-  core.src='control-core.js?v=20261028-1';
+  core.src='control-core.js?v=20261109-saldo1';
   core.onload=()=>{
     const loadProfiles=()=>{
       const profiles=document.createElement('script');
-      profiles.src='profiles.js?v=20261028-1';
+      profiles.src='profiles.js?v=20261109-saldo1';
       document.head.appendChild(profiles);
     };
     const microphone=document.createElement('script');
@@ -25,3 +25,4 @@
   };
   document.head.appendChild(core);
 })();
+

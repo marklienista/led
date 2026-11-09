@@ -419,7 +419,11 @@
   writeLocal=function(rows){try{localStorage.setItem(LOCAL_V2,JSON.stringify(rows.slice(-500)))}catch(e){}};
 
   encodedName=function(s){
-    if(s.manual)return`${MANUAL_PREFIX}${s.room}|${s.point}|${String(s.id).slice(-8)}`;
+    if(s.manual){
+      const id=String(s.id);
+      const reference=id.endsWith('-neg')?id.slice(-12):id.slice(-8);
+      return`${MANUAL_PREFIX}${s.room}|${s.point}|${reference}`;
+    }
     return`${SCORE_PREFIX}${s.room}|${s.point}|${Math.max(0,Math.floor(s.record))}|${String(s.id).slice(-8)}`;
   };
 
@@ -439,7 +443,7 @@
     return(await r.json()).map(row=>{
       const p=String(row.nome||'').split('|');
       if(p[0]==='R2'&&p.length>=4)return{room:sanitizeRoom(p[1]),point:Math.max(0,Number(p[2])||0),record:Number(p[3])||0,ts:row.criado_em||0,manual:false};
-      if(p[0]==='R2M'&&p.length>=3)return{room:sanitizeRoom(p[1]),point:Number(p[2])||0,record:0,ts:row.criado_em||0,manual:true};
+      if(p[0]==='R2M'&&p.length>=3)return{room:sanitizeRoom(p[1]),point:Number(p[2])||0,record:0,ts:row.criado_em||0,manual:true,id:p[3]?.endsWith('-neg')?p[3]:undefined};
       return null;
     }).filter(Boolean);
   };
@@ -496,21 +500,10 @@
   if(rankingBtn)rankingBtn.onclick=renderRanking;
   if(summaryRankingBtn)summaryRankingBtn.onclick=renderRanking;
 
-  async function currentProgressFor(roomName){
-    try{
-      const rows=await onlineSessions();
-      const found=medalStates(rows).find(x=>x.room===roomName);
-      return found?found.progress:0;
-    }catch(e){
-      const found=medalStates(localSessions()).find(x=>x.room===roomName);
-      return found?found.progress:0;
-    }
-  }
-
   async function adjustManual(sign){
     const r=cleanRoom(roomInput?.value);
     if(!r){manualMsg.style.color='#991b1b';manualMsg.textContent='ESCOLHA A TURMA';roomInput?.focus();return}
-    let value=Math.max(1,Math.min(99,Math.floor(Number(manualInput?.value)||1)));
+    const value=Math.max(1,Math.min(99,Math.floor(Number(manualInput?.value)||1)));
     if(manualInput)manualInput.value=String(value);
 
     manualAddBtn.disabled=true;
@@ -518,18 +511,9 @@
     manualMsg.style.color='#64748b';
     manualMsg.textContent='SALVANDO...';
 
-    if(sign<0){
-      const progress=await currentProgressFor(r);
-      if(progress<=0){
-        manualMsg.style.color='#92400e';manualMsg.textContent=`${r} NÃO TEM PONTOS SOLTOS PARA REMOVER`;
-        manualAddBtn.disabled=false;manualRemoveBtn.disabled=false;
-        return;
-      }
-      value=Math.min(value,progress);
-    }
-
-    const delta=sign*value;
-    const s={id:'M'+sessionId(),room:r,point:delta,record:0,duration:0,quietPct:0,stops:0,ts:Date.now(),synced:false,manual:true};
+    // O identificador guarda a regra do desconto também depois da sincronização.
+    const id='M'+sessionId()+(sign<0?'-neg':'');
+    const s={id,room:r,point:sign*value,record:0,duration:0,quietPct:0,stops:0,ts:Date.now(),synced:false,manual:true};
     const rows=localSessions();rows.push(s);writeLocal(rows);
 
     try{
@@ -615,3 +599,4 @@
   roomInput?.addEventListener('change',()=>{lastSent='';syncSoon()});
   syncSoon();
 })();
+

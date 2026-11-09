@@ -53,8 +53,11 @@
             legacyMedals+=1;
           }
         }
+      }else if((s.manual===true||s.tipo==='ajuste')&&String(s.id??s.sessao_id??'').endsWith('-neg')){
+        points+=delta;
       }else{
-        points=Math.max(0,points+delta);
+        // Descontos antigos consumiam somente o saldo positivo disponível.
+        points-=Math.min(Math.max(0,points),-delta);
       }
       used+=Math.max(0,Number(s.medalUse??s.medalhas_usadas)||0);
       record=Math.max(record,Math.max(0,Number(s.record??s.recorde_seg)||0));

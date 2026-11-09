@@ -419,7 +419,7 @@
   let projectionSeq=0;
   function projectionOf(base,earned){
     return {
-      points:Math.max(0,Number(base.points)||0)+Math.max(0,Number(earned)||0),
+      points:(Number(base.points)||0)+Math.max(0,Number(earned)||0),
       target:Math.max(1,Number(base.target)||40),
       medals:Math.max(0,Number(base.medals)||0),
       available:Math.max(0,Number(base.available)||0)

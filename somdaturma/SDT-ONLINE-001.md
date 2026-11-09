@@ -145,3 +145,12 @@ Próximo passo no Som da Turma: validação real de duas contas e correção pon
 **Avisos reais:** Security Advisor nesta consulta mostrou `auth_leaked_password_protection` desativado e três tabelas `apertaletra_*` com RLS sem política (informações de outro módulo). Nenhum desses avisos foi introduzido nem corrigido nesta tarefa; encaminhar à frente proprietária quando relevante. Não reconfigurar Auth do Supabase nem políticas de outro aplicativo por um ajuste de medalhas.
 
 **Próximo passo:** conferir no projetor real a nova hierarquia, selecionar turma com saldo suficiente, confirmar uma única troca e conferir ponto/medalha no resumo e ranking; conferir cancelamento e uso. **Evitar converter pontos da mesma turma simultaneamente em dois computadores**, pois o mecanismo público experimental ainda não tem transação de saldo bloqueada por conta autenticada. A identidade B foi preservada, sem novo logo, preço ou lançamento.
+
+
+## SDT-SALDO-001 — saldo negativo no GitHub Pages (09/11/2026)
+
+Em Ajustar pontos manualmente, Remover aplica o desconto completo. Com 3 pontos e desconto de 5, a turma fica com −2. Os pontos de uma aula encerrada somam a partir desse saldo, e a troca por medalha depende de atingir a meta configurada.
+
+Esta publicação usa o repositório `marklienista/led`. Os novos descontos têm o sufixo `-neg` no identificador já guardado pelo aplicativo. O cálculo lê esse marcador tanto no navegador quanto ao reabrir os registros online. Ajustes anteriores seguem a regra de saldo positivo vigente na época. O resumo da aula preserva o sinal do saldo inicial. As referências aos scripts foram versionadas e o manual ganhou um exemplo.
+
+Verificação local com registros fictícios: desconto de 5 a partir de 3, desconto a partir de zero, recarga pela representação online simulada, recomposição de saldo no resumo, meta de medalha e leitura de ajustes antigos. Sintaxe dos quatro scripts e referências versionadas conferidas. A definição atual da tabela permite pontos negativos em `ajuste` e identificadores de até 80 caracteres.
